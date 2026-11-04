@@ -173,3 +173,6 @@ pre_train/
 local_config.toml
 site/
 Model_ckpt/
+# uv environment management (see README "Environment Management")
+runtime/
+envs/*/venv/

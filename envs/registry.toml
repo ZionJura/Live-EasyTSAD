@@ -1,0 +1,25 @@
+# Environment registry: the single source of truth for which environment
+# runs which method. Each method must appear in exactly one environment.
+#
+# After editing this file run `scripts/tsad doc` to regenerate
+# envs/ENVIRONMENTS.md, and `scripts/tsad check <env>` to verify imports.
+
+[envs.torch2]
+python = "3.11"
+description = "Default. PyTorch 2.6 + CUDA 12.4, lightning, transformers, sklearn."
+methods = [
+    "AE", "AR", "AnomalyTransformer", "CAD", "DCdetector", "Diff", "Donut",
+    "EncDecAD", "Example", "FCVAE", "FITS", "LOF", "LSTMADalpha", "LSTMADbeta",
+    "OCSVM", "OFA", "SRCNN", "SubLOF", "SubOCSVM", "TFAD", "TimesNet", "TranAD",
+]
+
+[envs.legacy]
+python = "3.9"
+description = "Old pinned libraries: tslearn==0.4.1, matrixprofile."
+methods = ["SAND", "MatrixProfile"]
+
+# Free-form notes shown in ENVIRONMENTS.md (known issues, caveats).
+[notes]
+FCVAE = "Broken upstream: SyntaxError at EasyTSAD/Methods/FCVAE/TSDataset.py:46."
+Example = "Template method, not a real baseline."
+Spot = "Helper module (SPOT/biSPOT/...), not a BaseMethod; not registered."

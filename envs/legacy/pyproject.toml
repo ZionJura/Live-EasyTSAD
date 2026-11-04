@@ -1,0 +1,24 @@
+# Environment: legacy
+# Methods pinned to old, unmaintained libraries that conflict with torch2:
+#   - SAND           -> tslearn==0.4.1
+#   - MatrixProfile  -> matrixprofile
+# Python 3.9 is the oldest version supported by the EasyTSAD core.
+
+[project]
+name = "tsad-env-legacy"
+version = "0.0.0"
+requires-python = "==3.9.*"
+dependencies = [
+    "easytsad",
+    "numpy<1.24",
+    "scipy",
+    "tslearn==0.4.1",
+    "stumpy",
+    "matrixprofile",
+]
+
+[tool.uv]
+package = false
+
+[tool.uv.sources]
+easytsad = { path = "../..", editable = true }

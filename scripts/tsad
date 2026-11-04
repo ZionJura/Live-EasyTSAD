@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+# Entry point for EasyTSAD environment management.
+#
+# Pins every uv artifact inside the repository so that nothing ends up in
+# hidden home-directory locations:
+#   runtime/python/      uv-managed Python interpreters
+#   runtime/uv-cache/    uv package cache
+#   envs/<name>/venv/    virtual environment of each env project
+#
+# Usage: scripts/tsad <command> [...]    (run `scripts/tsad help`)
+set -euo pipefail
+
+ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+export TSAD_ROOT="$ROOT"
+export UV_PYTHON_INSTALL_DIR="$ROOT/runtime/python"
+export UV_CACHE_DIR="$ROOT/runtime/uv-cache"
+export UV_PYTHON_PREFERENCE="only-managed"   # never pick system / home Pythons
+export UV_PYTHON_INSTALL_BIN=0               # do not drop shims into ~/.local/bin
+
+command -v uv >/dev/null || { echo "error: uv not found on PATH (https://docs.astral.sh/uv/)" >&2; exit 1; }
+
+# The CLI itself is a stdlib-only script that needs Python >= 3.11 (tomllib).
+exec uv run --quiet --no-project --python 3.11 "$ROOT/scripts/tsad.py" "$@"
