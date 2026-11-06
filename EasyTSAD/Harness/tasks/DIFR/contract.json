@@ -1,0 +1,393 @@
+{
+  "method": "DIFR",
+  "paper": {
+    "title": "Deep Isolation Forest for Anomaly Detection",
+    "arxiv_id": "2206.06602",
+    "venue": "IEEE Transactions on Knowledge and Data Engineering (2023 publication; arXiv preprint 2022)",
+    "year": 2022
+  },
+  "task_type": "both",
+  "summary": "DIF maps time-series windows into an ensemble of randomly initialized, optimization-free dilated residual CNN representations and builds random axis-parallel isolation trees in each representation space. Deviation-enhanced anomaly scoring combines isolation path lengths with mean absolute deviations from visited split thresholds, with higher scores indicating stronger anomalies.",
+  "claims": [
+    {
+      "id": "data.preprocess",
+      "value": "raw",
+      "status": "inferred",
+      "source": "code: utils.py:L223-L265 reads time-series feature columns without normalization; main_ts.py:L73-L90 passes their values directly into subsequence construction and fitting. The MinMaxScaler utilities at utils.py:L11-L39 are not called by the time-series runner.",
+      "mutable": false,
+      "config_key": "Data_Params.preprocess"
+    },
+    {
+      "id": "data.window_size",
+      "value": 100,
+      "status": "inferred",
+      "source": "code: main_ts.py:L27-L32 (--seq_len=100); utils.py:L120-L132 constructs full contiguous windows.",
+      "mutable": false,
+      "config_key": "window_size"
+    },
+    {
+      "id": "data.train_stride",
+      "value": 10,
+      "status": "inferred",
+      "source": "code: main_ts.py:L29 and L88 set training window stride to 10.",
+      "mutable": false,
+      "config_key": "train_stride"
+    },
+    {
+      "id": "data.test_stride",
+      "value": 1,
+      "status": "inferred",
+      "source": "code: main_ts.py:L89 uses test stride=1.",
+      "mutable": false,
+      "config_key": "test_stride"
+    },
+    {
+      "id": "data.window_layout",
+      "value": "Each window has shape [window_size, channels]; batches have shape [batch, window_size, channels]. Univariate data uses channels=1; multivariate channels are processed jointly.",
+      "status": "inferred",
+      "source": "code: utils.py:L120-L132 explicitly identifies axis 0 as time and axis 1 as channels; algorithms/net_torch.py:L270-L289 applies a pointwise input projection before the channel/time transpose.",
+      "mutable": false
+    },
+    {
+      "id": "data.train_split",
+      "value": "Fit random representations and trees on the provided training series only. Do not concatenate validation or test data, use labels, or optimize on validation metrics.",
+      "status": "inferred",
+      "source": "Sec. 6.4 (predefined clean training/test splits); code: main_ts.py:L76-L91 fits only x_train_seq, then calls decision_function on x_test_seq; algorithms/dif.py:L153-L161 ignores y.",
+      "mutable": false
+    },
+    {
+      "id": "data.representation_preprocess",
+      "value": "For each independent network, collect all window representations in one fit or inference call, independently standardize each output feature with sklearn StandardScaler.fit_transform (population variance; zero-variance features use scale 1), then apply elementwise tanh. Inference fits its own representation scaler over the test-window collection; no stored training scaler is reused.",
+      "status": "inferred",
+      "source": "code: algorithms/dif.py:L280-L303 (StandardScaler().fit_transform followed by np.tanh); L232-L243 calls deep_transfer anew for time-series inference. Paper does not specify representation normalization.",
+      "mutable": false,
+      "config_key": "representation_preprocess"
+    },
+    {
+      "id": "data.short_series_policy",
+      "value": "Require at least window_size observations in each nonempty split used for fitting/scoring; raise an informative error for shorter inputs. Do not adapt window size or pad observations.",
+      "status": "unspecified",
+      "source": "Neither paper Secs. 5-6 nor code: utils.py:L120-L132 / main_ts.py:L88-L94 specifies short-input handling. Neutral default preserves the stated windowing algorithm.",
+      "mutable": false
+    },
+    {
+      "id": "model.architecture",
+      "value": "An ensemble of randomly initialized TS2Vec-style dilated one-dimensional CNN encoders with residual blocks; networks remain fixed and are never optimized.",
+      "status": "explicit",
+      "source": "Sec. 5.1 Eq. (1), Sec. 5.5.1, Sec. 6.1.3 and Sec. 6.2.2 specify randomly initialized dilated CNNs with residual blocks for time series, without optimization.",
+      "mutable": false
+    },
+    {
+      "id": "model.network_name",
+      "value": "dilated_conv",
+      "status": "inferred",
+      "source": "code: main_ts.py:L39-L48; algorithms/net_torch.py:L13-L25 maps this name to DilatedConvEncoder.",
+      "mutable": false,
+      "config_key": "network_name"
+    },
+    {
+      "id": "model.data_type",
+      "value": "ts",
+      "status": "inferred",
+      "source": "code: main_ts.py:L40-L48 sets data_type='ts'; algorithms/dif.py:L168 infers input feature count from the final axis.",
+      "mutable": false,
+      "config_key": "data_type"
+    },
+    {
+      "id": "model.n_ensemble",
+      "value": 50,
+      "status": "explicit",
+      "source": "Sec. 6.1.3: r=50 representations; code: config.py:L17-L24.",
+      "mutable": false,
+      "config_key": "n_ensemble"
+    },
+    {
+      "id": "model.n_estimators",
+      "value": 6,
+      "status": "explicit",
+      "source": "Sec. 6.1.3: t=6 isolation trees per representation, for 300 total trees; code: config.py:L18-L20.",
+      "mutable": false,
+      "config_key": "n_estimators"
+    },
+    {
+      "id": "model.max_samples",
+      "value": 256,
+      "status": "explicit",
+      "source": "Sec. 6.1.3: subsampling size n=256 per isolation tree; code: config.py:L20 and algorithms/dif.py:L44-L51 documents using all available samples if fewer than 256.",
+      "mutable": false,
+      "config_key": "max_samples"
+    },
+    {
+      "id": "model.layers",
+      "value": 2,
+      "status": "inferred",
+      "source": "code: main_ts.py:L30 and L46; algorithms/net_torch.py:L274-L284 constructs layers+1 residual blocks, so layers=2 produces three blocks with output widths [32,32,20].",
+      "mutable": false,
+      "config_key": "layers"
+    },
+    {
+      "id": "model.hidden_dim",
+      "value": 32,
+      "status": "inferred",
+      "source": "code: main_ts.py:L31,L47; algorithms/net_torch.py:L273-L274 sets the input projection and hidden block width.",
+      "mutable": false,
+      "config_key": "hidden_dim"
+    },
+    {
+      "id": "model.rep_dim",
+      "value": 20,
+      "status": "inferred",
+      "source": "code: main_ts.py:L32,L45; algorithms/dif.py:L135-L137 maps rep_dim to n_emb; algorithms/net_torch.py:L274 sets the final block width.",
+      "mutable": false,
+      "config_key": "rep_dim"
+    },
+    {
+      "id": "model.kernel_size",
+      "value": 3,
+      "status": "inferred",
+      "source": "code: algorithms/net_torch.py:L270-L283 gives DilatedConvEncoder kernel_size=3 and passes it to each block's two convolutions.",
+      "mutable": false,
+      "config_key": "kernel_size"
+    },
+    {
+      "id": "model.dilation_base",
+      "value": 2,
+      "status": "inferred",
+      "source": "code: algorithms/net_torch.py:L275-L283 uses dilation=2**i, producing dilations [1,2,4] for the three blocks.",
+      "mutable": false,
+      "config_key": "dilation_base"
+    },
+    {
+      "id": "model.activation",
+      "value": "gelu",
+      "status": "inferred",
+      "source": "code: algorithms/net_torch.py:L261-L267 applies GELU before each of the two convolutions within each residual block. The general DIF constructor's activation='tanh' parameter is not passed to the CNN; output tanh belongs to representation preprocessing.",
+      "mutable": false,
+      "config_key": "activation"
+    },
+    {
+      "id": "model.residual_structure",
+      "value": "Pointwise linear projection from input channels to hidden_dim; each block applies GELU, same-padded dilated Conv1d, GELU, same-padded dilated Conv1d, then adds the residual. Use a kernel-1 residual projector when widths change or for the final block. Same padding preserves sequence length.",
+      "status": "inferred",
+      "source": "code: algorithms/net_torch.py:L234-L284, especially ConvBlock at L254-L267 and final=True at L281.",
+      "mutable": false
+    },
+    {
+      "id": "model.pooling",
+      "value": "max",
+      "status": "inferred",
+      "source": "code: algorithms/net_torch.py:L287-L298 uses full-window temporal max pooling to produce one rep_dim-dimensional representation per window.",
+      "mutable": false,
+      "config_key": "pooling"
+    },
+    {
+      "id": "model.dropout",
+      "value": 0,
+      "status": "inferred",
+      "source": "code: algorithms/net_torch.py:L285 declares Dropout(p=0.1), but its only forward call at L291 is commented out. Effective dropout is zero; do not enable the unused module.",
+      "mutable": false,
+      "config_key": "dropout"
+    },
+    {
+      "id": "model.bias",
+      "value": "Input Linear, temporal Conv1d, and residual projection Conv1d retain PyTorch default biases and their constructor initialization. Only parameters whose names end in 'weight' are overwritten by DIF's normal initialization.",
+      "status": "inferred",
+      "source": "code: algorithms/net_torch.py:L239-L244,L259,L273 omits bias=False, so biases are enabled; algorithms/dif.py:L328-L333 only reinitializes weight parameters.",
+      "mutable": false
+    },
+    {
+      "id": "model.init_distribution",
+      "value": "normal",
+      "status": "inferred",
+      "source": "Sec. 5.5.3 permits standard normal or uniform initialization without fixing one; code: algorithms/dif.py:L328-L333 chooses torch.nn.init.normal_ for every parameter named *.weight.",
+      "mutable": false,
+      "config_key": "init_distribution"
+    },
+    {
+      "id": "model.init_mean",
+      "value": 0,
+      "status": "inferred",
+      "source": "code: algorithms/dif.py:L332 initializes weights with mean=0.",
+      "mutable": false,
+      "config_key": "init_mean"
+    },
+    {
+      "id": "model.init_std",
+      "value": 1,
+      "status": "inferred",
+      "source": "code: algorithms/dif.py:L332 initializes weights with std=1.",
+      "mutable": false,
+      "config_key": "init_std"
+    },
+    {
+      "id": "model.ensemble_method",
+      "value": "independent",
+      "status": "inferred",
+      "source": "code: main_ts.py:L39-L48 explicitly sets new_ensemble_method=0 for time series; algorithms/dif.py:L214-L229 creates an independently seeded CNN for each representation. Sec. 5.2.1 derives CERE for layer matrices and Sec. 5.4.1 describes its MLP implementation, without giving a convolution-specific CERE implementation.",
+      "mutable": false,
+      "config_key": "ensemble_method"
+    },
+    {
+      "id": "model.tree_partition",
+      "value": "Standard sklearn IsolationForest random axis-parallel partitions on each representation; choose a random representation dimension and a threshold in its observed range, subsample without replacement, use all representation features, and do not bootstrap.",
+      "status": "inferred",
+      "source": "Sec. 5.1 and Algorithm 1 explicitly define random axis-parallel splits; Sec. 6.1.3 identifies sklearn iForest; code: algorithms/dif.py:L182-L188 constructs IsolationForest with only n_estimators, max_samples and random_state overridden, retaining sklearn max_features=1.0 and bootstrap=False defaults.",
+      "mutable": false
+    },
+    {
+      "id": "model.max_depth",
+      "value": "ceil(log2(min(max_samples, number_of_training_windows)))",
+      "status": "inferred",
+      "source": "Sec. 5.4.1 gives typical J=8 with n=256; code: algorithms/dif.py:L182-L188 uses sklearn IsolationForest's subsample-derived maximum depth, yielding 8 when at least 256 training windows exist.",
+      "mutable": false
+    },
+    {
+      "id": "train.optimizer",
+      "value": "none; no gradient optimization occurs",
+      "status": "explicit",
+      "source": "Sec. 5.1, Sec. 5.5.2 and Sec. 6.1.3: DIF networks are only randomly initialized, without optimization steps. code: algorithms/dif.py:L214-L229 and L280-L303 contains no optimizer and runs feature extraction under torch.no_grad().",
+      "mutable": false
+    },
+    {
+      "id": "train.lr",
+      "value": "not applicable (no optimizer)",
+      "status": "explicit",
+      "source": "Sec. 5.1 and Sec. 6.1.3 specify optimization-free DIF. The Adam learning rates listed in Sec. 6.1.3 apply to competing deep detectors, not DIF.",
+      "mutable": false
+    },
+    {
+      "id": "train.epochs",
+      "value": 0,
+      "status": "explicit",
+      "source": "Sec. 5.1 and Sec. 6.1.3: no neural-network optimization/training steps; one feature-extraction pass and tree construction comprise fitting. The 50 epochs in Sec. 6.1.3 describe competing deep anomaly detectors.",
+      "mutable": false
+    },
+    {
+      "id": "train.loss",
+      "value": "none; networks are fixed random functions and trees use recursive random partitioning",
+      "status": "explicit",
+      "source": "Sec. 5.1 Eq. (1), Sec. 5.5.2, Sec. 6.1.3 and Algorithm 1.",
+      "mutable": false
+    },
+    {
+      "id": "train.batch_size",
+      "value": 64,
+      "status": "inferred",
+      "source": "code: main_ts.py:L40-L48 explicitly sets batch_size=64 for the time-series backbone; algorithms/dif.py:L283-L289 uses it for forward-only extraction. Sec. 5.2.1 also gives b=64 as the CERE example, but does not specifically fix the CNN batch size.",
+      "mutable": false,
+      "config_key": "batch_size"
+    },
+    {
+      "id": "train.loader",
+      "value": "Forward-only float32 inputs; chronological order; shuffle=False; drop_last=False. Extract representations for every training or test window.",
+      "status": "inferred",
+      "source": "code: algorithms/dif.py:L283-L289 uses torch.no_grad(), DataLoader(...,drop_last=False,shuffle=False), and batch_x.float().",
+      "mutable": false
+    },
+    {
+      "id": "train.random_state",
+      "value": 42,
+      "status": "inferred",
+      "source": "code: main_ts.py:L14 defaults to one run and L86 uses random_state=42+i. algorithms/dif.py:L169 draws r ensemble seeds from NumPy randint(0,100000); L224-L226 resets seed per network; L184-L186 reuses the matching seed for its forest; L335-L341 seeds torch, CUDA, NumPy and Python.",
+      "mutable": false,
+      "config_key": "random_state"
+    },
+    {
+      "id": "score.function",
+      "value": "Paper DEAS over the complete forest T of n_ensemble*n_estimators trees: s(o)=2^(-mean_tau h_tau(o)/c(m))*mean_tau g_tau(o), where m=min(max_samples,number_of_training_windows), h_tau is the traversed edge count, and g_tau is the mean absolute distance to the thresholds at the visited internal split nodes. Higher is more anomalous. Compute both means globally before multiplying; do not average nonlinear per-representation scores.",
+      "status": "explicit",
+      "source": "Sec. 5.2.2 Eqs. (7)-(8), Sec. 5.3 and Algorithm 2 define T as the full forest (Sec. 5.1: |T|=r*t). Official code discrepancy: algorithms/dif.py:L245-L275 averages per-representation DEAS values computed at L454-L463; follow the paper as recorded in deviation notes.",
+      "mutable": false,
+      "config_key": "score_function"
+    },
+    {
+      "id": "score.path_length",
+      "value": "Use the number of root-to-leaf split edges actually traversed. Do not add c(terminal_leaf_population) to this path length.",
+      "status": "explicit",
+      "source": "Sec. 5.2.2 Eq. (8) uses |p|, and Sec. 5.3 / Algorithm 2 accumulate the traversed path without a leaf-population correction. Official algorithms/dif.py:L396-L399 adds that correction; follow the paper's literal path-length definition, as recorded in deviation notes.",
+      "mutable": false
+    },
+    {
+      "id": "score.deviation_mean",
+      "value": "For each tree, sum |representation[split_feature]-split_threshold| at every visited internal node and divide by the count of visited internal nodes, counting exact-zero deviations in the denominator. Leaves are not split nodes.",
+      "status": "explicit",
+      "source": "Sec. 5.2.2 Eq. (7), Algorithm 2. Official algorithms/dif.py:L420-L421 instead counts only nonzero deviations and adds 1e-6; follow Eq. (7), as recorded in deviation notes.",
+      "mutable": false
+    },
+    {
+      "id": "score.normalizer",
+      "value": "Use c(m), the standard iForest expected path-length normalizer: c(m)=0 for m<=1; c(2)=1; for m>2 use 2*(log(m-1)+EulerGamma)-2*(m-1)/m, following the official implementation's harmonic-number approximation. m is the actual tree subsample size.",
+      "status": "inferred",
+      "source": "Sec. 4 and Eq. (8) identify C(T) as the iForest normalizing factor without giving its numerical formula. code: algorithms/dif.py:L454 uses _average_path_length([clf.max_samples_]); L467-L500 implements the stated expression.",
+      "mutable": false
+    },
+    {
+      "id": "score.degenerate_tree",
+      "value": "A tree with no internal nodes has h=0 and g=0. If m<=1 and c(m)=0 for the entire forest, return zero scores rather than divide by zero.",
+      "status": "unspecified",
+      "source": "Paper Eqs. (7)-(8) do not define empty-path/zero-normalizer cases. Neutral zero-evidence convention; code: algorithms/dif.py:L355-L370 already initializes deviations/depths to zero and skips one-node trees but leaves the division at L454 unguarded.",
+      "mutable": false
+    },
+    {
+      "id": "score.alignment",
+      "value": "Return exactly N_test-window_size+1 window scores at test stride 1; score index i maps to timestamp i+window_size-1. EasyTSAD aligns this suffix from the end, so omit the first window_size-1 timestamps instead of emitting the runner's artificial leading zeros. No overlap averaging, smoothing, score normalization, or thresholding.",
+      "status": "inferred",
+      "source": "code: main_ts.py:L89-L94 computes stride-1 window scores and prepends seq_len-1 zeros, proving right-endpoint alignment. EasyTSAD integration requires a score suffix and supplies end alignment; leading padding is not an algorithmic DEAS score.",
+      "mutable": false
+    },
+    {
+      "id": "threshold.protocol",
+      "value": "Return continuous DEAS scores and delegate all thresholds, segment adjustments, and evaluation metrics to the fixed EasyTSAD/LiveLeaderBoard pipeline. Do not implement oracle best-F1 thresholds or label-based score adjustment in the method.",
+      "status": "explicit",
+      "source": "Sec. 6.1.4 specifies threshold-free AUC-ROC and AUC-PR. code: utils.py:L135-L149 computes best-label F1; L199-L220,L268-L281 performs label-dependent segment-maximum adjustment. These are external evaluation routines and are excluded from the method under the harness integration contract; discrepancy recorded.",
+      "mutable": false
+    },
+    {
+      "id": "runtime.device",
+      "value": "cuda when available, otherwise cpu; device choice changes execution placement only",
+      "status": "inferred",
+      "source": "code: algorithms/dif.py:L81-L82 lists cuda/cpu support; L104 defaults to cuda. Neutral operational fallback to CPU when CUDA is unavailable, without changing the mathematical algorithm.",
+      "mutable": false,
+      "config_key": "device"
+    },
+    {
+      "id": "runtime.n_processes",
+      "value": 1,
+      "status": "inferred",
+      "source": "code: algorithms/dif.py:L104 defaults to n_processes=1; L245-L277 implements equivalent sequential or multiprocessing scoring.",
+      "mutable": false,
+      "config_key": "n_processes"
+    },
+    {
+      "id": "implementation.dependencies",
+      "value": "Adapt only the time-series CNN, representation extraction, isolation-forest construction and score routines. Remove unconditional graph-only imports and unused graph classes from the adapted TS source; torch_geometric, torch_scatter, torch_sparse, torch_cluster, networkx and pandas are not required by the CNN/forest algorithm. Target the existing torch2 environment without editing it in this evidence phase.",
+      "status": "inferred",
+      "source": "code: requirements.txt:L1-L10 lists the complete mixed tabular/graph/TS repository environment; algorithms/net_torch.py:L234-L298 and algorithms/dif.py:L280-L303,L328-L333,L355-L500 use torch, numpy and sklearn for the time-series path. torch_geometric at algorithms/dif.py:L16 and algorithms/net_torch.py:L9 is only needed for graph routines.",
+      "mutable": false
+    }
+  ],
+  "score": {
+    "definition": "For each test window, obtain its fixed random CNN representation under each of the 50 networks, independently standardize the collection of test-window representations per network and apply tanh, then traverse the 6 isolation trees associated with each representation. For all 300 trees, collect raw traversed edge length h and mean absolute visited-split deviation g, including zero deviations in the mean. Return 2^(-mean_all_trees(h)/c(min(256,n_train_windows)))*mean_all_trees(g), following paper Eq. (8) rather than the official code's per-representation score average; do not add the code's leaf-population path correction. Larger scores indicate anomalies. No label-dependent postprocessing is part of this score.",
+    "alignment": "One score per full contiguous 100-point test window at stride 1, assigned to its final timestamp. Return a one-dimensional NumPy array of length N_test-99 and let EasyTSAD align it to the end of the test series, omitting the 99 artificial leading zeros used in the standalone official runner."
+  },
+  "dependencies": [
+    "torch>=2,<3",
+    "numpy>=1.20,<2",
+    "scikit-learn>=1,<2"
+  ],
+  "official_code": {
+    "url": "https://github.com/xuhongzuo/deep-iForest",
+    "commit": "e77692bbb39c851a580c37154c0a7d0c3a460bdf",
+    "used_files": [
+      "algorithms/dif.py",
+      "algorithms/net_torch.py",
+      "config.py",
+      "main_ts.py",
+      "utils.py",
+      "requirements.txt",
+      "README.md",
+      "LICENCE"
+    ]
+  },
+  "open_questions": []
+}

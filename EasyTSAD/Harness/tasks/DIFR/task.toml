@@ -1,0 +1,17 @@
+method = "DIFR"
+created_at = "2026-11-05T13:37:03+00:00"
+code_url = "https://github.com/xuhongzuo/deep-iForest"
+env_hint = ""
+family = "深度学习"
+
+[paper]
+title = "Deep Isolation Forest for Anomaly Detection"
+authors = ["Hongzuo Xu", "Guansong Pang", "Yijie Wang", "Yongjun Wang"]
+year = 2022
+venue = "arXiv"
+arxiv_id = "2206.06602"
+url = "https://arxiv.org/abs/2206.06602"
+pdf_url = "https://arxiv.org/pdf/2206.06602v4"
+abstract = "Isolation forest (iForest) has been emerging as arguably the most popular anomaly detector in recent years due to its general effectiveness across different benchmarks and strong scalability. Nevertheless, its linear axis-parallel isolation method often leads to (i) failure in detecting hard anomalies that are difficult to isolate in high-dimensional/non-linear-separable data space, and (ii) notorious algorithmic bias that assigns unexpectedly lower anomaly scores to artefact regions. These issues contribute to high false negative errors. Several iForest extensions are introduced, but they essentially still employ shallow, linear data partition, restricting their power in isolating true anomalies. Therefore, this paper proposes deep isolation forest. We introduce a new representation scheme that utilises casually initialised neural networks to map original data into random representation ensembles, where random axis-parallel cuts are subsequently applied to perform the data partition. This representation scheme facilitates high freedom of the partition in the original data space (equivalent to non-linear partition on subspaces of varying sizes), encouraging a unique synergy between random representations and random partition-based isolation. Extensive experiments show that our model achieves significant improvement over state-of-the-art isolation-based methods and deep detectors on tabular, graph and time series datasets; our model also inherits desired scalability from iForest."
+code_urls = []
+source = "arxiv"

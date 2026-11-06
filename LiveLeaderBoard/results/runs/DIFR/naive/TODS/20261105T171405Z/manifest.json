@@ -1,0 +1,103 @@
+{
+  "schema_version": 1,
+  "run_id": "20261105T171405Z",
+  "experiment": "harness_DIFR_eval",
+  "method": "DIFR",
+  "schema": "naive",
+  "dataset_type": "UTS",
+  "dataset": "TODS",
+  "status": "success",
+  "started_at": "2026-11-05T17:17:26Z",
+  "finished_at": "2026-11-05T17:20:53Z",
+  "duration_s": 200.56,
+  "config_hash": "97bbe3a623d2788e",
+  "config": {
+    "method": "DIFR",
+    "schema": "naive",
+    "dataset_type": "UTS",
+    "dataset": "TODS",
+    "curves": null,
+    "data_params": {
+      "preprocess": "raw",
+      "diff_order": 0
+    },
+    "hparams": {
+      "window_size": 100,
+      "train_stride": 10,
+      "test_stride": 1,
+      "representation_preprocess": "For each independent network, collect all window representations in one fit or inference call, independently standardize each output feature with sklearn StandardScaler.fit_transform (population variance; zero-variance features use scale 1), then apply elementwise tanh. Inference fits its own representation scaler over the test-window collection; no stored training scaler is reused.",
+      "network_name": "dilated_conv",
+      "data_type": "ts",
+      "n_ensemble": 50,
+      "n_estimators": 6,
+      "max_samples": 256,
+      "layers": 2,
+      "hidden_dim": 32,
+      "rep_dim": 20,
+      "kernel_size": 3,
+      "dilation_base": 2,
+      "activation": "gelu",
+      "pooling": "max",
+      "dropout": 0,
+      "init_distribution": "normal",
+      "init_mean": 0,
+      "init_std": 1,
+      "ensemble_method": "independent",
+      "batch_size": 64,
+      "random_state": 42,
+      "score_function": "Paper DEAS over the complete forest T of n_ensemble*n_estimators trees: s(o)=2^(-mean_tau h_tau(o)/c(m))*mean_tau g_tau(o), where m=min(max_samples,number_of_training_windows), h_tau is the traversed edge count, and g_tau is the mean absolute distance to the thresholds at the visited internal split nodes. Higher is more anomalous. Compute both means globally before multiplying; do not average nonlinear per-representation scores.",
+      "device": "cuda when available, otherwise cpu; device choice changes execution placement only",
+      "n_processes": 1
+    },
+    "evals": [
+      "point_f1",
+      "event_f1",
+      "auprc"
+    ],
+    "margins": [
+      0,
+      5
+    ],
+    "seed": 2026,
+    "train_proportion": 1,
+    "valid_proportion": 0.2,
+    "transfer": null
+  },
+  "git": {
+    "commit": "68dea7bd11f5857ad807af0e428db24646444ad3",
+    "branch": "main",
+    "dirty": true
+  },
+  "env": {
+    "name": "torch2",
+    "python": "3.11.17",
+    "uv_lock_sha256": "43aba9b7c1de1ff1b1ffed9bb68d6e76c9a428fb204e57c6eaa670b02cb04ae4",
+    "packages": {
+      "easytsad": "0.3.0.2",
+      "numpy": "1.26.4",
+      "scipy": "1.17.1",
+      "scikit-learn": "1.9.1",
+      "pandas": "3.0.6",
+      "torch": "2.6.0+cu124",
+      "pytorch-lightning": "2.6.6",
+      "transformers": "5.22.1",
+      "stumpy": "1.14.1"
+    },
+    "host": "sp-1",
+    "cuda_visible_devices": "0",
+    "gpu": "NVIDIA GeForce RTX 3080 Ti"
+  },
+  "command": [
+    "/home/v-zzr25/workplace/Live-EasyTSAD/LiveLeaderBoard/pipeline/run.py",
+    "--spec",
+    "/home/v-zzr25/workplace/Live-EasyTSAD/EasyTSAD/Harness/tasks/DIFR/runs/eval.toml",
+    "--method",
+    "DIFR",
+    "--run-id",
+    "20261105T171405Z",
+    "--datasets",
+    "TODS",
+    "--force"
+  ],
+  "error": null
+}

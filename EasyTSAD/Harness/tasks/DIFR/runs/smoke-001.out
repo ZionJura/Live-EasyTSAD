@@ -1,0 +1,5 @@
+experiment 'harness_DIFR_smoke' run_id=20261105T171257Z jobs=1 slots=['0']
+  start  DIFR           NAB      env=torch2   gpu=0
+  done   DIFR           NAB      [success]  [0 queued, 0 running]
+wrote LiveLeaderBoard/results/leaderboard.json and LiveLeaderBoard/results/benchmark.json
+wrote LiveLeaderBoard/results/leaderboard.json and LiveLeaderBoard/results/benchmark.json

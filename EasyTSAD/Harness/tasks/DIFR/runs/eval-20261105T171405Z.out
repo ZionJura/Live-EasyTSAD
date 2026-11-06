@@ -1,0 +1,9 @@
+experiment 'harness_DIFR_eval' run_id=20261105T171405Z jobs=6 slots=['0']
+  start  DIFR           NAB      env=torch2   gpu=0
+  done   DIFR           NAB      [success]  [5 queued, 0 running]
+wrote LiveLeaderBoard/results/leaderboard.json and LiveLeaderBoard/results/benchmark.json
+  start  DIFR           TODS     env=torch2   gpu=0
+  done   DIFR           TODS     [success]  [4 queued, 0 running]
+wrote LiveLeaderBoard/results/leaderboard.json and LiveLeaderBoard/results/benchmark.json
+  start  DIFR           AIOPS    env=torch2   gpu=0
+interrupted; running jobs were marked 'aborted'

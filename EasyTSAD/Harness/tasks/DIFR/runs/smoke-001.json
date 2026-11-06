@@ -1,0 +1,40 @@
+{
+  "n": 1,
+  "status": "success",
+  "run_id": "20261105T171257Z",
+  "run_dir": "LiveLeaderBoard/results/runs/DIFR/naive/NAB/20261105T171257Z",
+  "epochs": null,
+  "epochs_key": null,
+  "metrics_summary": {
+    "point_f1": {
+      "f1": 0.9974874213240905,
+      "precision": 0.9949874371859296,
+      "recall": 1.0
+    },
+    "event_f1": {
+      "f1": 0.8333333333333327,
+      "precision": 0.7142857142857142,
+      "recall": 0.9999999999999998
+    },
+    "auprc": {
+      "value": 0.20891713200276163
+    }
+  },
+  "error": "",
+  "failure_class": null,
+  "rc": 0,
+  "source_hash": "02853ef2bafd2c863f84fb6612e5f9be15e3f857",
+  "allowed_scope": null,
+  "log_tail": "    Use Default Method Config. Path: /home/v-zzr25/workplace/Live-EasyTSAD/EasyTSAD/Methods/DIFR/config.toml\n    [Load Data (Specify)] DataSets: NAB \n    [DIFR] handling dataset NAB | curve Twitter_volume_AAPL \n    [DIFR] handling dataset NAB | curve Twitter_volume_AMZN \n    [Load Data (Specify)] DataSets: NAB \n[success] DIFR/naive/NAB -> LiveLeaderBoard/results/runs/DIFR/naive/NAB/20261105T171257Z\n",
+  "score_check": {
+    "ok": true,
+    "n_files": 2,
+    "lengths": {
+      "Twitter_volume_AAPL": 7852,
+      "Twitter_volume_AMZN": 7817
+    },
+    "problems": []
+  },
+  "finished_at": "2026-11-05T17:13:46+00:00",
+  "exp_output": "runs/smoke-001.out"
+}

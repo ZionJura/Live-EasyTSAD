@@ -1,0 +1,125 @@
+{
+  "phase": "DONE",
+  "status": "done",
+  "session_id": "session-92d6491d-31bc-402e-be1c-3fbec53bedea",
+  "history": [
+    {
+      "at": "2026-11-05T13:40:51+00:00",
+      "phase": "EVIDENCE",
+      "status": "ready"
+    },
+    {
+      "at": "2026-11-05T14:18:35+00:00",
+      "phase": "EVIDENCE",
+      "status": "running"
+    },
+    {
+      "at": "2026-11-05T14:40:46+00:00",
+      "phase": "EVIDENCE",
+      "status": "ready",
+      "reason": "restart EVIDENCE after MCP startup fix"
+    },
+    {
+      "at": "2026-11-05T14:41:34+00:00",
+      "phase": "EVIDENCE",
+      "status": "running"
+    },
+    {
+      "at": "2026-11-05T14:49:45+00:00",
+      "phase": "EVIDENCE",
+      "status": "awaiting_human",
+      "reason": "review gate after EVIDENCE: `harness approve DIFR` or `harness correct`"
+    },
+    {
+      "at": "2026-11-05T16:45:57+00:00",
+      "phase": "IMPLEMENT",
+      "status": "ready",
+      "reason": "approved EVIDENCE"
+    },
+    {
+      "at": "2026-11-05T16:49:32+00:00",
+      "phase": "IMPLEMENT",
+      "status": "running"
+    },
+    {
+      "at": "2026-11-05T16:53:40+00:00",
+      "phase": "IMPLEMENT",
+      "status": "failed",
+      "reason": "agent run ended with error: dsh exit code 1: {\"message\": \"Upstream HTTP/2 stream failed\", \"code\": \"PI_AI_ERROR\"}"
+    },
+    {
+      "at": "2026-11-05T17:02:16+00:00",
+      "phase": "IMPLEMENT",
+      "status": "ready",
+      "reason": "human correction c001"
+    },
+    {
+      "at": "2026-11-05T17:02:36+00:00",
+      "phase": "IMPLEMENT",
+      "status": "running"
+    },
+    {
+      "at": "2026-11-05T17:12:32+00:00",
+      "phase": "SMOKE",
+      "status": "ready"
+    },
+    {
+      "at": "2026-11-05T17:12:33+00:00",
+      "phase": "SMOKE",
+      "status": "running"
+    },
+    {
+      "at": "2026-11-05T17:14:05+00:00",
+      "phase": "EVALUATE",
+      "status": "ready"
+    },
+    {
+      "at": "2026-11-05T17:14:05+00:00",
+      "phase": "EVALUATE",
+      "status": "running"
+    },
+    {
+      "at": "2026-11-05T17:25:51+00:00",
+      "phase": "EVALUATE",
+      "status": "ready",
+      "reason": "manual reset to EVALUATE"
+    },
+    {
+      "at": "2026-11-05T17:25:54+00:00",
+      "phase": "EVALUATE",
+      "status": "running"
+    },
+    {
+      "at": "2026-11-06T00:23:27+00:00",
+      "phase": "REPORT",
+      "status": "ready"
+    },
+    {
+      "at": "2026-11-06T00:23:28+00:00",
+      "phase": "DONE",
+      "status": "done"
+    }
+  ],
+  "counters": {
+    "agent_runs": 5,
+    "smoke_runs": 1
+  },
+  "paper_title": null,
+  "reason": "manual reset to EVALUATE",
+  "eval": {
+    "pid": 1118252,
+    "log": "runs/eval-20261105T172554Z.out",
+    "spec": "runs/eval.toml",
+    "gpus": "3,8,9,2,5,1",
+    "started_at": "2026-11-05T17:25:54+00:00",
+    "datasets": [
+      "NAB",
+      "TODS",
+      "AIOPS",
+      "WSD",
+      "Yahoo",
+      "UCR"
+    ]
+  },
+  "report": "/home/v-zzr25/workplace/Live-EasyTSAD/EasyTSAD/Harness/tasks/DIFR/report.md"
+}

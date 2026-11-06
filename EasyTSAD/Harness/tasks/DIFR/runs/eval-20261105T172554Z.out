@@ -1,0 +1,20 @@
+experiment 'harness_DIFR_eval' run_id=20261105T172557Z jobs=6 slots=['3', '8', '9', '2', '5', '1']
+  start  DIFR           NAB      env=torch2   gpu=3
+  start  DIFR           TODS     env=torch2   gpu=8
+  start  DIFR           AIOPS    env=torch2   gpu=9
+  start  DIFR           WSD      env=torch2   gpu=2
+  start  DIFR           Yahoo    env=torch2   gpu=5
+  start  DIFR           UCR      env=torch2   gpu=1
+  done   DIFR           NAB      [success]  [0 queued, 5 running]
+wrote LiveLeaderBoard/results/leaderboard.json and LiveLeaderBoard/results/benchmark.json
+  done   DIFR           TODS     [success]  [0 queued, 4 running]
+wrote LiveLeaderBoard/results/leaderboard.json and LiveLeaderBoard/results/benchmark.json
+  done   DIFR           Yahoo    [success]  [0 queued, 3 running]
+wrote LiveLeaderBoard/results/leaderboard.json and LiveLeaderBoard/results/benchmark.json
+  done   DIFR           WSD      [success]  [0 queued, 2 running]
+wrote LiveLeaderBoard/results/leaderboard.json and LiveLeaderBoard/results/benchmark.json
+  done   DIFR           AIOPS    [success]  [0 queued, 1 running]
+wrote LiveLeaderBoard/results/leaderboard.json and LiveLeaderBoard/results/benchmark.json
+  done   DIFR           UCR      [success]  [0 queued, 0 running]
+wrote LiveLeaderBoard/results/leaderboard.json and LiveLeaderBoard/results/benchmark.json
+wrote LiveLeaderBoard/results/leaderboard.json and LiveLeaderBoard/results/benchmark.json
