@@ -42,6 +42,8 @@ We welcome you to send the algorithm code implemented based on this suite to our
 - [Features](#features)
 - [Built-in Methods](#built-in-methods)
 - [Built-in Evaluation Protocols](#built-in-evaluation-protocols)
+- [Environment Management (uv)](#environment-management-uv)
+- [LiveLeaderBoard Experiment Pipeline](#liveleaderboard-experiment-pipeline)
 - [Get Started](#get-started)
   - [Installation](#installation)
   - [Prepare datasets](#prepare-datasets)
@@ -106,6 +108,305 @@ base (int): Default is 3.
 | EventKthPrcPA | event-based | event-base AUPRC under k-delay      |                                                                                                   |
 | EventKthRocPA | event-based | event-base AUROC under k-delay      |                                                                                                   |
 
+# Environment Management (uv)
+
+Built-in and future methods have mutually incompatible dependencies. Some of them even need different Python versions. For example, SAND and MatrixProfile need old Cython-built libraries tied to `numpy<1.24`, while OFA needs a recent `transformers` on PyTorch 2.x. This repository therefore manages dependencies as **several isolated [uv](https://docs.astral.sh/uv/) environments**, one per group of compatible methods, instead of a single environment.
+
+This works because EasyTSAD splits experiments into independent stages that communicate only through files. Training writes anomaly scores to `Results/Scores/**.npy`, and evaluation, CSV summaries and plots only read those files. Each method can therefore be trained in its own environment, and the results can be evaluated together from any environment.
+
+## Layout
+
+Everything lives inside the repository working directory. Nothing is placed in hidden locations such as `~/.cache/uv` or a `.venv`.
+
+```
+Live-EasyTSAD/
+├── pyproject.toml          # core EasyTSAD library: lightweight, method-agnostic deps only
+├── envs/
+│   ├── registry.toml       # single source of truth: env -> Python version -> methods
+│   ├── ENVIRONMENTS.md     # generated overview table (scripts/tsad doc)
+│   ├── torch2/             # default env: Python 3.11, PyTorch 2.6 + CUDA 12.4
+│   │   ├── pyproject.toml  # env dependencies; EasyTSAD itself is an editable path dependency
+│   │   ├── uv.lock         # fully pinned, reproducible resolution
+│   │   └── venv/           # the virtual environment (git-ignored)
+│   └── legacy/             # Python 3.9, tslearn 0.5.x, matrixprofile (SAND, MatrixProfile)
+├── runtime/                # git-ignored
+│   ├── python/             # uv-managed Python interpreters (any version, side by side)
+│   └── uv-cache/           # uv package cache
+├── scripts/
+│   ├── tsad                # entry point: pins all uv paths to this repo, then calls tsad.py
+│   └── tsad.py             # the manager CLI (stdlib only)
+├── datasets/               # git-ignored, shared by all envs
+└── Results/                # git-ignored, shared by all envs
+```
+
+| Path | In git | Purpose |
+| --- | --- | --- |
+| `envs/*/pyproject.toml`, `envs/*/uv.lock` | yes | Environment definitions and exact locked versions |
+| `envs/registry.toml`, `envs/ENVIRONMENTS.md` | yes | Method → environment mapping and its generated documentation |
+| `scripts/` | yes | Management tooling |
+| `envs/*/venv/`, `runtime/` | no | Rebuildable from the files above with `scripts/tsad sync` |
+
+`scripts/tsad` sets these environment variables before every uv call. As a result, interpreters, cache and venvs always stay inside the repository:
+
+| Variable | Value |
+| --- | --- |
+| `UV_PYTHON_INSTALL_DIR` | `runtime/python` |
+| `UV_PYTHON_BIN_DIR` | `runtime/python/bin` |
+| `UV_CACHE_DIR` | `runtime/uv-cache` |
+| `UV_MANAGED_PYTHON` | `1` (never use system Pythons) |
+| `UV_PROJECT_ENVIRONMENT` | `envs/<name>/venv`, set per environment |
+
+Because the cache and the venvs are on the same filesystem, uv hard-links packages. Large wheels such as torch are stored only once on disk, even when several environments use them.
+
+> Always go through `scripts/tsad` rather than calling `uv` directly. A bare `uv` call does not see these variables and falls back to the hidden default locations. The repository-root `pyproject.toml` is marked `managed = false` for the same reason, so do not run `uv sync` at the root.
+
+## Prerequisites
+
+- [uv](https://docs.astral.sh/uv/getting-started/installation/) on `PATH`. No system Python is needed, because uv downloads the required interpreters into `runtime/python`.
+- For GPU methods: an NVIDIA driver >= 550. The `torch2` env uses the CUDA 12.4 wheels of PyTorch.
+
+## Quick start
+
+```bash
+# 1. Build all environments from their lock files
+scripts/tsad sync
+
+# 2. Download the datasets (≈2.6 GB) into ./datasets
+git clone --depth 1 https://github.com/CSTCloudOps/datasets.git datasets
+
+# 3. Verify that every registered method imports inside its environment
+scripts/tsad check
+
+# 4. Run something
+scripts/tsad env torch2 -- python Examples/run_baseline/run.py      # in a named env
+scripts/tsad run SAND -- python my_sand_experiment.py              # in the env registered for SAND
+```
+
+Commands run with the repository root as the working directory, so relative paths such as `datasets/` and `Results/` resolve consistently.
+
+## Command reference
+
+| Command | Description |
+| --- | --- |
+| `scripts/tsad list` | List environments, their Python version, sync state and methods. Also flags method folders that are not registered. |
+| `scripts/tsad sync [ENV...] [--locked]` | Create or update venvs from `uv.lock`. All envs if none are given. With `--locked`, fail instead of re-locking when the lock is stale. |
+| `scripts/tsad lock [ENV...] [--upgrade]` | Re-resolve lock files after editing an env's `pyproject.toml`. |
+| `scripts/tsad add ENV PKG...` | Add dependencies to an env. Updates its `pyproject.toml`, `uv.lock` and venv in one step. |
+| `scripts/tsad run METHOD -- CMD...` | Run a command in the env that `registry.toml` assigns to `METHOD`. |
+| `scripts/tsad env ENV -- CMD...` | Run a command in a named env. |
+| `scripts/tsad which METHOD` | Print the env a method belongs to. |
+| `scripts/tsad check [ENV...]` | Import every registered method inside its env and report failures. |
+| `scripts/tsad new NAME --python X.Y [--methods M...]` | Scaffold `envs/NAME/pyproject.toml` and register it. |
+| `scripts/tsad remove ENV` | Delete an env's venv (its definition and lock file are kept). |
+| `scripts/tsad doc` | Regenerate `envs/ENVIRONMENTS.md` from the registry. |
+| `scripts/tsad exp SPEC [--gpus ...]` | Run an experiment spec into `LiveLeaderBoard/results`. See [LiveLeaderBoard Experiment Pipeline](#liveleaderboard-experiment-pipeline). |
+| `scripts/tsad export` / `scripts/tsad table` | Rebuild the leaderboard files, or print them as a text table. |
+
+To use an environment interactively, activate it directly: `source envs/torch2/venv/bin/activate`.
+
+## The registry
+
+`envs/registry.toml` maps every method to exactly one environment. The CLI rejects a method registered twice and an environment without a `pyproject.toml`.
+
+```toml
+[envs.torch2]
+python = "3.11"
+description = "Default. PyTorch 2.6 + CUDA 12.4, lightning, transformers, sklearn."
+methods = ["AE", "AR", "Donut", "TimesNet", "..."]
+
+[envs.legacy]
+python = "3.9"
+description = "Old libraries: tslearn 0.5.x (Cython build), matrixprofile, numpy<1.24."
+methods = ["SAND", "MatrixProfile"]
+
+[notes]                       # free-form caveats shown in ENVIRONMENTS.md
+FCVAE = "Broken upstream: SyntaxError at EasyTSAD/Methods/FCVAE/TSDataset.py:46."
+```
+
+See [envs/ENVIRONMENTS.md](envs/ENVIRONMENTS.md) for the current, generated overview.
+
+## Adding a new method
+
+1. **Try the default environment first.** Put the method in `EasyTSAD/Methods/<Name>/` and add `<Name>` to `methods` of `[envs.torch2]`. Then add its dependencies:
+   ```bash
+   scripts/tsad add torch2 some-package another-package
+   ```
+2. **If uv reports a resolution conflict,** or the method needs another Python version, give it its own environment:
+   ```bash
+   scripts/tsad new mymethod --python 3.10 --methods MyMethod --description "Needs foo<2"
+   scripts/tsad add mymethod "foo<2"
+   ```
+   Remove the method from any other environment's `methods` list. A method must belong to exactly one environment.
+3. **Verify and document:**
+   ```bash
+   scripts/tsad check mymethod
+   scripts/tsad doc
+   ```
+4. **Commit** `envs/<name>/pyproject.toml`, `envs/<name>/uv.lock`, `envs/registry.toml` and `envs/ENVIRONMENTS.md`.
+
+Guidelines:
+
+- **Prefer extending an existing env.** Every extra environment costs disk space and maintenance, so create a new one only for a real conflict.
+- **Keep the core `pyproject.toml` lightweight.** Method-specific packages always go into an env, never into the core.
+- **Requires Python 3.9 or newer.** The EasyTSAD core uses `type[...]` annotations, so environments cannot use an older Python.
+- **Packages that build from source** may not declare their build requirements (old Cython packages often omit numpy). Declare them in the env's `[tool.uv.extra-build-dependencies]` table; `envs/legacy/pyproject.toml` has an example. Building needs a C compiler (`gcc`).
+- **Import order matters.** Import `EasyTSAD.Controller` before `EasyTSAD.Methods`; the reverse order triggers a circular import. The examples already follow this order.
+
+## Cross-environment workflow
+
+Training and evaluation are decoupled, so mixing environments is straightforward. Write separate scripts that use the same dataset settings: one that calls `run_exps`, and one that calls `set_evals`/`do_evals` and `summary.to_csv`.
+
+```bash
+scripts/tsad run TimesNet -- python exps/train_timesnet.py   # writes Results/Scores/TimesNet/...
+scripts/tsad run SAND     -- python exps/train_sand.py       # writes Results/Scores/SAND/...
+scripts/tsad env torch2   -- python exps/evaluate_all.py     # do_evals + summary.to_csv for both
+```
+
+# LiveLeaderBoard Experiment Pipeline
+
+Experiments for the leaderboard are described declaratively and stored in a structured way under `LiveLeaderBoard/results/`. Every combination of method, training schema and dataset gets its own self-describing run directory. Each directory records what produced the result, so results from different environments and dates can be compared and traced back to their configuration.
+
+## Layout
+
+```
+LiveLeaderBoard/
+├── catalog.toml                  # display metadata (method family/colour, dataset domain) + metric mapping for export
+├── experiments/                  # experiment specs (TOML), one file per experiment
+│   ├── smoke.toml                # 2 NAB curves, quick pipeline check
+│   ├── uts_naive.toml            # fast univariate baselines on all UTS datasets, naive schema
+│   └── uts_naive_slow.toml       # slow univariate baselines (Donut, SubOCSVM), same setting
+├── pipeline/
+│   ├── run.py                    # runs ONE method of a spec inside its env and writes run directories
+│   └── export.py                 # aggregates run directories into leaderboard tables
+└── results/
+    ├── runs/<method>/<schema>/<dataset>/<run_id>/
+    │   ├── manifest.json         # provenance + resolved config + status (see below)
+    │   ├── metrics.json          # summary (mean over curves) and per-curve metrics
+    │   ├── runtime.json          # train/valid and test wall-clock seconds
+    │   ├── model_statistic.txt   # parameter statistics reported by the method
+    │   ├── run.log               # EasyTSAD log of this run
+    │   └── scores/<curve>.npy    # raw anomaly scores (git-ignored)
+    ├── index.jsonl               # append-only log: one line per finished run (success or failure)
+    ├── leaderboard.json          # generated: latest successful run per (method, schema, dataset)
+    ├── benchmark.json            # generated: same results in the leaderboard web app format
+    └── logs/<run_id>_<name>/     # console output of each job (git-ignored)
+```
+
+`run_id` is the UTC start time of the experiment, for example `20261104T101213Z`. All methods launched by one `scripts/tsad exp` call share the same `run_id`.
+
+### `manifest.json`
+
+| Field | Content |
+| --- | --- |
+| `status` | `running`, `success`, `failed` or `aborted`. Failed and aborted runs keep the reason in `error`. |
+| `config` | The fully resolved configuration: method `config.toml` defaults, then per-dataset sections, then spec overrides. It includes data preprocessing, hyperparameters, metrics, margins, seed, and the train/valid split. |
+| `config_hash` | Hash of `config`. An identical successful run is skipped unless `--force` is given. |
+| `git` | Commit, branch and whether the working tree had uncommitted changes. |
+| `env` | uv environment name, Python version, SHA-256 of the env's `uv.lock`, versions of key packages, host, GPU and `CUDA_VISIBLE_DEVICES`. |
+| `started_at`, `finished_at`, `duration_s` | Timing of the whole run, including evaluation. |
+
+### `metrics.json`
+
+- `summary`: mean of each metric over all evaluated curves. Curves whose test labels are all normal are skipped and listed in `skipped_all_normal`.
+- `per_curve`: the per-curve metric values. F1 entries also include the best threshold.
+- `protocols`: the full EasyTSAD protocol name behind each metric key.
+
+Metric keys are stable identifiers defined in `pipeline/run.py`:
+
+| Key | EasyTSAD protocol |
+| --- | --- |
+| `point_f1` | `PointF1PA()`: best point-wise F1 with point adjustment |
+| `event_f1` | `EventF1PA(mode="log", base=3)`: event-based F1, log-scaled event length |
+| `event_f1_squeeze` | `EventF1PA(mode="squeeze")`: each event counts once |
+| `event_f1_raw` | `EventF1PA(mode="raw")` |
+| `auprc` | `PointPrc()`: point-wise average precision, no adjustment |
+| `auroc` | `PointRoc()` |
+| `auprc_pa` | `PointAuprcPA()` |
+| `point_f1_nopa` | `PointF1()`: point-wise F1 without adjustment |
+
+Scores are evaluated against the raw test labels, with the label margins from `EasyTSAD/Controller/GlobalCfg.toml` (`[EvalSetting.margin]`). The F1 metrics use the best threshold found on the test labels, so they are upper bounds and not deployable performance.
+
+## Experiment specs
+
+```toml
+# LiveLeaderBoard/experiments/uts_naive.toml
+name = "uts_naive"
+schema = "naive"                  # naive | all_in_one | zero_shot | mts
+dataset_type = "UTS"              # UTS | MTS (defaults to MTS for schema "mts")
+datasets = ["AIOPS", "NAB", "TODS", "WSD", "Yahoo", "UCR"]
+methods = ["AR", "AE", "LSTMADalpha", "SubLOF"]
+evals = ["point_f1", "event_f1", "event_f1_squeeze", "auprc", "auroc"]
+seed = 2026
+
+# Optional:
+# curves = ["Twitter_volume_AAPL"]          # restrict to some curves (exactly one dataset); marks the run "partial"
+# dataset_dir = "/other/datasets"           # default: ./datasets
+# [global_cfg.EvalSetting]                  # override GlobalCfg.toml entries
+# use_margin = false
+# [overrides.AR.hparams]                    # override a method's config.toml
+# epochs = 20
+# [overrides.AR.hparams_by_dataset.UCR]
+# p = 64
+# [overrides.AR.data]
+# preprocess = "z-score"
+```
+
+The default hyperparameters of each method come from `EasyTSAD/Methods/<Method>/config.toml`. A spec only states what differs from them, and the manifest stores the merged result.
+
+## Running
+
+```bash
+# Run a spec: every (method, dataset) pair is one job, run in the env registered for the
+# method in envs/registry.toml and pinned to one GPU slot; jobs are spread over all slots
+scripts/tsad exp LiveLeaderBoard/experiments/uts_naive.toml --gpus 0,1,2,3,4,5
+
+# Only some methods or datasets, re-running even if an identical successful run exists
+scripts/tsad exp LiveLeaderBoard/experiments/uts_naive.toml --methods AR --datasets NAB --force
+
+# Rebuild leaderboard.json / benchmark.json from all run directories
+scripts/tsad export
+
+# Show runs in progress (curves scored / total)
+scripts/tsad status
+
+# Print the current leaderboard as a text table (any metric key)
+scripts/tsad table --metric event_f1
+scripts/tsad table --schema naive --metric auprc
+```
+
+Options of `scripts/tsad exp`:
+
+- **`--gpus`** gives the GPU ids to use. Each job gets one GPU through `CUDA_VISIBLE_DEVICES`.
+- **`--per-gpu N`** allows N concurrent jobs per GPU. This is useful for CPU-bound methods such as SubLOF.
+- **CPU threads:** each job gets `OMP_NUM_THREADS` (and the MKL/OpenBLAS equivalents) set to its share of the CPU cores. Pass `--concurrent-exps N` when N experiments run side by side.
+- **Job order:** jobs are queued dataset by dataset, with methods interleaved, so every method gets results early.
+- **Failures:** a failed job is recorded as `failed` and does not stop the other jobs.
+- **Live export:** `leaderboard.json` and `benchmark.json` are re-exported after every finished job, so the leaderboard stays current while an experiment runs.
+- **Stopping:** stopping the scheduler with SIGINT or SIGTERM forwards the signal to running jobs, which record status `aborted`. Re-running the same spec skips every job that already succeeded with an identical config.
+- **Console logs:** the console output of each job goes to `results/logs/<run_id>_<name>/<method>_<dataset>.out`.
+- **Logs:** `TQDM_DISABLE=1` is set for method processes so progress bars do not bloat the logs. Export `TQDM_DISABLE=0` to see them.
+- **Detaching:** for long experiments, start the command with `setsid nohup ... &` so that it survives the terminal or session ending.
+
+## Export to the leaderboard web app
+
+`scripts/tsad export`, which also runs automatically at the end of `scripts/tsad exp`, writes two files:
+
+- **`results/leaderboard.json`** holds the newest successful run for every (method, schema, dataset). It contains all summary metrics and a pointer to the run directory, plus the commit, environment and config hash.
+- **`results/benchmark.json`** holds the same results in the `version: 1` format accepted by `leaderboard/src/data.ts`.
+  - It includes only full-dataset runs. Partial runs that use `curves` are excluded.
+  - The metric mapping is set in `[export.metrics]` of `catalog.toml`, for example `event_f1 = ["event_f1", "f1"]`.
+  - Method names, families, colours and dataset domains also come from `catalog.toml`.
+
+## Adding a method to the leaderboard
+
+1. Implement the method and register it in an environment. See [Adding a new method](#adding-a-new-method).
+2. Add a `[methods.<Name>]` entry to `LiveLeaderBoard/catalog.toml`.
+3. Add the method to an experiment spec, or write a new spec, and run `scripts/tsad exp <spec>`.
+
+## What goes into git
+
+Commit the experiment specs, `catalog.toml`, and everything under `results/` except `runs/**/scores/` and `logs/`. The tracked files are the manifests, metrics, runtime files, `index.jsonl`, `leaderboard.json` and `benchmark.json`. They are small, and they keep the history of results reviewable. The score arrays can be regenerated by re-running the spec.
+
 # Get Started
 
 ## Installation
@@ -126,7 +427,7 @@ The documentation of EasyTSAD is hosted at https://dawnvince.github.io/EasyTSAD/
 
 NOTE: Some built-in algorithms are based on Pytorch 2.0 or Pytorch-lightning 2.0. You may need to install related packages (including but not limited to pytorch, pytorch-lightning, torchinfo, torch_optimizer, scikit-learn, tslearn) if you want to run the baselines.
 
-There may be some version conflicts when using tslearn==0.4.1 (SAND). We recommend you to build and activate an independent conda environment using python 3.7 for these methods.
+There may be some version conflicts when using tslearn==0.4.1 (SAND). In this repository such conflicts are handled by isolated uv environments; see [Environment Management (uv)](#environment-management-uv).
 
 ## Prepare datasets
 

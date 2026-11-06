@@ -1,0 +1,88 @@
+# Trim layer applied on top of the shipped DSH `headless` profile
+# (dsh-base + dsh-headless, runtime 0.2.1-rc.2).
+#
+# Kept: agent loop, session + JSONL persistence, system prompt, native tool
+# executor, bash, fs read/write/edit/glob/grep, working directory, jobs,
+# compaction, llm-pi-ai (OpenAI-compatible route), llm-retry, MCP client.
+# Removed: DeepSeek-specific LLM/telemetry/upload rows, web search/fetch,
+# subagents, goal/plan/todo, workflow/PTC, skills, remote API gateway.
+# The LLM route, MCP tool server and session root are rendered per task by
+# tsad_harness/agent.py into <task>/dsh/runtime.patch.yml.
+
+# -- never upload or report anything to DeepSeek
+- id: session-log-deepseek
+  disabled: true
+- id: plugin-package-inventory-deepseek
+  disabled: true
+- id: otel
+  disabled: true
+- id: session-telemetry-otel
+  disabled: true
+- id: command-feedback
+  disabled: true
+# -- DeepSeek-only model routes (we use llm-pi-ai)
+- id: llm-deepseek
+  disabled: true
+- id: llm-deepseek-account
+  disabled: true
+- id: deepseek-llm-api-extensions
+  disabled: true
+- id: session-title-llm
+  disabled: true
+# -- remote access / gateway (headless worker needs no server)
+- id: remote-access
+  disabled: true
+- id: typert-gateway
+  disabled: true
+# -- web tools (paper retrieval is a deterministic harness step)
+- id: web
+  disabled: true
+- id: web-search-deepseek
+  disabled: true
+- id: web-deepseek-api
+  disabled: true
+- id: web-fetch-http
+  disabled: true
+- id: tool-web
+  disabled: true
+# -- planning layers (the harness owns the phase state machine)
+- id: goal
+  disabled: true
+- id: goal-round-driver
+  disabled: true
+- id: command-goal
+  disabled: true
+- id: tool-goal
+  disabled: true
+- id: plan-mode
+  disabled: true
+- id: tool-todo
+  disabled: true
+# -- multi-agent
+- id: subagent
+  disabled: true
+- id: subagent-spawn-in-process
+  disabled: true
+- id: subagent-fork-in-process
+  disabled: true
+- id: tool-subagent-control
+  disabled: true
+- id: tool-subagent-list-agents
+  disabled: true
+- id: tool-subagent
+  disabled: true
+- id: tool-subagent-fork
+  disabled: true
+# -- programmatic tool calling / workflows / skills
+- id: ptc-runtime
+  disabled: true
+- id: workflow-ptc
+  disabled: true
+- id: tool-workflow
+  disabled: true
+- id: skill
+  disabled: true
+- id: skill-filesystem
+  disabled: true
+- id: tool-skill
+  disabled: true

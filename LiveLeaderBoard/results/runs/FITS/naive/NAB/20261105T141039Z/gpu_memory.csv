@@ -1,0 +1,3 @@
+elapsed_s,phase,gpu_uuid,process_used_mib
+5.267,load_train_test,GPU-c585f8ae-9b20-059d-11d1-28239dee23d0,338.0
+6.094,evaluation,GPU-c585f8ae-9b20-059d-11d1-28239dee23d0,338.0

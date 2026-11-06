@@ -1,0 +1,175 @@
+# Display metadata used by `scripts/tsad export` to build
+# LiveLeaderBoard/results/benchmark.json for the leaderboard web app.
+#
+# `family` must be one of the values accepted by leaderboard/src/data.ts:
+#   "深度学习" (deep learning), "传统方法" (classic), "预训练模型" (pre-trained)
+# Methods or datasets missing here are exported with neutral defaults.
+
+[methods.AR]
+name = "AR"
+family = "深度学习"
+description = "Autoregression (linear, first-order difference)"
+color = "#8c7a5b"
+
+[methods.AE]
+name = "AutoEncoder"
+family = "深度学习"
+description = "AutoEncoder reconstruction baseline"
+color = "#a28a68"
+
+[methods.Donut]
+name = "Donut"
+family = "深度学习"
+description = "VAE for seasonal KPIs"
+color = "#6f8fae"
+
+[methods.LSTMADalpha]
+name = "LSTMAD-α"
+family = "深度学习"
+description = "LSTM anomaly detection, seq2seq"
+color = "#8e7fa8"
+
+[methods.LSTMADbeta]
+name = "LSTMAD-β"
+family = "深度学习"
+description = "LSTM anomaly detection, multi-step prediction"
+color = "#7f6f98"
+
+[methods.EncDecAD]
+name = "EncDecAD"
+family = "深度学习"
+description = "LSTM encoder-decoder"
+color = "#a77f8a"
+
+[methods.SRCNN]
+name = "SR-CNN"
+family = "深度学习"
+description = "Spectral residual + CNN"
+color = "#b2876c"
+
+[methods.AnomalyTransformer]
+name = "Anomaly Transformer"
+family = "深度学习"
+description = "Association discrepancy"
+color = "#7e85b8"
+
+[methods.TFAD]
+name = "TFAD"
+family = "深度学习"
+description = "Time-frequency decomposition"
+color = "#5f9a8a"
+
+[methods.FCVAE]
+name = "FCVAE"
+family = "深度学习"
+description = "Frequency-enhanced conditional VAE"
+color = "#9b8a5e"
+
+[methods.DCdetector]
+name = "DCdetector"
+family = "深度学习"
+description = "Dual attention contrastive learning"
+color = "#678c73"
+
+[methods.TimesNet]
+name = "TimesNet"
+family = "深度学习"
+description = "Temporal 2D-variation modeling"
+color = "#738fb4"
+
+[methods.FITS]
+name = "FITS"
+family = "深度学习"
+description = "Frequency interpolation, ~10K parameters"
+color = "#9a83ae"
+
+[methods.TranAD]
+name = "TranAD"
+family = "深度学习"
+description = "Transformer anomaly detection"
+color = "#b28a66"
+
+[methods.CAD]
+name = "CAD"
+family = "深度学习"
+description = "MTS anomaly detection (CAD)"
+color = "#6d8f9e"
+
+[methods.OFA]
+name = "OFA"
+family = "预训练模型"
+description = "One Fits All, frozen GPT-2 backbone"
+color = "#528c92"
+
+[methods.SubLOF]
+name = "SubLOF"
+family = "传统方法"
+description = "LOF on subsequences"
+color = "#929a70"
+
+[methods.SubOCSVM]
+name = "SubOCSVM"
+family = "传统方法"
+description = "One-class SVM on subsequences"
+color = "#7d9391"
+
+[methods.LOF]
+name = "LOF"
+family = "传统方法"
+description = "Local outlier factor"
+color = "#a0a070"
+
+[methods.OCSVM]
+name = "OCSVM"
+family = "传统方法"
+description = "One-class SVM"
+color = "#7d9a91"
+
+[methods.SAND]
+name = "SAND"
+family = "传统方法"
+description = "Streaming subsequence anomaly detection"
+color = "#8a9a7a"
+
+[methods.MatrixProfile]
+name = "Matrix Profile"
+family = "传统方法"
+description = "SCRIMP++ matrix profile discords"
+color = "#9a8f74"
+
+[methods.Diff]
+name = "Diff"
+family = "传统方法"
+description = "First-order difference magnitude"
+color = "#8f8f8f"
+
+[methods.DIFR]
+name = "DIFR"
+family = "深度学习"
+description = "DIF maps time-series windows into an ensemble of randomly initialized, optimization-fre..."
+color = "#5ea659"
+paper_title = "Deep Isolation Forest for Anomaly Detection"
+paper_url = "https://arxiv.org/abs/2206.06602"
+venue = "arXiv"
+year = 2022
+code_url = "https://github.com/xuhongzuo/deep-iForest"
+reproduced_by = "tsad-harness"
+[datasets]
+AIOPS = { task = "uts", domain = "运维监控" }
+NAB   = { task = "uts", domain = "流式监控" }
+TODS  = { task = "uts", domain = "综合时序" }
+WSD   = { task = "uts", domain = "网络服务" }
+Yahoo = { task = "uts", domain = "服务流量" }
+UCR   = { task = "uts", domain = "综合时序" }
+SMD   = { task = "mts", domain = "服务器监控" }
+MSL   = { task = "mts", domain = "航天器遥测" }
+SMAP  = { task = "mts", domain = "卫星遥测" }
+SWaT  = { task = "mts", domain = "工业水处理" }
+PSM   = { task = "mts", domain = "服务器监控" }
+WADI  = { task = "mts", domain = "供水系统" }
+
+# Leaderboard metric key -> (metrics.json summary key, field)
+[export.metrics]
+event_f1 = ["event_f1", "f1"]
+point_f1 = ["point_f1", "f1"]
+auprc    = ["auprc", "value"]

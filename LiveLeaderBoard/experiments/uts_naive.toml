@@ -1,0 +1,9 @@
+# Fast univariate baselines, naive schema (one model per curve), all UTS datasets.
+# Slow methods with the same setting live in uts_naive_slow.toml.
+name = "uts_naive"
+schema = "naive"
+dataset_type = "UTS"
+datasets = ["NAB", "TODS", "AIOPS", "WSD", "Yahoo", "UCR"]
+methods = ["AR", "AE", "LSTMADalpha", "SubLOF"]
+evals = ["point_f1", "event_f1", "event_f1_squeeze", "auprc", "auroc"]
+seed = 2026

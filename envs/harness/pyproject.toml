@@ -1,0 +1,26 @@
+# Environment: harness
+# Tooling environment for the automated paper-reproduction harness
+# (EasyTSAD/Harness). Not a method environment: it runs the DeepSeek Harness
+# runtime (bundled Node binary from PyPI), the TSAD MCP tool server, paper
+# search/download and the reporting scripts. Methods never run here.
+
+[project]
+name = "tsad-env-harness"
+version = "0.0.0"
+requires-python = "==3.11.*"
+dependencies = [
+    "easytsad",
+    "deepseek-harness-sdk==0.2.1rc2",   # pins deepseek-harness-runtime-bin (dsh binary, bundled Node)
+    "mcp>=1.12",                        # TSAD tool server exposed to the agent over stdio
+    "httpx>=0.27,<1",                   # arXiv / Semantic Scholar / GitHub requests
+    "pymupdf>=1.24",                    # PDF -> text for paper ingestion
+    "pyyaml>=6",                        # DSH cordis patch generation
+    "tomlkit>=0.13",                    # comment-preserving edits of catalog.toml / registry.toml
+]
+
+[tool.uv]
+package = false
+prerelease = "if-necessary"            # only the pinned DSH rc; no dev builds of other deps
+
+[tool.uv.sources]
+easytsad = { path = "../..", editable = true }

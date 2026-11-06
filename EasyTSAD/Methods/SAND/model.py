@@ -15,7 +15,10 @@ from numpy.linalg import norm, eigh
 from numpy.fft import fft, ifft
 
 from tslearn.clustering import KShape
-from tslearn.cycc import cdist_normalized_cc, y_shifted_sbd_vec
+try:  # tslearn >= 0.5
+    from tslearn.metrics.cycc import cdist_normalized_cc, y_shifted_sbd_vec
+except ImportError:  # tslearn 0.4.x
+    from tslearn.cycc import cdist_normalized_cc, y_shifted_sbd_vec
 from tslearn.utils import to_time_series_dataset, to_time_series
 
 import stumpy

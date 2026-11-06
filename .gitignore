@@ -176,3 +176,21 @@ Model_ckpt/
 # uv environment management (see README "Environment Management")
 runtime/
 envs/*/venv/
+
+# LiveLeaderBoard: raw score arrays and console logs are large and rebuildable
+LiveLeaderBoard/results/runs/**/scores/
+LiveLeaderBoard/results/logs/
+
+# Reproduction harness: downloaded papers / official code clones and local DSH state
+EasyTSAD/Harness/tasks/*/paper/paper.pdf
+EasyTSAD/Harness/tasks/*/code/
+
+# DeepSeek Harness reference source (read-only local copy, ~2.7 GB; not versioned here)
+EasyTSAD/tsautoreproduce-harness/
+
+# Reproduction harness: local-only task state (lock, guard file copies, scratch)
+EasyTSAD/Harness/tasks/*/.lock
+EasyTSAD/Harness/tasks/*/guard/
+EasyTSAD/Harness/tasks/*/scratch/
+EasyTSAD/Harness/tasks/*/*.tmp
+__pycache__/

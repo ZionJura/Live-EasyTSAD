@@ -1,0 +1,85 @@
+{
+  "schema_version": 1,
+  "run_id": "20261104T122527Z",
+  "experiment": "smoke_all",
+  "method": "FITS",
+  "schema": "naive",
+  "dataset_type": "UTS",
+  "dataset": "NAB",
+  "status": "success",
+  "started_at": "2026-11-04T12:25:35Z",
+  "finished_at": "2026-11-04T12:25:57Z",
+  "duration_s": 11.22,
+  "config_hash": "ea0980ffedb35fec",
+  "config": {
+    "method": "FITS",
+    "schema": "naive",
+    "dataset_type": "UTS",
+    "dataset": "NAB",
+    "curves": [
+      "Twitter_volume_AAPL",
+      "Twitter_volume_AMZN"
+    ],
+    "data_params": {
+      "preprocess": "min-max",
+      "diff_order": 0
+    },
+    "hparams": {
+      "input_len": 25,
+      "out_len": 100,
+      "cut_freq": 12,
+      "batch_size": 128,
+      "epochs": 100,
+      "lr": 0.001
+    },
+    "evals": [
+      "point_f1",
+      "event_f1",
+      "auprc"
+    ],
+    "margins": [
+      0,
+      0
+    ],
+    "seed": 2026,
+    "train_proportion": 1,
+    "valid_proportion": 0.2,
+    "transfer": null
+  },
+  "git": {
+    "commit": "68dea7bd11f5857ad807af0e428db24646444ad3",
+    "branch": "main",
+    "dirty": true
+  },
+  "env": {
+    "name": "torch2",
+    "python": "3.11.17",
+    "uv_lock_sha256": "43aba9b7c1de1ff1b1ffed9bb68d6e76c9a428fb204e57c6eaa670b02cb04ae4",
+    "packages": {
+      "easytsad": "0.3.0.2",
+      "numpy": "1.26.4",
+      "scipy": "1.17.1",
+      "scikit-learn": "1.9.1",
+      "pandas": "3.0.6",
+      "torch": "2.6.0+cu124",
+      "pytorch-lightning": "2.6.6",
+      "transformers": "5.22.1",
+      "stumpy": "1.14.1"
+    },
+    "host": "sp-1",
+    "cuda_visible_devices": "5",
+    "gpu": "NVIDIA GeForce RTX 3080 Ti"
+  },
+  "command": [
+    "/home/v-zzr25/workplace/Live-EasyTSAD/LiveLeaderBoard/pipeline/run.py",
+    "--spec",
+    "/home/v-zzr25/workplace/Live-EasyTSAD/LiveLeaderBoard/experiments/smoke_all.toml",
+    "--method",
+    "FITS",
+    "--run-id",
+    "20261104T122527Z",
+    "--datasets",
+    "NAB"
+  ],
+  "error": null
+}

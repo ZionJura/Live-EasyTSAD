@@ -1,0 +1,16 @@
+elapsed_s,phase,gpu_uuid,process_used_mib
+5.212,load_train_test,GPU-a97684ce-a3a7-be91-3e3a-c604f4ad8e3a,250.0
+10.412,load_train_test,GPU-a97684ce-a3a7-be91-3e3a-c604f4ad8e3a,332.0
+15.584,load_train_test,GPU-a97684ce-a3a7-be91-3e3a-c604f4ad8e3a,332.0
+20.757,load_train_test,GPU-a97684ce-a3a7-be91-3e3a-c604f4ad8e3a,332.0
+25.905,load_train_test,GPU-a97684ce-a3a7-be91-3e3a-c604f4ad8e3a,332.0
+31.074,load_train_test,GPU-a97684ce-a3a7-be91-3e3a-c604f4ad8e3a,332.0
+36.171,load_train_test,GPU-a97684ce-a3a7-be91-3e3a-c604f4ad8e3a,332.0
+41.306,load_train_test,GPU-a97684ce-a3a7-be91-3e3a-c604f4ad8e3a,332.0
+46.42,load_train_test,GPU-a97684ce-a3a7-be91-3e3a-c604f4ad8e3a,332.0
+51.536,load_train_test,GPU-a97684ce-a3a7-be91-3e3a-c604f4ad8e3a,332.0
+56.681,load_train_test,GPU-a97684ce-a3a7-be91-3e3a-c604f4ad8e3a,332.0
+61.82,load_train_test,GPU-a97684ce-a3a7-be91-3e3a-c604f4ad8e3a,332.0
+66.947,load_train_test,GPU-a97684ce-a3a7-be91-3e3a-c604f4ad8e3a,332.0
+72.117,evaluation,GPU-a97684ce-a3a7-be91-3e3a-c604f4ad8e3a,332.0
+72.485,evaluation,GPU-a97684ce-a3a7-be91-3e3a-c604f4ad8e3a,332.0

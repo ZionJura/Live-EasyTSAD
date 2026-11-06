@@ -1,0 +1,88 @@
+{
+  "schema_version": 1,
+  "run_id": "20261104T122527Z",
+  "experiment": "smoke_all",
+  "method": "AnomalyTransformer",
+  "schema": "naive",
+  "dataset_type": "UTS",
+  "dataset": "NAB",
+  "status": "failed",
+  "started_at": "2026-11-04T12:25:35Z",
+  "finished_at": "2026-11-04T12:25:56Z",
+  "duration_s": 10.97,
+  "config_hash": "bbfedd8272d1cfc7",
+  "config": {
+    "method": "AnomalyTransformer",
+    "schema": "naive",
+    "dataset_type": "UTS",
+    "dataset": "NAB",
+    "curves": [
+      "Twitter_volume_AAPL",
+      "Twitter_volume_AMZN"
+    ],
+    "data_params": {
+      "preprocess": "z-score",
+      "diff_order": 0
+    },
+    "hparams": {
+      "win_size": 100,
+      "input_c": 1,
+      "output_c": 1,
+      "earlystop_patience": 7,
+      "num_epochs": 10,
+      "learning_rate": 0.0001,
+      "batch_size": 256,
+      "step": 1,
+      "k": 3
+    },
+    "evals": [
+      "point_f1",
+      "event_f1",
+      "auprc"
+    ],
+    "margins": [
+      0,
+      0
+    ],
+    "seed": 2026,
+    "train_proportion": 1,
+    "valid_proportion": 0.2,
+    "transfer": null
+  },
+  "git": {
+    "commit": "68dea7bd11f5857ad807af0e428db24646444ad3",
+    "branch": "main",
+    "dirty": true
+  },
+  "env": {
+    "name": "torch2",
+    "python": "3.11.17",
+    "uv_lock_sha256": "43aba9b7c1de1ff1b1ffed9bb68d6e76c9a428fb204e57c6eaa670b02cb04ae4",
+    "packages": {
+      "easytsad": "0.3.0.2",
+      "numpy": "1.26.4",
+      "scipy": "1.17.1",
+      "scikit-learn": "1.9.1",
+      "pandas": "3.0.6",
+      "torch": "2.6.0+cu124",
+      "pytorch-lightning": "2.6.6",
+      "transformers": "5.22.1",
+      "stumpy": "1.14.1"
+    },
+    "host": "sp-1",
+    "cuda_visible_devices": "0",
+    "gpu": "NVIDIA GeForce RTX 3080 Ti"
+  },
+  "command": [
+    "/home/v-zzr25/workplace/Live-EasyTSAD/LiveLeaderBoard/pipeline/run.py",
+    "--spec",
+    "/home/v-zzr25/workplace/Live-EasyTSAD/LiveLeaderBoard/experiments/smoke_all.toml",
+    "--method",
+    "AnomalyTransformer",
+    "--run-id",
+    "20261104T122527Z",
+    "--datasets",
+    "NAB"
+  ],
+  "error": "OutOfMemoryError: CUDA out of memory. Tried to allocate 50.00 MiB. GPU 0 has a total capacity of 11.75 GiB of which 1.06 MiB is free. Including non-PyTorch memory, this process has 11.75 GiB memory in use. Of the allocated memory 10.27 GiB is allocated by PyTorch, and 1.17 GiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)\nTraceback (most recent call last):\n  File \"/home/v-zzr25/workplace/Live-EasyTSAD/LiveLeaderBoard/pipeline/run.py\", line 256, in run_one\n    exp.do_exp(tsDatas=exp.load_data(), hparams=hparams)\n  File \"/home/v-zzr25/workplace/Live-EasyTSAD/EasyTSAD/TrainingSchema/Naive.py\", line 56, in do_exp\n    method.train_valid_phase(curve)\n  File \"/home/v-zzr25/workplace/Live-EasyTSAD/EasyTSAD/Methods/AnomalyTransformer/AnomalyTransformer.py\", line 445, in train_valid_phase\n    vali_loss1, vali_loss2 = self.vali(valid_loader)\n                             ^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/v-zzr25/workplace/Live-EasyTSAD/EasyTSAD/Methods/AnomalyTransformer/AnomalyTransformer.py\", line 349, in vali\n    output, series, prior, _ = self.model(input)\n                               ^^^^^^^^^^^^^^^^^\n  File \"/home/v-zzr25/workplace/Live-EasyTSAD/envs/torch2/venv/lib/python3.11/site-packages/torch/nn/modules/module.py\", line 1739, in _wrapped_call_impl\n    return self._call_impl(*args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/v-zzr25/workplace/Live-EasyTSAD/envs/torch2/venv/lib/python3.11/site-packages/torch/nn/modules/module.py\", line 1750, in _call_impl\n    return forward_call(*args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/v-zzr25/workplace/Live-EasyTSAD/EasyTSAD/Methods/AnomalyTransformer/AnomalyTransformer.py\", line 281, in forward\n    enc_out, series, prior, sigmas = self.encoder(enc_out)\n                                     ^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/v-zzr25/workplace/Live-EasyTSAD/envs/torch2/venv/lib/python3.11/site-packages/torch/nn/modules/module.py\", line 1739, in _wrapped_call_impl\n    return self._call_impl(*args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/v-zzr25/workplace/Live-EasyTSAD/envs/torch2/venv/lib/python3.11/site-packages/torch/nn/modules/module.py\", line 1750, in _call_impl\n    return forward_call(*args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/v-zzr25/workplace/Live-EasyTSAD/EasyTSAD/Methods/AnomalyTransformer/AnomalyTransformer.py\", line 241, in forward\n    x, series, prior, sigma = attn_layer(x, attn_mask=attn_mask)\n                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/v-zzr25/workplace/Live-EasyTSAD/envs/torch2/venv/lib/python3.11/site-packages/torch/nn/modules/module.py\", line 1739, in _wrapped_call_impl\n    return self._call_impl(*args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/v-zzr25/workplace/Live-EasyTSAD/envs/torch2/venv/lib/python3.11/site-packages/torch/nn/modules/module.py\", line 1750, in _call_impl\n    return forward_call(*args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/v-zzr25/workplace/Live-EasyTSAD/EasyTSAD/Methods/AnomalyTransformer/AnomalyTransformer.py\", line 226, in forward\n    return self.norm2(x + y), attn, mask, sigma\n           ^^^^^^^^^^^^^^^^^\n  File \"/home/v-zzr25/workplace/Live-EasyTSAD/envs/torch2/venv/lib/python3.11/site-packages/torch/nn/modules/module.py\", line 1739, in _wrapped_call_impl\n    return self._call_impl(*args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/v-zzr25/workplace/Live-EasyTSAD/envs/torch2/venv/lib/python3.11/site-packages/torch/nn/modules/module.py\", line 1750, in _call_impl\n    return forward_call(*args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/v-zzr25/workplace/Live-EasyTSAD/envs/torch2/venv/lib/python3.11/site-packages/torch/nn/modules/normalization.py\", line 217, in forward\n    return F.layer_norm(\n           ^^^^^^^^^^^^^\n  File \"/home/v-zzr25/workplace/Live-EasyTSAD/envs/torch2/venv/lib/python3.11/site-packages/torch/nn/functional.py\", line 2910, in layer_norm\n    return torch.layer_norm(\n           ^^^^^^^^^^^^^^^^^\ntorch.OutOfMemoryError: CUDA out of memory. Tried to allocate 50.00 MiB. GPU 0 has a total capacity of 11.75 GiB of which 1.06 MiB is free. Including non-PyTorch memory, this process has 11.75 GiB memory in use. Of the allocated memory 10.27 GiB is allocated by PyTorch, and 1.17 GiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)\n"
+}

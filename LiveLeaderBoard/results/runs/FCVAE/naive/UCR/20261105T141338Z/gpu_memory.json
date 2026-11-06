@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "pid": 926763,
+  "cuda_visible_devices": "2",
+  "cuda_available": true,
+  "finished": true,
+  "elapsed_s": 25144.212,
+  "phase": "finished",
+  "phase_seconds": {
+    "setup": 0.146,
+    "load_train_test": 25010.023,
+    "evaluation": 134.042
+  },
+  "torch_devices": [
+    {
+      "logical_index": 0,
+      "name": "NVIDIA GeForce RTX 3080 Ti",
+      "total_memory_mib": 12038.1875,
+      "peak_allocated_mib": 48.0498046875,
+      "peak_reserved_mib": 66.0
+    }
+  ],
+  "nvidia_smi_sample_interval_s": 5.0,
+  "nvidia_smi_samples": 4791,
+  "nvidia_smi_peak_process_used_mib": {
+    "GPU-e2181cf8-ceda-db3b-0a26-dc42ecbb143a": 392.0
+  },
+  "errors": []
+}

@@ -1,0 +1,101 @@
+{
+  "schema_version": 1,
+  "run_id": "20261104T122527Z",
+  "experiment": "smoke_all",
+  "method": "OFA",
+  "schema": "naive",
+  "dataset_type": "UTS",
+  "dataset": "NAB",
+  "status": "failed",
+  "started_at": "2026-11-04T12:25:36Z",
+  "finished_at": "2026-11-04T12:26:02Z",
+  "duration_s": 16.25,
+  "config_hash": "e40be2ce978061fc",
+  "config": {
+    "method": "OFA",
+    "schema": "naive",
+    "dataset_type": "UTS",
+    "dataset": "NAB",
+    "curves": [
+      "Twitter_volume_AAPL",
+      "Twitter_volume_AMZN"
+    ],
+    "data_params": {
+      "preprocess": "z-score",
+      "diff_order": 0
+    },
+    "hparams": {
+      "is_training": 1,
+      "features": "M",
+      "seq_len": 100,
+      "pred_len": 0,
+      "d_model": 768,
+      "d_ff": 768,
+      "gpt_layers": 6,
+      "enc_in": 1,
+      "c_out": 1,
+      "anomaly_ratio": 0.5,
+      "batch_size": 128,
+      "patch_size": 1,
+      "stride": 1,
+      "learning_rate": 0.0001,
+      "epochs": 20,
+      "embed": "timeF",
+      "freq": "h",
+      "dropout": 0.1,
+      "mlp": 0,
+      "patience": 3,
+      "model_path": "pre_train",
+      "lradj": "type1"
+    },
+    "evals": [
+      "point_f1",
+      "event_f1",
+      "auprc"
+    ],
+    "margins": [
+      0,
+      0
+    ],
+    "seed": 2026,
+    "train_proportion": 1,
+    "valid_proportion": 0.2,
+    "transfer": null
+  },
+  "git": {
+    "commit": "68dea7bd11f5857ad807af0e428db24646444ad3",
+    "branch": "main",
+    "dirty": true
+  },
+  "env": {
+    "name": "torch2",
+    "python": "3.11.17",
+    "uv_lock_sha256": "43aba9b7c1de1ff1b1ffed9bb68d6e76c9a428fb204e57c6eaa670b02cb04ae4",
+    "packages": {
+      "easytsad": "0.3.0.2",
+      "numpy": "1.26.4",
+      "scipy": "1.17.1",
+      "scikit-learn": "1.9.1",
+      "pandas": "3.0.6",
+      "torch": "2.6.0+cu124",
+      "pytorch-lightning": "2.6.6",
+      "transformers": "5.22.1",
+      "stumpy": "1.14.1"
+    },
+    "host": "sp-1",
+    "cuda_visible_devices": "1",
+    "gpu": "NVIDIA GeForce RTX 3080 Ti"
+  },
+  "command": [
+    "/home/v-zzr25/workplace/Live-EasyTSAD/LiveLeaderBoard/pipeline/run.py",
+    "--spec",
+    "/home/v-zzr25/workplace/Live-EasyTSAD/LiveLeaderBoard/experiments/smoke_all.toml",
+    "--method",
+    "OFA",
+    "--run-id",
+    "20261104T122527Z",
+    "--datasets",
+    "NAB"
+  ],
+  "error": "AttributeError: 'Model' object has no attribute 'gpt2'\nTraceback (most recent call last):\n  File \"/home/v-zzr25/workplace/Live-EasyTSAD/LiveLeaderBoard/pipeline/run.py\", line 256, in run_one\n    exp.do_exp(tsDatas=exp.load_data(), hparams=hparams)\n  File \"/home/v-zzr25/workplace/Live-EasyTSAD/EasyTSAD/TrainingSchema/Naive.py\", line 48, in do_exp\n    method = BaseMethodMeta.registry[self.method](model_params)\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/v-zzr25/workplace/Live-EasyTSAD/EasyTSAD/Methods/OFA/OFA.py\", line 51, in __init__\n    self.model = Model(self.args).float().to(self.device)\n                 ^^^^^^^^^^^^^^^^\n  File \"/home/v-zzr25/workplace/Live-EasyTSAD/EasyTSAD/Methods/OFA/GPT4TS.py\", line 38, in __init__\n    self.gpt2.h = self.gpt2.h[:configs.gpt_layers]\n                  ^^^^^^^^^\n  File \"/home/v-zzr25/workplace/Live-EasyTSAD/envs/torch2/venv/lib/python3.11/site-packages/torch/nn/modules/module.py\", line 1928, in __getattr__\n    raise AttributeError(\nAttributeError: 'Model' object has no attribute 'gpt2'\n"
+}

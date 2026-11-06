@@ -1,0 +1,38 @@
+{
+  "public_host": "zr-zhang25.cn",
+  "public_ip": "49.232.30.3",
+  "exclude_ports": [22, 1053, 7890],
+  "exclude_processes": ["sshd", "mihomo"],
+  "exclude_paths": ["/root", "/root/", "/visitor", "/_authorize", "/projects/", "/projects"],
+  "exclude_roots": ["/usr/share/nginx/html", "/var/www/project-directory"],
+  "projects": [
+    {
+      "root": "/var/www/liveadboard/current",
+      "title": "EasyTSAD Leaderboard",
+      "description": "时序异常检测榜单。按数据集、训练范式和评估指标比较方法，查看排名、结果矩阵与方法详情。",
+      "category": "模型评测",
+      "icon": "chart"
+    },
+    {
+      "root": "/var/www/research-catalog/current",
+      "title": "科研报告导航",
+      "description": "汇集不同研究项目的报告与专题页面，按项目浏览已有的研究内容。访问需要登录。",
+      "category": "研究报告",
+      "icon": "book"
+    },
+    {
+      "root": "/var/www/webreport/current",
+      "title": "科研工作记录",
+      "description": "科研工作的总览、实验记录与阶段进展。访问需要登录。",
+      "category": "工作记录",
+      "icon": "grid"
+    },
+    {
+      "port": 18789,
+      "title": "OpenClaw Control",
+      "description": "OpenClaw 的运行状态与会话管理界面。目前仅监听服务器本机，尚未挂载公开访问入口。",
+      "category": "内部控制台",
+      "icon": "window"
+    }
+  ]
+}

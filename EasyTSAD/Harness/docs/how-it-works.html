@@ -1,0 +1,280 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>EasyTSAD Harness — how it works</title>
+<style>
+  :root {
+    --bg: #fbfaf7; --fg: #1f2328; --muted: #5d6470; --line: #d9d6cf; --card: #ffffff;
+    --det: #3d6f9e; --det-bg: #e8f0f8; --agent: #8a5a1f; --agent-bg: #f8eedf;
+    --human: #6b4a8f; --human-bg: #efe8f6; --ok: #2f7d4f; --warn: #a3542b; --code: #f2f0ea;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #16181c; --fg: #e6e6e3; --muted: #9aa0a8; --line: #343840; --card: #1d2026;
+      --det: #8fb7de; --det-bg: #1f2b38; --agent: #e0b27a; --agent-bg: #33281b;
+      --human: #c3a5e3; --human-bg: #2b2335; --ok: #7cc79a; --warn: #e39a72; --code: #23262c;
+    }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--fg);
+         font: 15px/1.55 -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; }
+  main { max-width: 1080px; margin: 0 auto; padding: 32px 24px 80px; }
+  h1 { font-size: 28px; margin: 0 0 4px; }
+  h2 { font-size: 20px; margin: 44px 0 12px; padding-bottom: 6px; border-bottom: 1px solid var(--line); }
+  h3 { font-size: 16px; margin: 20px 0 8px; }
+  p, li { color: var(--fg); }
+  .lead { color: var(--muted); margin: 0 0 20px; }
+  code, pre { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 13px; }
+  code { background: var(--code); padding: 1px 5px; border-radius: 4px; }
+  pre { background: var(--code); padding: 12px 14px; border-radius: 8px; overflow-x: auto; margin: 8px 0; }
+  table { border-collapse: collapse; width: 100%; margin: 8px 0; font-size: 14px; }
+  th, td { text-align: left; padding: 7px 10px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  th { color: var(--muted); font-weight: 600; }
+  .legend { display: flex; gap: 18px; flex-wrap: wrap; font-size: 13px; color: var(--muted); margin: 6px 0 14px; }
+  .legend span::before { content: ""; display: inline-block; width: 11px; height: 11px; border-radius: 3px;
+                         margin-right: 6px; vertical-align: -1px; }
+  .legend .l-det::before { background: var(--det-bg); border: 1.5px solid var(--det); }
+  .legend .l-agent::before { background: var(--agent-bg); border: 1.5px solid var(--agent); }
+  .legend .l-human::before { background: var(--human-bg); border: 1.5px solid var(--human); }
+
+  /* phase flow */
+  .flow { display: flex; align-items: stretch; gap: 0; overflow-x: auto; padding: 4px 0 8px; }
+  .step { flex: 1 0 118px; border: 1.5px solid; border-radius: 10px; padding: 10px 10px 9px; cursor: pointer;
+          transition: transform .12s; min-width: 118px; background: var(--card); }
+  .step:hover, .step.active { transform: translateY(-2px); box-shadow: 0 3px 10px rgba(0,0,0,.08); }
+  .step.det { border-color: var(--det); background: var(--det-bg); }
+  .step.agent { border-color: var(--agent); background: var(--agent-bg); }
+  .step.human { border-color: var(--human); background: var(--human-bg); border-style: dashed; }
+  .step .name { font-weight: 700; font-size: 14px; }
+  .step .kind { font-size: 11.5px; color: var(--muted); text-transform: uppercase; letter-spacing: .04em; }
+  .step .now { display: inline-block; margin-top: 6px; font-size: 11px; padding: 1px 6px; border-radius: 99px;
+               background: var(--fg); color: var(--bg); }
+  .arrow { flex: 0 0 22px; display: flex; align-items: center; justify-content: center; color: var(--muted); }
+  .detail { border: 1px solid var(--line); background: var(--card); border-radius: 10px; padding: 14px 18px; margin-top: 10px; }
+  .detail h3 { margin-top: 0; }
+  .detail dl { display: grid; grid-template-columns: 130px 1fr; gap: 6px 14px; margin: 0; }
+  .detail dt { color: var(--muted); }
+  .detail dd { margin: 0; }
+
+  /* architecture */
+  .arch { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; }
+  .box { border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px; background: var(--card); }
+  .box h4 { margin: 0 0 6px; font-size: 14px; }
+  .box ul { margin: 0; padding-left: 18px; font-size: 13.5px; }
+  .box.wide { grid-column: span 3; }
+  .stack { display: grid; grid-template-columns: 1fr; gap: 8px; }
+  .layer { border-radius: 8px; padding: 9px 12px; font-size: 13.5px; border: 1px solid var(--line); background: var(--card); }
+  .layer b { display: inline-block; min-width: 190px; }
+  .layer.ours { border-left: 4px solid var(--agent); }
+  .layer.dsh { border-left: 4px solid var(--det); }
+  .layer.repo { border-left: 4px solid var(--ok); }
+  .cols { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .ok { color: var(--ok); font-weight: 600; }
+  .warn { color: var(--warn); font-weight: 600; }
+  .muted { color: var(--muted); }
+  .seq { border-left: 2px solid var(--line); margin-left: 8px; padding-left: 16px; }
+  .seq div { margin: 0 0 9px; position: relative; font-size: 14px; }
+  .seq div::before { content: ""; position: absolute; left: -22px; top: 7px; width: 10px; height: 10px;
+                     border-radius: 50%; background: var(--bg); border: 2px solid var(--muted); }
+  .seq .who { display: inline-block; min-width: 92px; font-weight: 600; font-size: 12.5px; color: var(--muted); }
+  @media (max-width: 760px) { .arch, .cols { grid-template-columns: 1fr; } .box.wide { grid-column: auto; } }
+</style>
+</head>
+<body>
+<main>
+<h1>EasyTSAD Harness — how it works</h1>
+<p class="lead">Automated reproduction of time-series anomaly detection papers as EasyTSAD methods, evaluated by the
+existing LiveLeaderBoard pipeline. State as of 2026-11-05 (v0.1, initial simplified framework).</p>
+
+<h2>1. One task = one paper = one method</h2>
+<p>The harness owns the control flow as a deterministic phase state machine, while the model writes the code. An LLM agent
+is only used inside three phases. The harness decides whether a phase is done by running machine checks, not the model.
+Click a phase for details.</p>
+<div class="legend"><span class="l-det">deterministic (Python)</span><span class="l-agent">agent phase (DSH + LLM)</span><span class="l-human">human gate</span></div>
+<div class="flow" id="flow"></div>
+<div class="detail" id="detail"></div>
+
+<h2>2. Architecture</h2>
+<div class="stack">
+  <div class="layer ours"><b>CLI</b> <code>scripts/harness</code> &rarr; <code>tsad_harness/cli.py</code> (search, new, run, status, approve, correct, answer, log, guard, reset, report, publish, doctor)</div>
+  <div class="layer ours"><b>TSAD domain layer (new)</b> <code>pipeline.py</code> phase machine &middot; <code>task.py</code> state + journal &middot; <code>validate.py</code> exit checks &middot; <code>guard.py</code> protected files &middot; <code>runner.py</code> uv/exp integration &middot; <code>papers.py</code> &middot; <code>report.py</code> &middot; <code>review.py</code></div>
+  <div class="layer ours"><b>TSAD tools for the agent</b> <code>tools.py</code>, an MCP stdio server whose tools appear as <code>mcp__tsad__*</code> (contract, notes, import check, smoke run, ask human)</div>
+  <div class="layer dsh"><b>DeepSeek Harness (unchanged)</b> the <code>dsh --profile headless</code> binary from PyPI, trimmed by <code>dsh/trim.patch.yml</code>: agent loop, sessions, compaction, bash/fs tools, MCP client, <code>llm-pi-ai</code> &rarr; YYT <code>gpt-6.1-sol</code> (Responses API)</div>
+  <div class="layer repo"><b>Live-EasyTSAD (unchanged)</b> <code>EasyTSAD/Methods/&lt;Name&gt;</code> &middot; <code>envs/&lt;env&gt;</code> + <code>envs/registry.toml</code> (uv) &middot; <code>scripts/tsad exp</code> &middot; <code>LiveLeaderBoard/results</code> &middot; <code>leaderboard/</code> site</div>
+</div>
+
+<h3>Four modules</h3>
+<div class="arch">
+  <div class="box"><h4>&#9312; Paper search &amp; download</h4><ul>
+    <li>arXiv API (direct connection), GitHub repo search (proxy), LLM web search fallback through the Responses API</li>
+    <li>PDF &rarr; <code>paper.md</code> with page markers (PyMuPDF)</li>
+    <li>Official code is cloned with <code>git clone --depth 1</code> and its commit recorded</li></ul></div>
+  <div class="box"><h4>&#9313; Reproduction &amp; evaluation</h4><ul>
+    <li>EVIDENCE &rarr; reproduction contract</li>
+    <li>IMPLEMENT: method folder plus a uv env (reuse <code>torch2</code> or <code>scripts/tsad new</code>)</li>
+    <li>SMOKE: 2 NAB curves through the real pipeline</li>
+    <li>EVALUATE: unmodified <code>scripts/tsad exp</code>, run detached</li></ul></div>
+  <div class="box"><h4>&#9314; Results &amp; leaderboard</h4><ul>
+    <li><code>catalog.toml</code> entry with paper metadata</li>
+    <li><code>scripts/tsad export</code> &rarr; <code>benchmark.json</code></li>
+    <li><code>report.md</code> / <code>REPRODUCTION.md</code></li>
+    <li><code>publish</code>: copy to <code>leaderboard/public</code>, <code>npm run build</code>, optional deploy</li></ul></div>
+  <div class="box wide"><h4>&#9315; Human correction &amp; records</h4>
+    <ul>
+      <li><code>approve</code> clears a review gate.</li>
+      <li><code>correct -m "..." [--phase P]</code> stores the note together with a context snapshot (the last events, the git status of the method/env, and the last smoke result), optionally rewinds the phase, and injects the note at the top of the next agent prompt as <i>HUMAN CORRECTIONS (highest priority)</i>.</li>
+      <li><code>answer</code> replies to <code>mcp__tsad__ask_human</code>.</li>
+      <li><code>log</code> prints the combined timeline.</li>
+    </ul></div>
+</div>
+
+<h2>3. What happens inside one agent phase</h2>
+<div class="cols">
+<div class="seq">
+  <div><span class="who">pipeline</span>reload state, clear stale question flag, take the guard baseline (once per task)</div>
+  <div><span class="who">pipeline</span>build the prompt: phase template (+ any pending human corrections, + validator errors in repair rounds)</div>
+  <div><span class="who">agent.py</span>render <code>&lt;task&gt;/dsh/runtime.patch.yml</code> (LLM route, system prompt, session root, MCP server), then launch <code>dsh --profile headless --patch trim --patch runtime --json [--session-id S] -</code></div>
+  <div><span class="who">DSH</span>model &rarr; tools &rarr; model loop: <code>read/grep/glob/edit/write/bash</code> + <code>mcp__tsad__*</code>; all events are persisted to the session JSONL</div>
+  <div><span class="who">agent.py</span>stream the NDJSON to <code>dsh/runs/NNN-phase.ndjson</code>; enforce budgets (steps, wall clock via watchdog); detect missing tools</div>
+  <div><span class="who">pipeline</span>reload state &rarr; guard check &rarr; pending question? &rarr; phase validator</div>
+  <div><span class="who">pipeline</span>validator fails: repair round with the exact errors (up to 4). Validator passes: next phase or review gate</div>
+</div>
+<div>
+  <table>
+    <tr><th>Phase</th><th>Exit check (validate.py)</th></tr>
+    <tr><td>EVIDENCE</td><td>contract schema, 9 required claim ids, a source for every explicit/inferred claim, epoch key rule</td></tr>
+    <tr><td>IMPLEMENT</td><td>files and class name, <code>src/</code> has no EasyTSAD imports, registered in exactly one env, config.toml matches the contract, import check inside the env, guard clean</td></tr>
+    <tr><td>SMOKE</td><td>latest smoke run succeeded, scores are 1-D and finite, source hash unchanged since the run, guard clean</td></tr>
+    <tr><td>EVALUATE</td><td>every (method, dataset) run succeeded</td></tr>
+    <tr><td>REPORT</td><td>method present in <code>benchmark.json</code></td></tr>
+  </table>
+  <h3>Typed repair scope (SMOKE)</h3>
+  <table>
+    <tr><th>Failure class</th><th>May edit</th></tr>
+    <tr><td>ENVIRONMENT</td><td>the method's own env only</td></tr>
+    <tr><td>ADAPTER_INTERFACE</td><td><code>&lt;Name&gt;.py</code> adapter</td></tr>
+    <tr><td>ALGORITHM_IMPLEMENTATION</td><td><code>src/</code>; contract changes must be logged as deviations</td></tr>
+    <tr><td>RESOURCE_EXECUTION</td><td>runtime settings only</td></tr>
+  </table>
+  <p class="muted">A low metric is never a repair trigger.</p>
+</div>
+</div>
+
+<h2>4. DSH: what was kept and what was trimmed</h2>
+<p>DSH is not forked. The shipped <code>headless</code> profile is composed with one patch that disables 36 plugin rows.
+The source in <code>EasyTSAD/tsautoreproduce-harness/</code> (upstream <code>fcc0ad4621</code>, git link removed) is kept for reference only.</p>
+<div class="cols">
+  <div class="box"><h4 class="ok">Kept</h4><ul>
+    <li>agent loop (step/turn lifecycle, cancellation, LLM retry)</li>
+    <li>session + JSONL persistence (uncompressed, inside the task dir)</li>
+    <li>context compaction, tool-result pruning, spill</li>
+    <li>bash, jobs, fs read/write/edit, glob/grep, working directory</li>
+    <li>MCP client (TSAD tools), <code>llm-pi-ai</code> OpenAI-compatible route</li></ul></div>
+  <div class="box"><h4 class="warn">Removed</h4><ul>
+    <li>DeepSeek session-log upload, telemetry, inventory reporting</li>
+    <li>DeepSeek-only model routes, LLM session titles</li>
+    <li>web search/fetch (paper retrieval is a deterministic step)</li>
+    <li>subagents, goal/plan/todo, workflow/PTC, skills</li>
+    <li>remote-access API gateway</li></ul></div>
+</div>
+
+<h2>5. Records for later analysis</h2>
+<table>
+  <tr><th>File (in <code>EasyTSAD/Harness/tasks/&lt;Name&gt;/</code>)</th><th>Writer</th><th>Content</th></tr>
+  <tr><td><code>dsh/sessions/**/session.v4.jsonl</code></td><td>DSH</td><td>every message, tool call/result, step, compaction</td></tr>
+  <tr><td><code>dsh/runs/NNN-*.{prompt.md,ndjson,stderr}</code></td><td>agent.py</td><td>exact prompt and event stream of each run</td></tr>
+  <tr><td><code>journal.jsonl</code></td><td>all modules</td><td>state changes, validations, tool calls, guard events, evals, reports</td></tr>
+  <tr><td><code>contract.json</code>, <code>notes.jsonl</code></td><td>agent (MCP)</td><td>paper evidence &rarr; values; deviations, assumptions, issues</td></tr>
+  <tr><td><code>corrections.jsonl</code>, <code>questions.jsonl</code></td><td>human / agent</td><td>corrections with context snapshot; agent questions and answers</td></tr>
+  <tr><td><code>runs/</code>, <code>report.md</code></td><td>runner / report</td><td>smoke + eval specs and outcomes; final reproduction report</td></tr>
+</table>
+
+<h2>6. Current status: first real task (DIFR — Deep Isolation Forest, arXiv 2206.06602)</h2>
+<table>
+  <tr><th>Phase</th><th>Result</th></tr>
+  <tr><td>FETCH</td><td class="ok">done: 14-page PDF &rarr; paper.md; official code <code>xuhongzuo/deep-iForest</code> cloned at <code>e77692b</code></td></tr>
+  <tr><td>EVIDENCE</td><td class="ok">done in about 8 min, 10 model steps, 41 tool calls, about 0.5 M tokens (83 % cache hits); contract valid on the first try</td></tr>
+  <tr><td>Review gate</td><td><b>waiting for a human</b>: <code>scripts/harness approve DIFR</code> or <code>scripts/harness correct DIFR -m "..."</code></td></tr>
+  <tr><td>IMPLEMENT &rarr; REPORT</td><td class="muted">not started</td></tr>
+</table>
+<h3>Contract produced by the agent</h3>
+<table>
+  <tr><th>Claim status</th><th>Count</th><th>Meaning</th></tr>
+  <tr><td>explicit</td><td>12</td><td>stated in the paper (with section, equation or table)</td></tr>
+  <tr><td>inferred</td><td>33</td><td>from the official code (file:line) or unambiguous context</td></tr>
+  <tr><td>unspecified</td><td>2</td><td>neither; neutral default recorded</td></tr>
+</table>
+<p>Key values: window 100 (train stride 10, test stride 1), raw input, 50 random untrained dilated CNN
+representations &times; 6 isolation trees each, 256 samples per tree, no training (epochs 0, no optimiser),
+and DEAS score (paper Eq. 8) assigned to the window end. Thresholding is left to EasyTSAD.</p>
+<p>Notes recorded: <b>4 deviations</b>, where the official code differs from the paper and the paper is followed (forest-level vs.
+per-representation score averaging, zero deviations included in the mean, no leaf path-length correction,
+no label-based segment adjustment). It also recorded <b>3 assumptions</b> and <b>1 issue</b> (per-call representation standardisation in the official code).</p>
+
+<h3>Problems found and fixed while getting here</h3>
+<ul>
+  <li><b>MCP tools missing.</b> On the networked filesystem, the cold <code>import mcp</code> takes about 50 s, which is longer than the MCP initialize timeout, so the agent ran without <code>mcp__tsad__*</code>. Fix: prewarm before launch, set a longer startup timeout, and fail fast when the tools are missing.</li>
+  <li><b>Wrong paper metadata in the prompt.</b> The EVIDENCE prompt read the wrong <code>meta.json</code> keys and reported that no official code existed. This is fixed.</li>
+  <li><b>Network.</b> The local proxy cannot reach YYT or arXiv, so those hosts are reached directly and GitHub goes through the proxy. The SOCKS <code>all_proxy</code> is dropped for DSH.</li>
+  <li><b>Code review.</b> An independent review with adversarial verification confirmed 20 bugs. These include lost state updates between processes, <code>approve</code> skipping phases, a guard baseline that silently absorbed violations, a re-launched evaluation, the API key reaching bash children, and a wall-clock budget that a silent process could escape. <span class="ok">All 20 are fixed</span>: per-task lock with reloads, gated approve (<code>--force</code> is logged), a one-time guard baseline with <code>guard --restore/--accept</code>, eval re-attach, a key scrubbed from child processes, and a watchdog timer.</li>
+</ul>
+
+<h2>7. Configuration</h2>
+<pre># EasyTSAD/Harness/config.toml (excerpt)
+[llm]   base_url = "https://yyt.s-flag.com/v1"   wire_api = "responses"   model = "gpt-6.1-sol"
+        api_key_env = "yyt_api"  (exported by the user)  -&gt;  dsh_key_env = "YYT_API_KEY" (scrubbed from children)
+[budget] max_steps_per_run = 120   max_wall_minutes_per_run = 90   max_repair_rounds = 4   max_smoke_runs = 8
+[human]  review_after = ["EVIDENCE"]
+[smoke]  naive / NAB / 2 curves / &lt;= 2 epochs        [eval] naive / 6 UTS datasets / point_f1, event_f1, auprc</pre>
+<pre>scripts/tsad sync harness        # envs/harness: dsh runtime (bundled Node), mcp, pymupdf, ...
+scripts/harness doctor           # binary, key, endpoint, profile
+scripts/harness new DIFR --arxiv 2206.06602 --code https://github.com/xuhongzuo/deep-iForest
+scripts/harness run DIFR         # -&gt; stops at the review gate
+scripts/harness approve DIFR &amp;&amp; scripts/harness run DIFR</pre>
+</main>
+
+<script>
+const PHASES = [
+  { id: "FETCH", kind: "det", label: "deterministic", who: "papers.py",
+    does: "Resolve the paper (arXiv id / title / URL / local PDF), download the PDF, extract paper.md with page markers, find and clone the official code.",
+    exit: "paper/paper.md is non-empty", out: "paper/{paper.pdf, paper.md, meta.json}, code/<repo>" },
+  { id: "EVIDENCE", kind: "agent", label: "agent", who: "DSH + prompts/evidence.md",
+    does: "Read the paper and official code; call mcp__tsad__save_contract with every hyper-parameter, its status (explicit / inferred / unspecified) and source; record deviations and assumptions.",
+    exit: "contract.json valid (schema, required claims, sources)", out: "contract.json, notes.jsonl", now: true },
+  { id: "REVIEW", kind: "human", label: "human gate", who: "review.py",
+    does: "A human checks the contract. approve → IMPLEMENT; correct -m … → the note is injected into the next run and the phase re-runs.",
+    exit: "harness approve", out: "corrections.jsonl (with context snapshot)" },
+  { id: "IMPLEMENT", kind: "agent", label: "agent", who: "DSH + prompts/implement.md",
+    does: "Write EasyTSAD/Methods/<Name>/ (src/ algorithm, adapter, config.toml); reuse torch2 or create a dedicated uv env via scripts/tsad new/add; register it; check imports.",
+    exit: "structure, no EasyTSAD in src/, registry, config = contract, import check, guard clean", out: "method folder, env, registry entry" },
+  { id: "SMOKE", kind: "agent", label: "agent", who: "DSH + mcp__tsad__run_smoke",
+    does: "Run the real scripts/tsad exp on 2 NAB curves with an epoch cap; on failure get a typed failure class and repair only within its scope.",
+    exit: "latest smoke run success, finite 1-D scores, source unchanged since the run", out: "runs/smoke-NNN.json" },
+  { id: "EVALUATE", kind: "det", label: "deterministic", who: "runner.py",
+    does: "Launch the full evaluation (naive schema, 6 UTS datasets) detached with scripts/tsad exp; poll its status.",
+    exit: "all (method, dataset) runs success", out: "LiveLeaderBoard/results/runs/<Name>/…" },
+  { id: "REPORT", kind: "det", label: "deterministic", who: "report.py",
+    does: "Add the catalog.toml entry with paper metadata, run scripts/tsad export, write report.md and REPRODUCTION.md. `harness publish` refreshes and builds the site.",
+    exit: "method present in benchmark.json", out: "benchmark.json, report.md" },
+];
+const flow = document.getElementById("flow"), detail = document.getElementById("detail");
+function show(i) {
+  const p = PHASES[i];
+  document.querySelectorAll(".step").forEach((el, j) => el.classList.toggle("active", j === i));
+  detail.innerHTML = `<h3>${p.id} <span class="muted" style="font-weight:400">— ${p.label}, ${p.who}</span></h3>
+    <dl><dt>Does</dt><dd>${p.does}</dd><dt>Exit condition</dt><dd>${p.exit}</dd><dt>Outputs</dt><dd><code>${p.out}</code></dd></dl>`;
+}
+PHASES.forEach((p, i) => {
+  if (i) flow.insertAdjacentHTML("beforeend", '<div class="arrow">&rarr;</div>');
+  const el = document.createElement("div");
+  el.className = `step ${p.kind}`;
+  el.innerHTML = `<div class="kind">${p.label}</div><div class="name">${p.id}</div>${p.now ? '<span class="now">DIFR is here</span>' : ""}`;
+  el.onclick = () => show(i);
+  flow.appendChild(el);
+});
+show(1);
+</script>
+</body>
+</html>

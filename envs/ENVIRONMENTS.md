@@ -5,7 +5,8 @@
 | Environment | Python | Description | Methods |
 | --- | --- | --- | --- |
 | `torch2` | 3.11 | Default. PyTorch 2.6 + CUDA 12.4, lightning, transformers, sklearn. | AE, AR, AnomalyTransformer, CAD, DCdetector, Diff, Donut, EncDecAD, Example, FCVAE, FITS, LOF, LSTMADalpha, LSTMADbeta, OCSVM, OFA, SRCNN, SubLOF, SubOCSVM, TFAD, TimesNet, TranAD |
-| `legacy` | 3.9 | Old pinned libraries: tslearn==0.4.1, matrixprofile. | SAND, MatrixProfile |
+| `legacy` | 3.9 | Old libraries: tslearn 0.5.x (Cython build), matrixprofile, numpy<1.24. | SAND, MatrixProfile |
+| `harness` | 3.11 | Tooling env for the reproduction harness (DSH runtime, MCP tools, paper ingestion). Runs no methods. |  |
 
 ## Method lookup
 
@@ -28,7 +29,7 @@
 | MatrixProfile | `legacy` |  |
 | OCSVM | `torch2` |  |
 | OFA | `torch2` |  |
-| SAND | `legacy` |  |
+| SAND | `legacy` | Uses tslearn 0.5.x instead of the original 0.4.1 pin (0.4.1 needs scikit-learn<0.24, which has no Python 3.9 wheels); model.py imports cycc from either location. |
 | Spot | - | Helper module (SPOT/biSPOT/...), not a BaseMethod; not registered. |
 | SRCNN | `torch2` |  |
 | SubLOF | `torch2` |  |

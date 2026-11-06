@@ -1,0 +1,22 @@
+DIFR time-series implementation
+
+Adapted from Deep Isolation Forest by Hongzuo Xu, Guansong Pang, Yijie Wang,
+and Yongjun Wang: https://github.com/xuhongzuo/deep-iForest
+Reference commit: e77692bbb39c851a580c37154c0a7d0c3a460bdf
+Original algorithm source identifies Xu Hongzuo (hongzuo.xu@gmail.com),
+2022/8/19, as its author. The original repository is licensed under the
+Apache License, Version 2.0; the full license is included in LICENSE.
+
+Modified for this reproduction:
+- Keep only the time-series dilated residual CNN and isolation forest path.
+- Supply all model settings from config.toml through the adapter.
+- Generate the same full windows lazily and accumulate sparse decision paths.
+- Use the approved paper Eq. (8) across all representation trees, raw traversed
+  edge lengths, and Eq. (7)'s mean over all visited split nodes, including zeros.
+- Keep collection-specific StandardScaler followed by tanh exactly as in the
+  official representation extraction; do not read labels or adjust scores.
+- Return the window-end score suffix and let the fixed evaluator align it.
+
+The deliberate scoring differences from the official implementation and
+neutral edge-case conventions are documented in the reproduction contract
+and harness notes.

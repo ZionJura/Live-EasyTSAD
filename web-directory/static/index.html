@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="网页项目统一导航：查看已部署的项目、访问入口、服务状态和最近修改时间。">
+  <meta name="theme-color" content="#19375c">
+  <title>项目导航 · Webhost</title>
+  <link rel="icon" href="./favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="./styles.css">
+  <script defer src="./app.js"></script>
+</head>
+<body>
+  <header class="site-header"><div class="header-inner">
+    <a class="brand" href="./" aria-label="项目导航首页"><span class="brand-mark" aria-hidden="true"><i></i><i></i><i></i><i></i></span><span>Webhost<span class="brand-caption">PROJECT DIRECTORY</span></span></a>
+    <div class="header-right"><span class="host-tag">zr-zhang25.cn</span><span class="live-dot" aria-hidden="true"></span><span>项目导航</span></div>
+  </div></header>
+  <main>
+    <section class="hero" aria-labelledby="page-title">
+      <div class="hero-copy"><div class="eyebrow"><span></span> YOUR WORK, CONNECTED</div><h1 id="page-title">所有项目，<br class="mobile-break">一个<span>入口。</span></h1><p>从实验榜单到研究报告，在这里找到服务器上的网页项目。<br class="desktop-break">最近更新的内容，始终排在前面。</p><div class="sync-line"><span class="sync-dot"></span><span id="sync-status" role="status">正在读取项目清单…</span><button id="refresh" class="refresh-button" type="button">刷新清单 <span aria-hidden="true">↻</span></button></div></div>
+      <div class="hero-art" aria-hidden="true"><div class="orbit orbit-one"></div><div class="orbit orbit-two"></div><div class="art-center"><span class="brand-mark"><i></i><i></i><i></i><i></i></span></div><span class="art-node node-one">01</span><span class="art-node node-two">02</span><span class="art-node node-three">03</span><div class="art-caption">A PLACE FOR EVERY PROJECT</div></div>
+    </section>
+    <section class="stats" aria-label="服务概览">
+      <div class="stat"><span class="stat-label">发现的网页项目</span><strong id="stat-projects">—</strong><span class="stat-note">相同项目的多个入口已合并</span></div>
+      <div class="stat"><span class="stat-label">已挂载访问入口</span><strong id="stat-published">—</strong><span id="stat-internal" class="stat-note">正在检测访问入口</span></div>
+      <div class="stat"><span class="stat-label">确认返回 HTML 的端口</span><strong id="stat-ports">—</strong><span class="stat-note" id="ports-list">只统计成功返回的网页响应</span></div>
+    </section>
+    <section class="projects-section" aria-labelledby="projects-title">
+      <div class="section-heading"><div><span class="section-eyebrow">EXPLORE</span><h2 id="projects-title">项目目录 <span id="result-count"></span></h2></div><label class="sort-label">排序 <select id="sort" aria-label="排序方式"><option value="modified">最近修改优先</option><option value="name">项目名称</option></select></label></div>
+      <div class="toolbar"><div class="filters" role="group" aria-label="项目范围"><button type="button" class="filter active" data-filter="published" aria-pressed="true">已挂载</button><button type="button" class="filter" data-filter="all" aria-pressed="false">全部项目</button><button type="button" class="filter" data-filter="internal" aria-pressed="false">内部服务</button></div><label class="search"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 4.5 4.5"/></svg><input id="search" type="search" placeholder="搜索项目、简介或端口…" aria-label="搜索项目"></label></div>
+      <p id="notice" class="notice" hidden role="alert"></p>
+      <div id="projects" class="project-grid" aria-live="polite"><div class="loading">正在发现项目…</div></div>
+      <div id="empty" class="empty" hidden><span aria-hidden="true">⌕</span><h3>没有匹配的项目</h3><p>试试其他关键词，或切换项目范围。</p><button id="reset" type="button">清除筛选</button></div>
+    </section>
+    <details class="about"><summary><span class="info-icon">i</span> 这个目录如何更新？<span class="details-plus" aria-hidden="true">+</span></summary><div class="about-content"><p><strong>自动发现</strong>服务器每分钟检测一次本机监听端口与 Nginx 网页入口，根据页面标题和简介生成清单；同一个项目的多个端口、路径会合并展示。</p><p><strong>时间依据</strong>优先使用项目网页和资源文件的最新修改时间，其次使用 HTTP Last-Modified。无法获取时显示未知；观察到动态页面内容变化后，会单独标为“检测到内容变化”。所有时间显示为北京时间（UTC+8）。</p><p><strong>访问方式</strong>优先使用已有网页路径并保留登录要求。单独监听外部地址的网页生成端口链接，外网可达性仍取决于防火墙；本机内部服务不会自动对外开放。HTML 端口数包含网关和内部预览端口，与项目数不同。</p></div></details>
+  </main>
+  <footer><span><b>Webhost</b> · Project Directory</span><span>每分钟自动发现 <i>·</i> 金色记录更新，蓝色连接项目</span></footer>
+  <template id="project-template"><article class="project-card"><div class="card-top"><span class="project-icon" aria-hidden="true"></span><div class="badges"><span class="category"></span><span class="access-badge"></span></div></div><h3 class="project-title"></h3><p class="description"></p><div class="project-route"><span aria-hidden="true">↳</span><span class="route-value"></span></div><div class="project-meta"><span class="status"><i></i><span></span></span><span class="port-value"></span></div><div class="card-footer"><div class="modified"><span class="modified-label">最近修改</span><time></time></div><a class="open-project" target="_blank" rel="noopener noreferrer">打开项目 <span aria-hidden="true">↗</span></a><span class="unpublished" hidden>未挂载公开入口</span></div></article></template>
+</body>
+</html>

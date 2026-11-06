@@ -1,0 +1,5266 @@
+{
+  "summary": {
+    "point_f1": {
+      "f1": 0.6177299504504848,
+      "precision": 0.48422579776042096,
+      "recall": 1.0
+    },
+    "event_f1": {
+      "f1": 0.06487812874409211,
+      "precision": 0.034596370515280944,
+      "recall": 0.9999999999999999
+    },
+    "event_f1_squeeze": {
+      "f1": 0.01782297332874708,
+      "precision": 0.009077406343792251,
+      "recall": 0.9999999999999989
+    },
+    "auprc": {
+      "value": 0.01468553568175655
+    },
+    "auroc": {
+      "value": 0.4946757646509705
+    }
+  },
+  "n_curves_scored": 203,
+  "n_curves_evaluated": 201,
+  "skipped_all_normal": [
+    "NOISEresperation2",
+    "resperation2"
+  ],
+  "protocols": {
+    "point_f1": "best f1 under pa",
+    "event_f1": "event-based f1 under pa with mode log",
+    "event_f1_squeeze": "event-based f1 under pa with mode squeeze",
+    "auprc": "point-based auprc",
+    "auroc": "point-based auroc"
+  },
+  "per_curve": {
+    "1sddb40": {
+      "point_f1": {
+        "f1": 0.7583474816072434,
+        "precision": 0.6107566089334548,
+        "recall": 1.0,
+        "threshold": 1.0
+      },
+      "event_f1": {
+        "f1": 0.02288329519450798,
+        "precision": 0.011574074074074073,
+        "recall": 0.9999999999999998,
+        "threshold": 1.0
+      },
+      "event_f1_squeeze": {
+        "f1": 0.004662004662004657,
+        "precision": 0.002336448598130841,
+        "recall": 0.9999999999999989,
+        "threshold": 1.0
+      },
+      "auprc": {
+        "value": 0.014954732817575969
+      },
+      "auroc": {
+        "value": 0.5009805009404473
+      }
+    },
+    "2sddb40": {
+      "point_f1": {
+        "f1": 0.5847953216374264,
+        "precision": 0.4132231404958678,
+        "recall": 1.0,
+        "threshold": 1.0
+      },
+      "event_f1": {
+        "f1": 0.01972386587771201,
+        "precision": 0.0099601593625498,
+        "recall": 0.9999999999999998,
+        "threshold": 1.0
+      },
+      "event_f1_squeeze": {
+        "f1": 0.004008016032064124,
+        "precision": 0.002008032128514056,
+        "recall": 0.9999999999999989,
+        "threshold": 1.0
+      },
+      "auprc": {
+        "value": 0.0077680638976113875
+      },
+      "auroc": {
+        "value": 0.44204469684850417
+      }
+    },
+    "3sddb40": {
+      "point_f1": {
+        "f1": 0.7150153217568942,
+        "precision": 0.5564387917329093,
+        "recall": 1.0,
+        "threshold": 1.0
+      },
+      "event_f1": {
+        "f1": 0.034602076124567435,
+        "precision": 0.017605633802816902,
+        "recall": 0.9999999999999998,
+        "threshold": 1.0
+      },
+      "event_f1_squeeze": {
+        "f1": 0.007117437722419921,
+        "precision": 0.0035714285714285713,
+        "recall": 0.9999999999999989,
+        "threshold": 1.0
+      },
+      "auprc": {
+        "value": 0.007751647675274617
+      },
+      "auroc": {
+        "value": 0.4874667413213885
+      }
+    },
+    "BIDMC1": {
+      "point_f1": {
+        "f1": 0.848896434634974,
+        "precision": 0.7374631268436578,
+        "recall": 1.0,
+        "threshold": 1.0
+      },
+      "event_f1": {
+        "f1": 0.10101010101010091,
+        "precision": 0.05319148936170213,
+        "recall": 0.9999999999999998,
+        "threshold": 1.0
+      },
+      "event_f1_squeeze": {
+        "f1": 0.021978021978021955,
+        "precision": 0.011111111111111112,
+        "recall": 0.9999999999999989,
+        "threshold": 1.0
+      },
+      "auprc": {
+        "value": 0.029813020302906196
+      },
+      "auroc": {
+        "value": 0.5038361650485437
+      }
+    },
+    "CHARISfive": {
+      "point_f1": {
+        "f1": 0.7523510971786829,
+        "precision": 0.6030150753768844,
+        "recall": 1.0,
+        "threshold": 1.0
+      },
+      "event_f1": {
+        "f1": 0.09195402298850565,
+        "precision": 0.04819277108433735,
+        "recall": 0.9999999999999998,
+        "threshold": 1.0
+      },
+      "event_f1_squeeze": {
+        "f1": 0.024691358024691332,
+        "precision": 0.0125,
+        "recall": 0.9999999999999989,
+        "threshold": 1.0
+      },
+      "auprc": {
+        "value": 0.0041979583094492534
+      },
+      "auroc": {
+        "value": 0.5188815342837745
+      }
+    },
+    "CHARISten": {
+      "point_f1": {
+        "f1": 0.2240325865580446,
+        "precision": 0.12614678899082568,
+        "recall": 1.0,
+        "threshold": 1.0
+      },
+      "event_f1": {
+        "f1": 0.01038961038961038,
+        "precision": 0.005221932114882507,
+        "recall": 0.9999999999999998,
+        "threshold": 1.0
+      },
+      "event_f1_squeeze": {
+        "f1": 0.002617801047120416,
+        "precision": 0.001310615989515072,
+        "recall": 0.9999999999999989,
+        "threshold": 1.0
+      },
+      "auprc": {
+        "value": 0.003019857247803506
+      },
+      "auroc": {
+        "value": 0.5017121874844673
+      }
+    },
+    "CIMIS44AirTemperature1": {
+      "point_f1": {
+        "f1": 0.6938775510204077,
+        "precision": 0.53125,
+        "recall": 1.0,
+        "threshold": 1.0
+      },
+      "event_f1": {
+        "f1": 0.1176470588235293,
+        "precision": 0.0625,
+        "recall": 0.9999999999999997,
+        "threshold": 1.0
+      },
+      "event_f1_squeeze": {
+        "f1": 0.04255319148936165,
+        "precision": 0.021739130434782608,
+        "recall": 0.9999999999999989,
+        "threshold": 1.0
+      },
+      "auprc": {
+        "value": 0.012137835065870347
+      },
+      "auroc": {
+        "value": 0.487830189128334
+      }
+    },
+    "CIMIS44AirTemperature2": {
+      "point_f1": {
+        "f1": 0.7326732673267321,
+        "precision": 0.578125,
+        "recall": 1.0,
+        "threshold": 1.0
+      },
+      "event_f1": {
+        "f1": 0.09999999999999988,
+        "precision": 0.05263157894736842,
+        "recall": 0.9999999999999997,
+        "threshold": 1.0
+      },
+      "event_f1_squeeze": {
+        "f1": 0.03571428571428568,
+        "precision": 0.01818181818181818,
+        "recall": 0.9999999999999989,
+        "threshold": 1.0
+      },
+      "auprc": {
+        "value": 0.01773512829296253
+      },
+      "auroc": {
+        "value": 0.5026030669341217
+      }
+    },
+    "CIMIS44AirTemperature3": {
+      "point_f1": {
+        "f1": 0.6548672566371676,
+        "precision": 0.4868421052631579,
+        "recall": 1.0,
+        "threshold": 1.0
+      },
+      "event_f1": {
+        "f1": 0.07142857142857134,
+        "precision": 0.037037037037037035,
+        "recall": 0.9999999999999997,
+        "threshold": 1.0
+      },
+      "event_f1_squeeze": {
+        "f1": 0.02499999999999997,
+        "precision": 0.012658227848101266,
+        "recall": 0.9999999999999989,
+        "threshold": 1.0
+      },
+      "auprc": {
+        "value": 0.017654374430176516
+      },
+      "auroc": {
+        "value": 0.49685091585726354
+      }
+    },
+    "CIMIS44AirTemperature4": {
+      "point_f1": {
+        "f1": 0.8166666666666661,
+        "precision": 0.6901408450704225,
+        "recall": 1.0,
+        "threshold": 1.0
+      },
+      "event_f1": {
+        "f1": 0.1538461538461537,
+        "precision": 0.08333333333333333,
+        "recall": 0.9999999999999998,
+        "threshold": 1.0
+      },
+      "event_f1_squeeze": {
+        "f1": 0.043478260869565175,
+        "precision": 0.022222222222222223,
+        "recall": 0.9999999999999989,
+        "threshold": 1.0
+      },
+      "auprc": {
+        "value": 0.024113214120448867
+      },
+      "auroc": {
+        "value": 0.5109333025941222
+      }
+    },
+    "CIMIS44AirTemperature5": {
+      "point_f1": {
+        "f1": 0.8828828828828823,
+        "precision": 0.7903225806451613,
+        "recall": 1.0,
+        "threshold": 1.0
+      },
+      "event_f1": {
+        "f1": 0.2352941176470586,
+        "precision": 0.13333333333333333,
+        "recall": 0.9999999999999998,
+        "threshold": 1.0
+      },
+      "event_f1_squeeze": {
+        "f1": 0.07142857142857134,
+        "precision": 0.037037037037037035,
+        "recall": 0.9999999999999989,
+        "threshold": 1.0
+      },
+      "auprc": {
+        "value": 0.02355701534561687
+      },
+      "auroc": {
+        "value": 0.5013719878914238
+      }
+    },
+    "CIMIS44AirTemperature6": {
+      "point_f1": {
+        "f1": 0.7567567567567562,
+        "precision": 0.6086956521739131,
+        "recall": 1.0,
+        "threshold": 1.0
+      },
+      "event_f1": {
+        "f1": 0.11267605633802805,
+        "precision": 0.05970149253731343,
+        "recall": 0.9999999999999998,
+        "threshold": 1.0
+      },
+      "event_f1_squeeze": {
+        "f1": 0.030769230769230736,
+        "precision": 0.015625,
+        "recall": 0.9999999999999989,
+        "threshold": 1.0
+      },
+      "auprc": {
+        "value": 0.023838377156538953
+      },
+      "auroc": {
+        "value": 0.5038102421715247
+      }
+    },
+    "DISTORTED1sddb40": {
+      "point_f1": {
+        "f1": 0.7714450201496827,
+        "precision": 0.6279287722586692,
+        "recall": 1.0,
+        "threshold": 1.0
+      },
+      "event_f1": {
+        "f1": 0.024570024570024544,
+        "precision": 0.012437810945273632,
+        "recall": 0.9999999999999998,
+        "threshold": 1.0
+      },
+      "event_f1_squeeze": {
+        "f1": 0.005012531328320797,
+        "precision": 0.002512562814070352,
+        "recall": 0.9999999999999989,
+        "threshold": 1.0
+      },
+      "auprc": {
+        "value": 0.01486041085926152
+      },
+      "auroc": {
+        "value": 0.4789367701384285
+      }
+    },
+    "DISTORTED2sddb40": {
+      "point_f1": {
+        "f1": 0.5892255892255889,
+        "precision": 0.41766109785202865,
+        "recall": 1.0,
+        "threshold": 1.0
+      },
+      "event_f1": {
+        "f1": 0.02008032128514054,
+        "precision": 0.010141987829614604,
+        "recall": 0.9999999999999998,
+        "threshold": 1.0
+      },
+      "event_f1_squeeze": {
+        "f1": 0.0040816326530612205,
+        "precision": 0.002044989775051125,
+        "recall": 0.9999999999999989,
+        "threshold": 1.0
+      },
+      "auprc": {
+        "value": 0.007788427503235809
+      },
+      "auroc": {
+        "value": 0.5023974404095345
+      }
+    },
+    "DISTORTED3sddb40": {
+      "point_f1": {
+        "f1": 0.6829268292682921,
+        "precision": 0.5185185185185185,
+        "recall": 1.0,
+        "threshold": 1.0
+      },
+      "event_f1": {
+        "f1": 0.029850746268656685,
+        "precision": 0.015151515151515152,
+        "recall": 0.9999999999999998,
+        "threshold": 1.0
+      },
+      "event_f1_squeeze": {
+        "f1": 0.0061162079510703295,
+        "precision": 0.003067484662576687,
+        "recall": 0.9999999999999989,
+        "threshold": 1.0
+      },
+      "auprc": {
+        "value": 0.0077957044717312934
+      },
+      "auroc": {
+        "value": 0.5039184770436729
+      }
+    },
+    "DISTORTEDBIDMC1": {
+      "point_f1": {
+        "f1": 0.846023688663282,
+        "precision": 0.7331378299120235,
+        "recall": 1.0,
+        "threshold": 1.0
+      },
+      "event_f1": {
+        "f1": 0.09900990099009892,
+        "precision": 0.052083333333333336,
+        "recall": 0.9999999999999998,
+        "threshold": 1.0
+      },
+      "event_f1_squeeze": {
+        "f1": 0.021505376344085995,
+        "precision": 0.010869565217391304,
+        "recall": 0.9999999999999989,
+        "threshold": 1.0
+      },
+      "auprc": {
+        "value": 0.02955163980231514
+      },
+      "auroc": {
+        "value": 0.5035718446601942
+      }
+    },
+    "DISTORTEDCIMIS44AirTemperature1": {
+      "point_f1": {
+        "f1": 0.42857142857142816,
+        "precision": 0.2727272727272727,
+        "recall": 1.0,
+        "threshold": 0.8697694540023804
+      },
+      "event_f1": {
+        "f1": 0.04225352112676052,
+        "precision": 0.02158273381294964,
+        "recall": 0.9999999999999997,
+        "threshold": 0.8697694540023804
+      },
+      "event_f1_squeeze": {
+        "f1": 0.014492753623188389,
+        "precision": 0.0072992700729927005,
+        "recall": 0.9999999999999989,
+        "threshold": 0.8697694540023804
+      },
+      "auprc": {
+        "value": 0.012322237977009341
+      },
+      "auroc": {
+        "value": 0.49986433029147564
+      }
+    },
+    "DISTORTEDCIMIS44AirTemperature2": {
+      "point_f1": {
+        "f1": 0.7437185929648236,
+        "precision": 0.592,
+        "recall": 1.0,
+        "threshold": 1.0
+      },
+      "event_f1": {
+        "f1": 0.10526315789473673,
+        "precision": 0.05555555555555555,
+        "recall": 0.9999999999999997,
+        "threshold": 1.0
+      },
+      "event_f1_squeeze": {
+        "f1": 0.03773584905660374,
+        "precision": 0.019230769230769232,
+        "recall": 0.9999999999999989,
+        "threshold": 1.0
+      },
+      "auprc": {
+        "value": 0.017900944761277276
+      },
+      "auroc": {
+        "value": 0.5135597022804055
+      }
+    },
+    "DISTORTEDCIMIS44AirTemperature3": {
+      "point_f1": {
+        "f1": 0.6519823788546251,
+        "precision": 0.48366013071895425,
+        "recall": 1.0,
+        "threshold": 1.0
+      },
+      "event_f1": {
+        "f1": 0.07058823529411756,
+        "precision": 0.036585365853658534,
+        "recall": 0.9999999999999997,
+        "threshold": 1.0
+      },
+      "event_f1_squeeze": {
+        "f1": 0.024691358024691332,
+        "precision": 0.0125,
+        "recall": 0.9999999999999989,
+        "threshold": 1.0
+      },
+      "auprc": {
+        "value": 0.017969182165267158
+      },
+      "auroc": {
+        "value": 0.4950512035472973
+      }
+    },
+    "DISTORTEDCIMIS44AirTemperature4": {
+      "point_f1": {
+        "f1": 0.7967479674796742,
+        "precision": 0.6621621621621622,
+        "recall": 1.0,
+        "threshold": 1.0
+      },
+      "event_f1": {
+        "f1": 0.13793103448275845,
+        "precision": 0.07407407407407407,
+        "recall": 0.9999999999999998,
+        "threshold": 1.0
+      },
+      "event_f1_squeeze": {
+        "f1": 0.03846153846153842,
+        "precision": 0.0196078431372549,
+        "recall": 0.9999999999999989,
+        "threshold": 1.0
+      },
+      "auprc": {
+        "value": 0.023742446618935344
+      },
+      "auroc": {
+        "value": 0.49901768172888017
+      }
+    },
+    "DISTORTEDCIMIS44AirTemperature5": {
+      "point_f1": {
+        "f1": 0.8789237668161429,
+        "precision": 0.784,
+        "recall": 1.0,
+        "threshold": 1.0
+      },
+      "event_f1": {
+        "f1": 0.22857142857142831,
+        "precision": 0.12903225806451613,
+        "recall": 0.9999999999999998,
+        "threshold": 1.0
+      },
+      "event_f1_squeeze": {
+        "f1": 0.06896551724137923,
+        "precision": 0.03571428571428571,
+        "recall": 0.9999999999999989,
+        "threshold": 1.0
+      },
+      "auprc": {
+        "value": 0.023477507418925715
+      },
+      "auroc": {
+        "value": 0.49303857102762516
+      }
+    },
+    "DISTORTEDCIMIS44AirTemperature6": {
+      "point_f1": {
+        "f1": 0.7509578544061297,
+        "precision": 0.6012269938650306,
+        "recall": 1.0,
+        "threshold": 1.0
+      },
+      "event_f1": {
+        "f1": 0.1095890410958903,
+        "precision": 0.057971014492753624,
+        "recall": 0.9999999999999998,
+        "threshold": 1.0
+      },
+      "event_f1_squeeze": {
+        "f1": 0.029850746268656685,
+        "precision": 0.015151515151515152,
+        "recall": 0.9999999999999989,
+        "threshold": 1.0
+      },
+      "auprc": {
+        "value": 0.023881435499830142
+      },
+      "auroc": {
+        "value": 0.5031837636822901
+      }
+    },
+    "DISTORTEDECG1": {
+      "point_f1": {
+        "f1": 0.9271523178807942,
+        "precision": 0.8641975308641975,
+        "recall": 1.0,
+        "threshold": 1.0
+      },
+      "event_f1": {
+        "f1": 0.1538461538461537,
+        "precision": 0.08333333333333333,
+        "recall": 0.9999999999999998,
+        "threshold": 1.0
+      },
+      "event_f1_squeeze": {
+        "f1": 0.03508771929824557,
+        "precision": 0.017857142857142856,
+        "recall": 0.9999999999999989,
+        "threshold": 1.0
+      },
+      "auprc": {
+        "value": 0.01751622467245491
+      },
+      "auroc": {
+        "value": 0.4934058656575212
+      }
+    },
+    "DISTORTEDECG2": {
+      "point_f1": {
+        "f1": 0.9202453987730056,
+        "precision": 0.8522727272727273,
+        "recall": 1.0,
+        "threshold": 1.0
+      },
+      "event_f1": {
+        "f1": 0.2352941176470586,
+        "precision": 0.13333333333333333,
+        "recall": 0.9999999999999998,
+        "threshold": 1.0
+      },
+      "event_f1_squeeze": {
+        "f1": 0.07142857142857134,
+        "precision": 0.037037037037037035,
+        "recall": 0.9999999999999989,
+        "threshold": 1.0
+      },
+      "auprc": {
+        "value": 0.010180204684870442
+      },
+      "auroc": {
+        "value": 0.4957369248035915
+      }
+    },
+    "DISTORTEDECG3": {
+      "point_f1": {
+        "f1": 0.5434782608695649,
+        "precision": 0.373134328358209,
+        "recall": 1.0,
+        "threshold": 1.0
+      },
+      "event_f1": {
+        "f1": 0.030769230769230736,
+        "precision": 0.015625,
+        "recall": 0.9999999999999998,
+        "threshold": 1.0
+      },
+      "event_f1_squeeze": {
+        "f1": 0.007874015748031487,
+        "precision": 0.003952569169960474,
+        "recall": 0.9999999999999989,
+        "threshold": 1.0
+      },
+      "auprc": {
+        "value": 0.0068989300025920465
+      },
+      "auroc": {
+        "value": 0.502421855921856
+      }
+    },
+    "DISTORTEDECG4": {
+      "point_f1": {
+        "f1": 0.45248868778280504,
+        "precision": 0.29239766081871343,
+        "recall": 1.0,
+        "threshold": 1.0
+      },
+      "event_f1": {
+        "f1": 0.021563342318059276,
+        "precision": 0.010899182561307902,
+        "recall": 0.9999999999999998,
+        "threshold": 1.0
+      },
+      "event_f1_squeeze": {
+        "f1": 0.005479452054794515,
+        "precision": 0.0027472527472527475,
+        "recall": 0.9999999999999989,
+        "threshold": 1.0
+      },
+      "auprc": {
+        "value": 0.006024589534992636
+      },
+      "auroc": {
+        "value": 0.49808480944712835
+      }
+    },
+    "DISTORTEDGP711MarkerLFM5z1": {
+      "point_f1": {
+        "f1": 0.8318584070796455,
+        "precision": 0.7121212121212122,
+        "recall": 1.0,
+        "threshold": 1.0
+      },
+      "event_f1": {
+        "f1": 0.1739130434782607,
+        "precision": 0.09523809523809523,
+        "recall": 0.9999999999999998,
+        "threshold": 1.0
+      },
+      "event_f1_squeeze": {
+        "f1": 0.04999999999999995,
+        "precision": 0.02564102564102564,
+        "recall": 0.9999999999999989,
+        "threshold": 1.0
+      },
+      "auprc": {
+        "value": 0.013444129912032388
+      },
+      "auroc": {
+        "value": 0.49361409019104513
+      }
+    },
+    "DISTORTEDGP711MarkerLFM5z2": {
+      "point_f1": {
+        "f1": 0.8840336134453776,
+        "precision": 0.7921686746987951,
+        "recall": 1.0,
+        "threshold": 1.0
+      },
+      "event_f1": {
+        "f1": 0.12658227848101253,
+        "precision": 0.06756756756756757,
+        "recall": 0.9999999999999998,
+        "threshold": 1.0
+      },
+      "event_f1_squeeze": {
+        "f1": 0.02816901408450701,
+        "precision": 0.014285714285714285,
+        "recall": 0.9999999999999989,
+        "threshold": 1.0
+      },
+      "auprc": {
+        "value": 0.0377211143692969
+      },
+      "auroc": {
+        "value": 0.49783178960445984
+      }
+    },
+    "DISTORTEDGP711MarkerLFM5z3": {
+      "point_f1": {
+        "f1": 0.8675799086757985,
+        "precision": 0.7661290322580645,
+        "recall": 1.0,
+        "threshold": 1.0
+      },
+      "event_f1": {
+        "f1": 0.21621621621621598,
+        "precision": 0.12121212121212122,
+        "recall": 0.9999999999999998,
+        "threshold": 1.0
+      },
+      "event_f1_squeeze": {
+        "f1": 0.064516129032258,
+        "precision": 0.03333333333333333,
+        "recall": 0.9999999999999989,
+        "threshold": 1.0
+      },
+      "auprc": {
+        "value": 0.013794731880233602
+      },
+      "auroc": {
+        "value": 0.49824357848937056
+      }
+    },
+    "DISTORTEDGP711MarkerLFM5z4": {
+      "point_f1": {
+        "f1": 0.8135593220338978,
+        "precision": 0.6857142857142857,
+        "recall": 1.0,
+        "threshold": 1.0
+      },
+      "event_f1": {
+        "f1": 0.09411764705882342,
+        "precision": 0.04938271604938271,
+        "recall": 0.9999999999999998,
+        "threshold": 1.0
+      },
+      "event_f1_squeeze": {
+        "f1": 0.025316455696202503,
+        "precision": 0.01282051282051282,
+        "recall": 0.9999999999999989,
+        "threshold": 1.0
+      },
+      "auprc": {
+        "value": 0.02120301385509791
+      },
+      "auroc": {
+        "value": 0.5032287780703679
+      }
+    },
+    "DISTORTEDGP711MarkerLFM5z5": {
+      "point_f1": {
+        "f1": 0.7298578199052127,
+        "precision": 0.5746268656716418,
+        "recall": 1.0,
+        "threshold": 1.0
+      },
+      "event_f1": {
+        "f1": 0.06557377049180321,
+        "precision": 0.03389830508474576,
+        "recall": 0.9999999999999998,
+        "threshold": 1.0
+      },
+      "event_f1_squeeze": {
+        "f1": 0.017241379310344807,
+        "precision": 0.008695652173913044,
+        "recall": 0.9999999999999989,
+        "threshold": 1.0
+      },
+      "auprc": {
+        "value": 0.02215288221778658
+      },
+      "auroc": {
+        "value": 0.5043576596019546
+      }
+    },
+    "DISTORTEDInternalBleeding10": {
+      "point_f1": {
+        "f1": 0.7843137254901956,
+        "precision": 0.6451612903225806,
+        "recall": 1.0,
+        "threshold": 1.0
+      },
+      "event_f1": {
+        "f1": 0.1538461538461537,
+        "precision": 0.08333333333333333,
+        "recall": 0.9999999999999998,
+        "threshold": 1.0
+      },
+      "event_f1_squeeze": {
+        "f1": 0.043478260869565175,
+        "precision": 0.022222222222222223,
+        "recall": 0.9999999999999989,
+        "threshold": 1.0
+      },
+      "auprc": {
+        "value": 0.01852645343474773
+      },
+      "auroc": {
+        "value": 0.49726543942992874
+      }
+    },
+    "DISTORTEDInternalBleeding14": {
+      "point_f1": {
+        "f1": 0.6311475409836061,
+        "precision": 0.46107784431137727,
+        "recall": 1.0,
+        "threshold": 1.0
+      },
+      "event_f1": {
+        "f1": 0.06249999999999992,
+        "precision": 0.03225806451612903,
+        "recall": 0.9999999999999997,
+        "threshold": 1.0
+      },
+      "event_f1_squeeze": {
+        "f1": 0.021739130434782587,
+        "precision": 0.01098901098901099,
+        "recall": 0.9999999999999989,
+        "threshold": 1.0
+      },
+      "auprc": {
+        "value": 0.01657590775237834
+      },
+      "auroc": {
+        "value": 0.49765398624838114
+      }
+    },
+    "DISTORTEDInternalBleeding15": {
+      "point_f1": {
+        "f1": 0.7815275310834808,
+        "precision": 0.641399416909621,
+        "recall": 1.0,
+        "threshold": 1.0
+      },
+      "event_f1": {
+        "f1": 0.06106870229007627,
+        "precision": 0.031496062992125984,
+        "recall": 0.9999999999999998,
+        "threshold": 1.0
+      },
+      "event_f1_squeeze": {
+        "f1": 0.015999999999999983,
+        "precision": 0.008064516129032258,
+        "recall": 0.9999999999999989,
+        "threshold": 1.0
+      },
+      "auprc": {
+        "value": 0.037561526187809405
+      },
+      "auroc": {
+        "value": 0.504232251847093
+      }
+    },
+    "DISTORTEDInternalBleeding16": {
+      "point_f1": {
+        "f1": 0.5961538461538457,
+        "precision": 0.4246575342465753,
+        "recall": 1.0,
+        "threshold": 1.0
+      },
+      "event_f1": {
+        "f1": 0.0666666666666666,
+        "precision": 0.034482758620689655,
+        "recall": 0.9999999999999997,
+        "threshold": 1.0
+      },
+      "event_f1_squeeze": {
+        "f1": 0.023255813953488344,
+        "precision": 0.011764705882352941,
+        "recall": 0.9999999999999989,
+        "threshold": 1.0
+      },
+      "auprc": {
+        "value": 0.010141910801102189
+      },
+      "auroc": {
+        "value": 0.5149719719926775
+      }
+    },
+    "DISTORTEDInternalBleeding17": {
+      "point_f1": {
+        "f1": 0.8749999999999996,
+        "precision": 0.7777777777777778,
+        "recall": 1.0,
+        "threshold": 1.0
+      },
+      "event_f1": {
+        "f1": 0.148148148148148,
+        "precision": 0.08,
+        "recall": 0.9999999999999998,
+        "threshold": 1.0
+      },
+      "event_f1_squeeze": {
+        "f1": 0.04166666666666662,
+        "precision": 0.02127659574468085,
+        "recall": 0.9999999999999989,
+        "threshold": 1.0
+      },
+      "auprc": {
+        "value": 0.02751647650216167
+      },
+      "auroc": {
+        "value": 0.505034433548844
+      }
+    },
+    "DISTORTEDInternalBleeding18": {
+      "point_f1": {
+        "f1": 0.8238482384823842,
+        "precision": 0.7004608294930875,
+        "recall": 1.0,
+        "threshold": 1.0
+      },
+      "event_f1": {
+        "f1": 0.1095890410958903,
+        "precision": 0.057971014492753624,
+        "recall": 0.9999999999999998,
+        "threshold": 1.0
+      },
+      "event_f1_squeeze": {
+        "f1": 0.029850746268656685,
+        "precision": 0.015151515151515152,
+        "recall": 0.9999999999999989,
+        "threshold": 1.0
+      },
+      "auprc": {
+        "value": 0.029696419046866835
+      },
+      "auroc": {
+        "value": 0.49729751258853766
+      }
+    },
+    "DISTORTEDInternalBleeding19": {
+      "point_f1": {
+        "f1": 0.7692307692307687,
+        "precision": 0.625,
+        "recall": 1.0,
+        "threshold": 1.0
+      },
+      "event_f1": {
+        "f1": 0.1428571428571427,
+        "precision": 0.07692307692307693,
+        "recall": 0.9999999999999997,
+        "threshold": 1.0
+      },
+      "event_f1_squeeze": {
+        "f1": 0.05263157894736836,
+        "precision": 0.02702702702702703,
+        "recall": 0.9999999999999989,
+        "threshold": 1.0
+      },
+      "auprc": {
+        "value": 0.013899033065699734
+      },
+      "auroc": {
+        "value": 0.5145495495495495
+      }
+    },
+    "DISTORTEDInternalBleeding20": {
+      "point_f1": {
+        "f1": 0.8219178082191776,
+        "precision": 0.6976744186046512,
+        "recall": 1.0,
+        "threshold": 1.0
+      },
+      "event_f1": {
+        "f1": 0.08080808080808073,
+        "precision": 0.042105263157894736,
+        "recall": 0.9999999999999998,
+        "threshold": 1.0
+      },
+      "event_f1_squeeze": {
+        "f1": 0.021505376344085995,
+        "precision": 0.010869565217391304,
+        "recall": 0.9999999999999989,
+        "threshold": 1.0
+      },
+      "auprc": {
+        "value": 0.04390541079638824
+      },
+      "auroc": {
+        "value": 0.5004108309990664
+      }
+    },
+    "DISTORTEDInternalBleeding4": {
+      "point_f1": {
+        "f1": 0.8850325379609539,
+        "precision": 0.7937743190661478,
+        "recall": 1.0,
+        "threshold": 1.0
+      },
+      "event_f1": {
+        "f1": 0.08620689655172405,
+        "precision": 0.04504504504504504,
+        "recall": 0.9999999999999998,
+        "threshold": 1.0
+      },
+      "event_f1_squeeze": {
+        "f1": 0.0185185185185185,
+        "precision": 0.009345794392523364,
+        "recall": 0.9999999999999989,
+        "threshold": 1.0
+      },
+      "auprc": {
+        "value": 0.06462809460432972
+      },
+      "auroc": {
+        "value": 0.4943996013205011
+      }
+    },
+    "DISTORTEDInternalBleeding5": {
+      "point_f1": {
+        "f1": 0.866141732283464,
+        "precision": 0.7638888888888888,
+        "recall": 1.0,
+        "threshold": 1.0
+      },
+      "event_f1": {
+        "f1": 0.10526315789473673,
+        "precision": 0.05555555555555555,
+        "recall": 0.9999999999999998,
+        "threshold": 1.0
+      },
+      "event_f1_squeeze": {
+        "f1": 0.02857142857142854,
+        "precision": 0.014492753623188406,
+        "recall": 0.9999999999999989,
+        "threshold": 1.0
+      },
+      "auprc": {
+        "value": 0.06488776300723202
+      },
+      "auroc": {
+        "value": 0.4971386578720963
+      }
+    },
+    "DISTORTEDInternalBleeding6": {
+      "point_f1": {
+        "f1": 0.866807610993657,
+        "precision": 0.7649253731343284,
+        "recall": 1.0,
+        "threshold": 1.0
+      },
+      "event_f1": {
+        "f1": 0.11267605633802805,
+        "precision": 0.05970149253731343,
+        "recall": 0.9999999999999998,
+        "threshold": 1.0
+      },
+      "event_f1_squeeze": {
+        "f1": 0.030769230769230736,
+        "precision": 0.015625,
+        "recall": 0.9999999999999989,
+        "threshold": 1.0
+      },
+      "auprc": {
+        "value": 0.033253031383346295
+      },
+      "auroc": {
+        "value": 0.5071980963712076
+      }
+    },
+    "DISTORTEDInternalBleeding8": {
+      "point_f1": {
+        "f1": 0.7499999999999994,
+        "precision": 0.6,
+        "recall": 1.0,
+        "threshold": 1.0
+      },
+      "event_f1": {
+        "f1": 0.07017543859649115,
+        "precision": 0.03636363636363636,
+        "recall": 0.9999999999999998,
+        "threshold": 1.0
+      },
+      "event_f1_squeeze": {
+        "f1": 0.0185185185185185,
+        "precision": 0.009345794392523364,
+        "recall": 0.9999999999999989,
+        "threshold": 1.0
+      },
+      "auprc": {
+        "value": 0.03201870406796901
+      },
+      "auroc": {
+        "value": 0.5010808321559633
+      }
+    },
+    "DISTORTEDInternalBleeding9": {
+      "point_f1": {
+        "f1": 0.7787610619469021,
+        "precision": 0.6376811594202898,
+        "recall": 1.0,
+        "threshold": 1.0
+      },
+      "event_f1": {
+        "f1": 0.09638554216867458,
+        "precision": 0.05063291139240506,
+        "recall": 0.9999999999999998,
+        "threshold": 1.0
+      },
+      "event_f1_squeeze": {
+        "f1": 0.025974025974025948,
+        "precision": 0.013157894736842105,
+        "recall": 0.9999999999999989,
+        "threshold": 1.0
+      },
+      "auprc": {
+        "value": 0.039934520453881156
+      },
+      "auroc": {
+        "value": 0.501810242577288
+      }
+    },
+    "DISTORTEDLab2Cmac011215EPG1": {
+      "point_f1": {
+        "f1": 0.40080160320641245,
+        "precision": 0.2506265664160401,
+        "recall": 1.0,
+        "threshold": 1.0
+      },
+      "event_f1": {
+        "f1": 0.026058631921824078,
+        "precision": 0.013201320132013201,
+        "recall": 0.9999999999999998,
+        "threshold": 1.0
+      },
+      "event_f1_squeeze": {
+        "f1": 0.0066445182724252415,
+        "precision": 0.0033333333333333335,
+        "recall": 0.9999999999999989,
+        "threshold": 1.0
+      },
+      "auprc": {
+        "value": 0.004206316313150453
+      },
+      "auroc": {
+        "value": 0.5216556850140619
+      }
+    },
+    "DISTORTEDLab2Cmac011215EPG2": {
+      "point_f1": {
+        "f1": 0.2912621359223298,
+        "precision": 0.17045454545454544,
+        "recall": 1.0,
+        "threshold": 1.0
+      },
+      "event_f1": {
+        "f1": 0.013513513513513497,
+        "precision": 0.006802721088435374,
+        "recall": 0.9999999999999998,
+        "threshold": 1.0
+      },
+      "event_f1_squeeze": {
+        "f1": 0.0034129692832764466,
+        "precision": 0.0017094017094017094,
+        "recall": 0.9999999999999989,
+        "threshold": 1.0
+      },
+      "auprc": {
+        "value": 0.004754400995684027
+      },
+      "auroc": {
+        "value": 0.4969776971651216
+      }
+    },
+    "DISTORTEDLab2Cmac011215EPG3": {
+      "point_f1": {
+        "f1": 0.43715846994535484,
+        "precision": 0.27972027972027974,
+        "recall": 1.0,
+        "threshold": 1.0
+      },
+      "event_f1": {
+        "f1": 0.03738317757009343,
+        "precision": 0.01904761904761905,
+        "recall": 0.9999999999999998,
+        "threshold": 1.0
+      },
+      "event_f1_squeeze": {
+        "f1": 0.009615384615384604,
+        "precision": 0.004830917874396135,
+        "recall": 0.9999999999999989,
+        "threshold": 1.0
+      },
+      "auprc": {
+        "value": 0.003237930835159407
+      },
+      "auroc": {
+        "value": 0.42565845070422537
+      }
+    },
+    "DISTORTEDLab2Cmac011215EPG4": {
+      "point_f1": {
+        "f1": 0.6349206349206344,
+        "precision": 0.46511627906976744,
+        "recall": 1.0,
+        "threshold": 1.0
+      },
+      "event_f1": {
+        "f1": 0.03720930232558136,
+        "precision": 0.018957345971563982,
+        "recall": 0.9999999999999998,
+        "threshold": 1.0
+      },
+      "event_f1_squeeze": {
+        "f1": 0.009569377990430613,
+        "precision": 0.004807692307692308,
+        "recall": 0.9999999999999989,
+        "threshold": 1.0
+      },
+      "auprc": {
+        "value": 0.007487269634791146
+      },
+      "auroc": {
+        "value": 0.44803461753210505
+      }
+    },
+    "DISTORTEDLab2Cmac011215EPG5": {
+      "point_f1": {
+        "f1": 0.6857142857142852,
+        "precision": 0.5217391304347826,
+        "recall": 1.0,
+        "threshold": 1.0
+      },
+      "event_f1": {
+        "f1": 0.04624277456647394,
+        "precision": 0.023668639053254437,
+        "recall": 0.9999999999999998,
+        "threshold": 1.0
+      },
+      "event_f1_squeeze": {
+        "f1": 0.011976047904191602,
+        "precision": 0.006024096385542169,
+        "recall": 0.9999999999999989,
+        "threshold": 1.0
+      },
+      "auprc": {
+        "value": 0.00781706531180343
+      },
+      "auroc": {
+        "value": 0.46188611356714804
+      }
+    },
+    "DISTORTEDLab2Cmac011215EPG6": {
+      "point_f1": {
+        "f1": 0.8022922636103147,
+        "precision": 0.6698564593301436,
+        "recall": 1.0,
+        "threshold": 1.0
+      },
+      "event_f1": {
+        "f1": 0.0675675675675675,
+        "precision": 0.03496503496503497,
+        "recall": 0.9999999999999998,
+        "threshold": 1.0
+      },
+      "event_f1_squeeze": {
+        "f1": 0.014285714285714271,
+        "precision": 0.007194244604316547,
+        "recall": 0.9999999999999989,
+        "threshold": 1.0
+      },
+      "auprc": {
+        "value": 0.01221334246069971
+      },
+      "auroc": {
+        "value": 0.4942897529299968
+      }
+    },
+    "DISTORTEDMesoplodonDensirostris": {
+      "point_f1": {
+        "f1": 0.6185567010309274,
+        "precision": 0.44776119402985076,
+        "recall": 1.0,
+        "threshold": 1.0
+      },
+      "event_f1": {
+        "f1": 0.02996254681647937,
+        "precision": 0.015209125475285171,
+        "recall": 0.9999999999999998,
+        "threshold": 1.0
+      },
+      "event_f1_squeeze": {
+        "f1": 0.007662835249042137,
+        "precision": 0.0038461538461538464,
+        "recall": 0.9999999999999989,
+        "threshold": 1.0
+      },
+      "auprc": {
+        "value": 0.014326877863912743
+      },
+      "auroc": {
+        "value": 0.4925674025674026
+      }
+    },
+    "DISTORTEDPowerDemand1": {
+      "point_f1": {
+        "f1": 0.7194780987884432,
+        "precision": 0.5618631732168851,
+        "recall": 1.0,
+        "threshold": 1.0
+      },
+      "event_f1": {
+        "f1": 0.03215434083601283,
+        "precision": 0.016339869281045753,
+        "recall": 0.9999999999999998,
+        "threshold": 1.0
+      },
+      "event_f1_squeeze": {
+        "f1": 0.006600660066006595,
+        "precision": 0.0033112582781456954,
+        "recall": 0.9999999999999989,
+        "threshold": 1.0
+      },
+      "auprc": {
+        "value": 0.01849539808269141
+      },
+      "auroc": {
+        "value": 0.4953359923375439
+      }
+    },
+    "DISTORTEDPowerDemand2": {
+      "point_f1": {
+        "f1": 0.7461328480436755,
+        "precision": 0.5950653120464441,
+        "recall": 1.0,
+        "threshold": 1.0
+      },
+      "event_f1": {
+        "f1": 0.034602076124567435,
+        "precision": 0.017605633802816902,
+        "recall": 0.9999999999999998,
+        "threshold": 1.0
+      },
+      "event_f1_squeeze": {
+        "f1": 0.007117437722419921,
+        "precision": 0.0035714285714285713,
+        "recall": 0.9999999999999989,
+        "threshold": 1.0
+      },
+      "auprc": {
+        "value": 0.025840129026800936
+      },
+      "auroc": {
+        "value": 0.5027199365099322
+      }
+    },
+    "DISTORTEDPowerDemand3": {
+      "point_f1": {
+        "f1": 0.5224839400428262,
+        "precision": 0.3536231884057971,
+        "recall": 1.0,
+        "threshold": 1.0
+      },
+      "event_f1": {
+        "f1": 0.034632034632034604,
+        "precision": 0.01762114537444934,
+        "recall": 0.9999999999999998,
+        "threshold": 1.0
+      },
+      "event_f1_squeeze": {
+        "f1": 0.008888888888888877,
+        "precision": 0.004464285714285714,
+        "recall": 0.9999999999999989,
+        "threshold": 1.0
+      },
+      "auprc": {
+        "value": 0.008740739725282892
+      },
+      "auroc": {
+        "value": 0.5029687719056456
+      }
+    },
+    "DISTORTEDPowerDemand4": {
+      "point_f1": {
+        "f1": 0.6099999999999995,
+        "precision": 0.43884892086330934,
+        "recall": 1.0,
+        "threshold": 1.0
+      },
+      "event_f1": {
+        "f1": 0.048780487804878,
+        "precision": 0.025,
+        "recall": 0.9999999999999998,
+        "threshold": 1.0
+      },
+      "event_f1_squeeze": {
+        "f1": 0.012658227848101253,
+        "precision": 0.006369426751592357,
+        "recall": 0.9999999999999989,
+        "threshold": 1.0
+      },
+      "auprc": {
+        "value": 0.010283248068488179
+      },
+      "auroc": {
+        "value": 0.4923950168829652
+      }
+    },
+    "DISTORTEDTkeepFifthMARS": {
+      "point_f1": {
+        "f1": 0.7924528301886787,
+        "precision": 0.65625,
+        "recall": 1.0,
+        "threshold": 1.0
+      },
+      "event_f1": {
+        "f1": 0.09411764705882342,
+        "precision": 0.04938271604938271,
+        "recall": 0.9999999999999998,
+        "threshold": 1.0
+      },
+      "event_f1_squeeze": {
+        "f1": 0.025316455696202503,
+        "precision": 0.01282051282051282,
+        "recall": 0.9999999999999989,
+        "threshold": 1.0
+      },
+      "auprc": {
+        "value": 0.019030630611819258
+      },
+      "auroc": {
+        "value": 0.5047812955717235
+      }
+    },
+    "DISTORTEDTkeepFirstMARS": {
+      "point_f1": {
+        "f1": 0.7182320441988945,
+        "precision": 0.5603448275862069,
+        "recall": 1.0,
+        "threshold": 1.0
+      },
+      "event_f1": {
+        "f1": 0.10526315789473673,
+        "precision": 0.05555555555555555,
+        "recall": 0.9999999999999997,
+        "threshold": 1.0
+      },
+      "event_f1_squeeze": {
+        "f1": 0.03773584905660374,
+        "precision": 0.019230769230769232,
+        "recall": 0.9999999999999989,
+        "threshold": 1.0
+      },
+      "auprc": {
+        "value": 0.008516405685663713
+      },
+      "auroc": {
+        "value": 0.5047942983534037
+      }
+    },
+    "DISTORTEDTkeepForthMARS": {
+      "point_f1": {
+        "f1": 0.8032786885245896,
+        "precision": 0.6712328767123288,
+        "recall": 1.0,
+        "threshold": 1.0
+      },
+      "event_f1": {
+        "f1": 0.0999999999999999,
+        "precision": 0.05263157894736842,
+        "recall": 0.9999999999999998,
+        "threshold": 1.0
+      },
+      "event_f1_squeeze": {
+        "f1": 0.027027027027026994,
+        "precision": 0.0136986301369863,
+        "recall": 0.9999999999999989,
+        "threshold": 1.0
+      },
+      "auprc": {
+        "value": 0.01870035988496731
+      },
+      "auroc": {
+        "value": 0.4973030895358274
+      }
+    },
+    "DISTORTEDTkeepSecondMARS": {
+      "point_f1": {
+        "f1": 0.32520325203252004,
+        "precision": 0.1941747572815534,
+        "recall": 1.0,
+        "threshold": 0.9991402626037598
+      },
+      "event_f1": {
+        "f1": 0.023529411764705854,
+        "precision": 0.011904761904761904,
+        "recall": 0.9999999999999997,
+        "threshold": 0.9991402626037598
+      },
+      "event_f1_squeeze": {
+        "f1": 0.007968127490039832,
+        "precision": 0.004,
+        "recall": 0.9999999999999989,
+        "threshold": 0.9991402626037598
+      },
+      "auprc": {
+        "value": 0.007567013647929679
+      },
+      "auroc": {
+        "value": 0.48977350427350436
+      }
+    },
+    "DISTORTEDTkeepThirdMARS": {
+      "point_f1": {
+        "f1": 0.8942598187311173,
+        "precision": 0.8087431693989071,
+        "recall": 1.0,
+        "threshold": 1.0
+      },
+      "event_f1": {
+        "f1": 0.18604651162790675,
+        "precision": 0.10256410256410256,
+        "recall": 0.9999999999999998,
+        "threshold": 1.0
+      },
+      "event_f1_squeeze": {
+        "f1": 0.054054054054053995,
+        "precision": 0.027777777777777776,
+        "recall": 0.9999999999999989,
+        "threshold": 1.0
+      },
+      "auprc": {
+        "value": 0.019032423962074742
+      },
+      "auroc": {
+        "value": 0.5000529803195773
+      }
+    },
+    "DISTORTEDWalkingAceleration1": {
+      "point_f1": {
+        "f1": 0.9397993311036784,
+        "precision": 0.886435331230284,
+        "recall": 1.0,
+        "threshold": 1.0
+      },
+      "event_f1": {
+        "f1": 0.2173913043478259,
+        "precision": 0.12195121951219512,
+        "recall": 0.9999999999999998,
+        "threshold": 1.0
+      },
+      "event_f1_squeeze": {
+        "f1": 0.05263157894736836,
+        "precision": 0.02702702702702703,
+        "recall": 0.9999999999999989,
+        "threshold": 1.0
+      },
+      "auprc": {
+        "value": 0.054760743000183375
+      },
+      "auroc": {
+        "value": 0.49728190903129765
+      }
+    },
+    "DISTORTEDWalkingAceleration5": {
+      "point_f1": {
+        "f1": 0.6942675159235664,
+        "precision": 0.5317073170731708,
+        "recall": 1.0,
+        "threshold": 1.0
+      },
+      "event_f1": {
+        "f1": 0.07692307692307684,
+        "precision": 0.04,
+        "recall": 0.9999999999999998,
+        "threshold": 1.0
+      },
+      "event_f1_squeeze": {
+        "f1": 0.0204081632653061,
+        "precision": 0.010309278350515464,
+        "recall": 0.9999999999999989,
+        "threshold": 1.0
+      },
+      "auprc": {
+        "value": 0.027278104953907794
+      },
+      "auroc": {
+        "value": 0.4957892504985003
+      }
+    },
+    "DISTORTEDapneaecg": {
+      "point_f1": {
+        "f1": 0.8644688644688638,
+        "precision": 0.7612903225806451,
+        "recall": 1.0,
+        "threshold": 1.0
+      },
+      "event_f1": {
+        "f1": 0.17777777777777756,
+        "precision": 0.0975609756097561,
+        "recall": 0.9999999999999998,
+        "threshold": 1.0
+      },
+      "event_f1_squeeze": {
+        "f1": 0.05128205128205122,
+        "precision": 0.02631578947368421,
+        "recall": 0.9999999999999989,
+        "threshold": 1.0
+      },
+      "auprc": {
+        "value": 0.004155574982584953
+      },
+      "auroc": {
+        "value": 0.4810555209854897
+      }
+    },
+    "DISTORTEDapneaecg2": {
+      "point_f1": {
+        "f1": 0.5830903790087459,
+        "precision": 0.411522633744856,
+        "recall": 1.0,
+        "threshold": 1.0
+      },
+      "event_f1": {
+        "f1": 0.027210884353741464,
+        "precision": 0.013793103448275862,
+        "recall": 0.9999999999999998,
+        "threshold": 1.0
+      },
+      "event_f1_squeeze": {
+        "f1": 0.006944444444444437,
+        "precision": 0.003484320557491289,
+        "recall": 0.9999999999999989,
+        "threshold": 1.0
+      },
+      "auprc": {
+        "value": 0.007054322691485221
+      },
+      "auroc": {
+        "value": 0.49609116607773857
+      }
+    },
+    "DISTORTEDapneaecg3": {
+      "point_f1": {
+        "f1": 0.6451612903225801,
+        "precision": 0.47619047619047616,
+        "recall": 1.0,
+        "threshold": 1.0
+      },
+      "event_f1": {
+        "f1": 0.04624277456647394,
+        "precision": 0.023668639053254437,
+        "recall": 0.9999999999999998,
+        "threshold": 1.0
+      },
+      "event_f1_squeeze": {
+        "f1": 0.011976047904191602,
+        "precision": 0.006024096385542169,
+        "recall": 0.9999999999999989,
+        "threshold": 1.0
+      },
+      "auprc": {
+        "value": 0.004498416339689108
+      },
+      "auroc": {
+        "value": 0.49247596105590685
+      }
+    },
+    "DISTORTEDapneaecg4": {
+      "point_f1": {
+        "f1": 0.522648083623693,
+        "precision": 0.35377358490566035,
+        "recall": 1.0,
+        "threshold": 1.0
+      },
+      "event_f1": {
+        "f1": 0.028368794326241106,
+        "precision": 0.014388489208633094,
+        "recall": 0.9999999999999998,
+        "threshold": 1.0
+      },
+      "event_f1_squeeze": {
+        "f1": 0.007246376811594195,
+        "precision": 0.0036363636363636364,
+        "recall": 0.9999999999999989,
+        "threshold": 1.0
+      },
+      "auprc": {
+        "value": 0.004609093069701938
+      },
+      "auroc": {
+        "value": 0.48007954309449635
+      }
+    },
+    "DISTORTEDgait1": {
+      "point_f1": {
+        "f1": 0.6076388888888884,
+        "precision": 0.43640897755610975,
+        "recall": 1.0,
+        "threshold": 1.0
+      },
+      "event_f1": {
+        "f1": 0.02164502164502162,
+        "precision": 0.010940919037199124,
+        "recall": 0.9999999999999998,
+        "threshold": 1.0
+      },
+      "event_f1_squeeze": {
+        "f1": 0.004405286343612329,
+        "precision": 0.002207505518763797,
+        "recall": 0.9999999999999989,
+        "threshold": 1.0
+      },
+      "auprc": {
+        "value": 0.007733675272141548
+      },
+      "auroc": {
+        "value": 0.4893680691089425
+      }
+    },
+    "DISTORTEDgait2": {
+      "point_f1": {
+        "f1": 0.5331302361005328,
+        "precision": 0.363447559709242,
+        "recall": 1.0,
+        "threshold": 1.0
+      },
+      "event_f1": {
+        "f1": 0.01605136436597109,
+        "precision": 0.008090614886731391,
+        "recall": 0.9999999999999998,
+        "threshold": 1.0
+      },
+      "event_f1_squeeze": {
+        "f1": 0.0032520325203251998,
+        "precision": 0.0016286644951140066,
+        "recall": 0.9999999999999989,
+        "threshold": 1.0
+      },
+      "auprc": {
+        "value": 0.008125608084723185
+      },
+      "auroc": {
+        "value": 0.4977486263736264
+      }
+    },
+    "DISTORTEDgait3": {
+      "point_f1": {
+        "f1": 0.5782918149466187,
+        "precision": 0.4067584480600751,
+        "recall": 1.0,
+        "threshold": 1.0
+      },
+      "event_f1": {
+        "f1": 0.01043841336116909,
+        "precision": 0.005246589716684155,
+        "recall": 0.9999999999999998,
+        "threshold": 1.0
+      },
+      "event_f1_squeeze": {
+        "f1": 0.0021052631578947346,
+        "precision": 0.001053740779768177,
+        "recall": 0.9999999999999989,
+        "threshold": 1.0
+      },
+      "auprc": {
+        "value": 0.01609298454152051
+      },
+      "auroc": {
+        "value": 0.4970384518868835
+      }
+    },
+    "DISTORTEDgaitHunt1": {
+      "point_f1": {
+        "f1": 0.47976011994002954,
+        "precision": 0.3155818540433925,
+        "recall": 1.0,
+        "threshold": 1.0
+      },
+      "event_f1": {
+        "f1": 0.02253521126760561,
+        "precision": 0.011396011396011397,
+        "recall": 0.9999999999999998,
+        "threshold": 1.0
+      },
+      "event_f1_squeeze": {
+        "f1": 0.00573065902578796,
+        "precision": 0.0028735632183908046,
+        "recall": 0.9999999999999989,
+        "threshold": 1.0
+      },
+      "auprc": {
+        "value": 0.0034887450175493918
+      },
+      "auroc": {
+        "value": 0.4810190727052074
+      }
+    },
+    "DISTORTEDgaitHunt2": {
+      "point_f1": {
+        "f1": 0.7968127490039836,
+        "precision": 0.6622516556291391,
+        "recall": 1.0,
+        "threshold": 1.0
+      },
+      "event_f1": {
+        "f1": 0.027247956403269727,
+        "precision": 0.013812154696132596,
+        "recall": 0.9999999999999998,
+        "threshold": 1.0
+      },
+      "event_f1_squeeze": {
+        "f1": 0.005571030640668518,
+        "precision": 0.002793296089385475,
+        "recall": 0.9999999999999989,
+        "threshold": 1.0
+      },
+      "auprc": {
+        "value": 0.015365802958027365
+      },
+      "auroc": {
+        "value": 0.4948741466215785
+      }
+    },
+    "DISTORTEDgaitHunt3": {
+      "point_f1": {
+        "f1": 0.7955077211043514,
+        "precision": 0.6604506604506605,
+        "recall": 1.0,
+        "threshold": 1.0
+      },
+      "event_f1": {
+        "f1": 0.02672605790645877,
+        "precision": 0.013544018058690745,
+        "recall": 0.9999999999999999,
+        "threshold": 1.0
+      },
+      "event_f1_squeeze": {
+        "f1": 0.004555808656036441,
+        "precision": 0.00228310502283105,
+        "recall": 0.9999999999999989,
+        "threshold": 1.0
+      },
+      "auprc": {
+        "value": 0.020952532067293923
+      },
+      "auroc": {
+        "value": 0.5024147103229817
+      }
+    },
+    "DISTORTEDinsectEPG1": {
+      "point_f1": {
+        "f1": 0.5673758865248223,
+        "precision": 0.39603960396039606,
+        "recall": 1.0,
+        "threshold": 1.0
+      },
+      "event_f1": {
+        "f1": 0.061538461538461466,
+        "precision": 0.031746031746031744,
+        "recall": 0.9999999999999998,
+        "threshold": 1.0
+      },
+      "event_f1_squeeze": {
+        "f1": 0.016129032258064502,
+        "precision": 0.008130081300813009,
+        "recall": 0.9999999999999989,
+        "threshold": 1.0
+      },
+      "auprc": {
+        "value": 0.01138270350849515
+      },
+      "auroc": {
+        "value": 0.4926537626628076
+      }
+    },
+    "DISTORTEDinsectEPG2": {
+      "point_f1": {
+        "f1": 0.5263157894736837,
+        "precision": 0.35714285714285715,
+        "recall": 1.0,
+        "threshold": 1.0
+      },
+      "event_f1": {
+        "f1": 0.04255319148936165,
+        "precision": 0.021739130434782608,
+        "recall": 0.9999999999999997,
+        "threshold": 1.0
+      },
+      "event_f1_squeeze": {
+        "f1": 0.014598540145985385,
+        "precision": 0.007352941176470588,
+        "recall": 0.9999999999999989,
+        "threshold": 1.0
+      },
+      "auprc": {
+        "value": 0.012083253588516746
+      },
+      "auroc": {
+        "value": 0.4941049233252623
+      }
+    },
+    "DISTORTEDinsectEPG3": {
+      "point_f1": {
+        "f1": 0.7843137254901956,
+        "precision": 0.6451612903225806,
+        "recall": 1.0,
+        "threshold": 1.0
+      },
+      "event_f1": {
+        "f1": 0.12698412698412684,
+        "precision": 0.06779661016949153,
+        "recall": 0.9999999999999998,
+        "threshold": 1.0
+      },
+      "event_f1_squeeze": {
+        "f1": 0.03508771929824557,
+        "precision": 0.017857142857142856,
+        "recall": 0.9999999999999989,
+        "threshold": 1.0
+      },
+      "auprc": {
+        "value": 0.021321407327885806
+      },
+      "auroc": {
+        "value": 0.5053618843683083
+      }
+    },
+    "DISTORTEDinsectEPG4": {
+      "point_f1": {
+        "f1": 0.5633802816901404,
+        "precision": 0.39215686274509803,
+        "recall": 1.0,
+        "threshold": 1.0
+      },
+      "event_f1": {
+        "f1": 0.04907975460122694,
+        "precision": 0.025157232704402517,
+        "recall": 0.9999999999999998,
+        "threshold": 1.0
+      },
+      "event_f1_squeeze": {
+        "f1": 0.0127388535031847,
+        "precision": 0.00641025641025641,
+        "recall": 0.9999999999999989,
+        "threshold": 1.0
+      },
+      "auprc": {
+        "value": 0.011881263726293589
+      },
+      "auroc": {
+        "value": 0.5123582263710619
+      }
+    },
+    "DISTORTEDinsectEPG5": {
+      "point_f1": {
+        "f1": 0.4047619047619044,
+        "precision": 0.2537313432835821,
+        "recall": 1.0,
+        "threshold": 1.0
+      },
+      "event_f1": {
+        "f1": 0.038461538461538415,
+        "precision": 0.0196078431372549,
+        "recall": 0.9999999999999997,
+        "threshold": 1.0
+      },
+      "event_f1_squeeze": {
+        "f1": 0.01315789473684209,
+        "precision": 0.006622516556291391,
+        "recall": 0.9999999999999989,
+        "threshold": 1.0
+      },
+      "auprc": {
+        "value": 0.0073979782526361944
+      },
+      "auroc": {
+        "value": 0.48630584057857495
+      }
+    },
+    "DISTORTEDltstdbs30791AI": {
+      "point_f1": {
+        "f1": 0.3415300546448084,
+        "precision": 0.20593080724876442,
+        "recall": 1.0,
+        "threshold": 1.0
+      },
+      "event_f1": {
+        "f1": 0.01026694045174537,
+        "precision": 0.005159958720330237,
+        "recall": 0.9999999999999998,
+        "threshold": 1.0
+      },
+      "event_f1_squeeze": {
+        "f1": 0.0020703933747411984,
+        "precision": 0.0010362694300518134,
+        "recall": 0.9999999999999989,
+        "threshold": 1.0
+      },
+      "auprc": {
+        "value": 0.0065402241860468705
+      },
+      "auroc": {
+        "value": 0.5022511749347258
+      }
+    },
+    "DISTORTEDltstdbs30791AS": {
+      "point_f1": {
+        "f1": 0.4101722723543885,
+        "precision": 0.2579979360165119,
+        "recall": 1.0,
+        "threshold": 1.0
+      },
+      "event_f1": {
+        "f1": 0.013717421124828516,
+        "precision": 0.006906077348066298,
+        "recall": 0.9999999999999998,
+        "threshold": 1.0
+      },
+      "event_f1_squeeze": {
+        "f1": 0.0027739251040221884,
+        "precision": 0.001388888888888889,
+        "recall": 0.9999999999999989,
+        "threshold": 1.0
+      },
+      "auprc": {
+        "value": 0.007910760648694762
+      },
+      "auroc": {
+        "value": 0.5051208950520013
+      }
+    },
+    "DISTORTEDltstdbs30791ES": {
+      "point_f1": {
+        "f1": 0.36049026676279705,
+        "precision": 0.2198768689533861,
+        "recall": 1.0,
+        "threshold": 1.0
+      },
+      "event_f1": {
+        "f1": 0.011148272017837222,
+        "precision": 0.005605381165919282,
+        "recall": 0.9999999999999998,
+        "threshold": 1.0
+      },
+      "event_f1_squeeze": {
+        "f1": 0.002249718785151853,
+        "precision": 0.0011261261261261261,
+        "recall": 0.9999999999999989,
+        "threshold": 1.0
+      },
+      "auprc": {
+        "value": 0.007155778209453546
+      },
+      "auroc": {
+        "value": 0.4941909588252231
+      }
+    },
+    "DISTORTEDpark3m": {
+      "point_f1": {
+        "f1": 0.7845084409136043,
+        "precision": 0.6454248366013072,
+        "recall": 1.0,
+        "threshold": 1.0
+      },
+      "event_f1": {
+        "f1": 0.0440528634361233,
+        "precision": 0.02252252252252252,
+        "recall": 0.9999999999999998,
+        "threshold": 1.0
+      },
+      "event_f1_squeeze": {
+        "f1": 0.00913242009132419,
+        "precision": 0.0045871559633027525,
+        "recall": 0.9999999999999989,
+        "threshold": 1.0
+      },
+      "auprc": {
+        "value": 0.013033286171778024
+      },
+      "auroc": {
+        "value": 0.4882922188562913
+      }
+    },
+    "DISTORTEDqtdbSel1005V": {
+      "point_f1": {
+        "f1": 0.7826086956521735,
+        "precision": 0.6428571428571429,
+        "recall": 1.0,
+        "threshold": 1.0
+      },
+      "event_f1": {
+        "f1": 0.03846153846153842,
+        "precision": 0.0196078431372549,
+        "recall": 0.9999999999999998,
+        "threshold": 1.0
+      },
+      "event_f1_squeeze": {
+        "f1": 0.007936507936507927,
+        "precision": 0.00398406374501992,
+        "recall": 0.9999999999999989,
+        "threshold": 1.0
+      },
+      "auprc": {
+        "value": 0.014053930128198108
+      },
+      "auroc": {
+        "value": 0.4990551150579695
+      }
+    },
+    "DISTORTEDqtdbSel100MLII": {
+      "point_f1": {
+        "f1": 0.7633587786259536,
+        "precision": 0.6172839506172839,
+        "recall": 1.0,
+        "threshold": 1.0
+      },
+      "event_f1": {
+        "f1": 0.034602076124567435,
+        "precision": 0.017605633802816902,
+        "recall": 0.9999999999999998,
+        "threshold": 1.0
+      },
+      "event_f1_squeeze": {
+        "f1": 0.007117437722419921,
+        "precision": 0.0035714285714285713,
+        "recall": 0.9999999999999989,
+        "threshold": 1.0
+      },
+      "auprc": {
+        "value": 0.01728236377859575
+      },
+      "auroc": {
+        "value": 0.4971800931366149
+      }
+    },
+    "DISTORTEDresperation1": {
+      "point_f1": {
+        "f1": 0.685908319185059,
+        "precision": 0.5219638242894057,
+        "recall": 1.0,
+        "threshold": 1.0
+      },
+      "event_f1": {
+        "f1": 0.04145077720207249,
+        "precision": 0.021164021164021163,
+        "recall": 0.9999999999999998,
+        "threshold": 1.0
+      },
+      "event_f1_squeeze": {
+        "f1": 0.01069518716577539,
+        "precision": 0.005376344086021506,
+        "recall": 0.9999999999999989,
+        "threshold": 1.0
+      },
+      "auprc": {
+        "value": 0.001896337723639453
+      },
+      "auroc": {
+        "value": 0.40742076171781205
+      }
+    },
+    "DISTORTEDresperation10": {
+      "point_f1": {
+        "f1": 0.5646086756942846,
+        "precision": 0.39334825711544613,
+        "recall": 1.0,
+        "threshold": 1.0
+      },
+      "event_f1": {
+        "f1": 0.006286013619696169,
+        "precision": 0.0031529164477141357,
+        "recall": 0.9999999999999999,
+        "threshold": 1.0
+      },
+      "event_f1_squeeze": {
+        "f1": 0.0010531858873091089,
+        "precision": 0.0005268703898840885,
+        "recall": 0.9999999999999989,
+        "threshold": 1.0
+      },
+      "auprc": {
+        "value": 0.008497128094086011
+      },
+      "auroc": {
+        "value": 0.5100388238292756
+      }
+    },
+    "DISTORTEDresperation11": {
+      "point_f1": {
+        "f1": 0.0913978494623655,
+        "precision": 0.04788732394366197,
+        "recall": 1.0,
+        "threshold": 1.0
+      },
+      "event_f1": {
+        "f1": 0.005882352941176464,
+        "precision": 0.0029498525073746312,
+        "recall": 0.9999999999999997,
+        "threshold": 1.0
+      },
+      "event_f1_squeeze": {
+        "f1": 0.0019685039370078714,
+        "precision": 0.0009852216748768472,
+        "recall": 0.9999999999999989,
+        "threshold": 1.0
+      },
+      "auprc": {
+        "value": 0.00037979936303357466
+      },
+      "auroc": {
+        "value": 0.4076061889237287
+      }
+    },
+    "DISTORTEDresperation2": {
+      "point_f1": {
+        "f1": 0.024739267523647798,
+        "precision": 0.012524557956777996,
+        "recall": 1.0,
+        "threshold": 1.0
+      },
+      "event_f1": {
+        "f1": 0.0014899428855227202,
+        "precision": 0.0007455268389662028,
+        "recall": 0.9999999999999997,
+        "threshold": 1.0
+      },
+      "event_f1_squeeze": {
+        "f1": 0.0004971414367387516,
+        "precision": 0.0002486325211337643,
+        "recall": 0.9999999999999989,
+        "threshold": 1.0
+      },
+      "auprc": {
+        "value": 0.00032298148243669375
+      },
+      "auroc": {
+        "value": 0.4852560965760938
+      }
+    },
+    "DISTORTEDresperation3": {
+      "point_f1": {
+        "f1": 0.0343434343434343,
+        "precision": 0.017471736896197326,
+        "recall": 1.0,
+        "threshold": 1.0
+      },
+      "event_f1": {
+        "f1": 0.002087682672233818,
+        "precision": 0.0010449320794148381,
+        "recall": 0.9999999999999997,
+        "threshold": 1.0
+      },
+      "event_f1_squeeze": {
+        "f1": 0.000696864111498257,
+        "precision": 0.0003485535029627048,
+        "recall": 0.9999999999999989,
+        "threshold": 1.0
+      },
+      "auprc": {
+        "value": 0.000440732793479245
+      },
+      "auroc": {
+        "value": 0.5460178417325324
+      }
+    },
+    "DISTORTEDresperation4": {
+      "point_f1": {
+        "f1": 0.08346972176759403,
+        "precision": 0.04355251921434671,
+        "recall": 1.0,
+        "threshold": 1.0
+      },
+      "event_f1": {
+        "f1": 0.005328596802841912,
+        "precision": 0.0026714158504007124,
+        "recall": 0.9999999999999997,
+        "threshold": 1.0
+      },
+      "event_f1_squeeze": {
+        "f1": 0.0017825311942958983,
+        "precision": 0.0008920606601248885,
+        "recall": 0.9999999999999989,
+        "threshold": 1.0
+      },
+      "auprc": {
+        "value": 0.00040975786498721235
+      },
+      "auroc": {
+        "value": 0.4112189081257148
+      }
+    },
+    "DISTORTEDresperation9": {
+      "point_f1": {
+        "f1": 0.12038523274478317,
+        "precision": 0.06404782237403928,
+        "recall": 1.0,
+        "threshold": 1.0
+      },
+      "event_f1": {
+        "f1": 0.0036363636363636325,
+        "precision": 0.0018214936247723133,
+        "recall": 0.9999999999999998,
+        "threshold": 1.0
+      },
+      "event_f1_squeeze": {
+        "f1": 0.0009115770282588869,
+        "precision": 0.00045599635202918376,
+        "recall": 0.9999999999999989,
+        "threshold": 1.0
+      },
+      "auprc": {
+        "value": 0.0009659778022735763
+      },
+      "auroc": {
+        "value": 0.4869066989713508
+      }
+    },
+    "DISTORTEDs20101m": {
+      "point_f1": {
+        "f1": 0.3086419753086417,
+        "precision": 0.18248175182481752,
+        "recall": 1.0,
+        "threshold": 1.0
+      },
+      "event_f1": {
+        "f1": 0.011764705882352927,
+        "precision": 0.005917159763313609,
+        "recall": 0.9999999999999998,
+        "threshold": 1.0
+      },
+      "event_f1_squeeze": {
+        "f1": 0.0029673590504451,
+        "precision": 0.0014858841010401188,
+        "recall": 0.9999999999999989,
+        "threshold": 1.0
+      },
+      "auprc": {
+        "value": 0.005013148765223345
+      },
+      "auroc": {
+        "value": 0.49161809045226124
+      }
+    },
+    "DISTORTEDs20101mML2": {
+      "point_f1": {
+        "f1": 0.3024193548387094,
+        "precision": 0.17814726840855108,
+        "recall": 1.0,
+        "threshold": 1.0
+      },
+      "event_f1": {
+        "f1": 0.011428571428571416,
+        "precision": 0.005747126436781609,
+        "recall": 0.9999999999999998,
+        "threshold": 1.0
+      },
+      "event_f1_squeeze": {
+        "f1": 0.0028818443804034554,
+        "precision": 0.001443001443001443,
+        "recall": 0.9999999999999989,
+        "threshold": 1.0
+      },
+      "auprc": {
+        "value": 0.005412884041000144
+      },
+      "auroc": {
+        "value": 0.5095059865900383
+      }
+    },
+    "DISTORTEDsddb49": {
+      "point_f1": {
+        "f1": 0.317628374801482,
+        "precision": 0.18879798615481436,
+        "recall": 1.0,
+        "threshold": 1.0
+      },
+      "event_f1": {
+        "f1": 0.007698229407236327,
+        "precision": 0.0038639876352395673,
+        "recall": 0.9999999999999998,
+        "threshold": 1.0
+      },
+      "event_f1_squeeze": {
+        "f1": 0.001549186676994576,
+        "precision": 0.0007751937984496124,
+        "recall": 0.9999999999999989,
+        "threshold": 1.0
+      },
+      "auprc": {
+        "value": 0.005014007729352536
+      },
+      "auroc": {
+        "value": 0.4985119486320491
+      }
+    },
+    "DISTORTEDsel840mECG1": {
+      "point_f1": {
+        "f1": 0.476730987514188,
+        "precision": 0.31296572280178836,
+        "recall": 1.0,
+        "threshold": 1.0
+      },
+      "event_f1": {
+        "f1": 0.01072961373390557,
+        "precision": 0.005393743257820928,
+        "recall": 0.9999999999999998,
+        "threshold": 1.0
+      },
+      "event_f1_squeeze": {
+        "f1": 0.002164502164502162,
+        "precision": 0.0010834236186348862,
+        "recall": 0.9999999999999989,
+        "threshold": 1.0
+      },
+      "auprc": {
+        "value": 0.009954841697246957
+      },
+      "auroc": {
+        "value": 0.5103648053066658
+      }
+    },
+    "DISTORTEDsel840mECG2": {
+      "point_f1": {
+        "f1": 0.5486610058785104,
+        "precision": 0.37803780378037805,
+        "recall": 1.0,
+        "threshold": 1.0
+      },
+      "event_f1": {
+        "f1": 0.014265335235378014,
+        "precision": 0.007183908045977011,
+        "recall": 0.9999999999999998,
+        "threshold": 1.0
+      },
+      "event_f1_squeeze": {
+        "f1": 0.002886002886002883,
+        "precision": 0.001445086705202312,
+        "recall": 0.9999999999999989,
+        "threshold": 1.0
+      },
+      "auprc": {
+        "value": 0.011309619391355464
+      },
+      "auroc": {
+        "value": 0.4950662135239658
+      }
+    },
+    "DISTORTEDtiltAPB1": {
+      "point_f1": {
+        "f1": 0.26145251396648017,
+        "precision": 0.15038560411311053,
+        "recall": 1.0,
+        "threshold": 0.9999995231628418
+      },
+      "event_f1": {
+        "f1": 0.011958146487294456,
+        "precision": 0.006015037593984963,
+        "recall": 0.9999999999999998,
+        "threshold": 0.9999995231628418
+      },
+      "event_f1_squeeze": {
+        "f1": 0.0030165912518853658,
+        "precision": 0.0015105740181268882,
+        "recall": 0.9999999999999989,
+        "threshold": 0.9999995231628418
+      },
+      "auprc": {
+        "value": 0.0038767890769760564
+      },
+      "auroc": {
+        "value": 0.46365111684858695
+      }
+    },
+    "DISTORTEDtiltAPB2": {
+      "point_f1": {
+        "f1": 0.48237885462555025,
+        "precision": 0.3178519593613933,
+        "recall": 1.0,
+        "threshold": 1.0
+      },
+      "event_f1": {
+        "f1": 0.006342494714587731,
+        "precision": 0.003181336161187699,
+        "recall": 0.9999999999999999,
+        "threshold": 1.0
+      },
+      "event_f1_squeeze": {
+        "f1": 0.0010626992561105198,
+        "precision": 0.000531632110579479,
+        "recall": 0.9999999999999989,
+        "threshold": 1.0
+      },
+      "auprc": {
+        "value": 0.011275813704821138
+      },
+      "auroc": {
+        "value": 0.5012630900190836
+      }
+    },
+    "DISTORTEDtiltAPB3": {
+      "point_f1": {
+        "f1": 0.3262135922330094,
+        "precision": 0.19489559164733178,
+        "recall": 1.0,
+        "threshold": 1.0
+      },
+      "event_f1": {
+        "f1": 0.00573065902578796,
+        "precision": 0.0028735632183908046,
+        "recall": 0.9999999999999998,
+        "threshold": 1.0
+      },
+      "event_f1_squeeze": {
+        "f1": 0.001151410477835347,
+        "precision": 0.000576036866359447,
+        "recall": 0.9999999999999989,
+        "threshold": 1.0
+      },
+      "auprc": {
+        "value": 0.004680227089710285
+      },
+      "auroc": {
+        "value": 0.4975509802977795
+      }
+    },
+    "DISTORTEDtiltAPB4": {
+      "point_f1": {
+        "f1": 0.068825910931174,
+        "precision": 0.03563941299790356,
+        "recall": 1.0,
+        "threshold": 1.0
+      },
+      "event_f1": {
+        "f1": 0.004329004329004324,
+        "precision": 0.0021691973969631237,
+        "recall": 0.9999999999999997,
+        "threshold": 1.0
+      },
+      "event_f1_squeeze": {
+        "f1": 0.0014471780028943544,
+        "precision": 0.000724112961622013,
+        "recall": 0.9999999999999989,
+        "threshold": 1.0
+      },
+      "auprc": {
+        "value": 0.0004786818478275953
+      },
+      "auroc": {
+        "value": 0.4832984857228332
+      }
+    },
+    "ECG1": {
+      "point_f1": {
+        "f1": 0.9320905459387478,
+        "precision": 0.8728179551122195,
+        "recall": 1.0,
+        "threshold": 1.0
+      },
+      "event_f1": {
+        "f1": 0.16393442622950805,
+        "precision": 0.08928571428571429,
+        "recall": 0.9999999999999998,
+        "threshold": 1.0
+      },
+      "event_f1_squeeze": {
+        "f1": 0.03773584905660374,
+        "precision": 0.019230769230769232,
+        "recall": 0.9999999999999989,
+        "threshold": 1.0
+      },
+      "auprc": {
+        "value": 0.017516766110834924
+      },
+      "auroc": {
+        "value": 0.4870453387671931
+      }
+    },
+    "ECG2": {
+      "point_f1": {
+        "f1": 0.9316770186335398,
+        "precision": 0.872093023255814,
+        "recall": 1.0,
+        "threshold": 1.0
+      },
+      "event_f1": {
+        "f1": 0.2666666666666664,
+        "precision": 0.15384615384615385,
+        "recall": 0.9999999999999998,
+        "threshold": 1.0
+      },
+      "event_f1_squeeze": {
+        "f1": 0.08333333333333325,
+        "precision": 0.043478260869565216,
+        "recall": 0.9999999999999989,
+        "threshold": 1.0
+      },
+      "auprc": {
+        "value": 0.009986150663088798
+      },
+      "auroc": {
+        "value": 0.4653450056116722
+      }
+    },
+    "ECG3": {
+      "point_f1": {
+        "f1": 0.9374999999999994,
+        "precision": 0.8823529411764706,
+        "recall": 1.0,
+        "threshold": 1.0
+      },
+      "event_f1": {
+        "f1": 0.2857142857142854,
+        "precision": 0.16666666666666666,
+        "recall": 0.9999999999999998,
+        "threshold": 1.0
+      },
+      "event_f1_squeeze": {
+        "f1": 0.09090909090909079,
+        "precision": 0.047619047619047616,
+        "recall": 0.9999999999999989,
+        "threshold": 1.0
+      },
+      "auprc": {
+        "value": 0.009838033472077842
+      },
+      "auroc": {
+        "value": 0.4420181818181818
+      }
+    },
+    "ECG4": {
+      "point_f1": {
+        "f1": 0.5999999999999995,
+        "precision": 0.42857142857142855,
+        "recall": 1.0,
+        "threshold": 1.0
+      },
+      "event_f1": {
+        "f1": 0.03846153846153842,
+        "precision": 0.0196078431372549,
+        "recall": 0.9999999999999998,
+        "threshold": 1.0
+      },
+      "event_f1_squeeze": {
+        "f1": 0.009900990099009889,
+        "precision": 0.004975124378109453,
+        "recall": 0.9999999999999989,
+        "threshold": 1.0
+      },
+      "auprc": {
+        "value": 0.006826072826765629
+      },
+      "auroc": {
+        "value": 0.5010196886446887
+      }
+    },
+    "Fantasia": {
+      "point_f1": {
+        "f1": 0.7856341189674517,
+        "precision": 0.6469500924214417,
+        "recall": 1.0,
+        "threshold": 1.0
+      },
+      "event_f1": {
+        "f1": 0.049751243781094474,
+        "precision": 0.025510204081632654,
+        "recall": 0.9999999999999998,
+        "threshold": 1.0
+      },
+      "event_f1_squeeze": {
+        "f1": 0.010362694300518123,
+        "precision": 0.005208333333333333,
+        "recall": 0.9999999999999989,
+        "threshold": 1.0
+      },
+      "auprc": {
+        "value": 0.004813143172278606
+      },
+      "auroc": {
+        "value": 0.4937861862806797
+      }
+    },
+    "GP711MarkerLFM5z1": {
+      "point_f1": {
+        "f1": 0.8355555555555549,
+        "precision": 0.7175572519083969,
+        "recall": 1.0,
+        "threshold": 1.0
+      },
+      "event_f1": {
+        "f1": 0.17777777777777756,
+        "precision": 0.0975609756097561,
+        "recall": 0.9999999999999998,
+        "threshold": 1.0
+      },
+      "event_f1_squeeze": {
+        "f1": 0.05128205128205122,
+        "precision": 0.02631578947368421,
+        "recall": 0.9999999999999989,
+        "threshold": 1.0
+      },
+      "auprc": {
+        "value": 0.01344602960808102
+      },
+      "auroc": {
+        "value": 0.4951606234881769
+      }
+    },
+    "GP711MarkerLFM5z2": {
+      "point_f1": {
+        "f1": 0.8885135135135129,
+        "precision": 0.7993920972644377,
+        "recall": 1.0,
+        "threshold": 1.0
+      },
+      "event_f1": {
+        "f1": 0.13157894736842093,
+        "precision": 0.07042253521126761,
+        "recall": 0.9999999999999998,
+        "threshold": 1.0
+      },
+      "event_f1_squeeze": {
+        "f1": 0.029411764705882318,
+        "precision": 0.014925373134328358,
+        "recall": 0.9999999999999989,
+        "threshold": 1.0
+      },
+      "auprc": {
+        "value": 0.03783705052657498
+      },
+      "auroc": {
+        "value": 0.502242255119684
+      }
+    },
+    "GP711MarkerLFM5z3": {
+      "point_f1": {
+        "f1": 0.8715596330275224,
+        "precision": 0.7723577235772358,
+        "recall": 1.0,
+        "threshold": 1.0
+      },
+      "event_f1": {
+        "f1": 0.222222222222222,
+        "precision": 0.125,
+        "recall": 0.9999999999999998,
+        "threshold": 1.0
+      },
+      "event_f1_squeeze": {
+        "f1": 0.06666666666666658,
+        "precision": 0.034482758620689655,
+        "recall": 0.9999999999999989,
+        "threshold": 1.0
+      },
+      "auprc": {
+        "value": 0.013801951730308903
+      },
+      "auroc": {
+        "value": 0.4952627762299149
+      }
+    },
+    "GP711MarkerLFM5z4": {
+      "point_f1": {
+        "f1": 0.8135593220338978,
+        "precision": 0.6857142857142857,
+        "recall": 1.0,
+        "threshold": 1.0
+      },
+      "event_f1": {
+        "f1": 0.09411764705882342,
+        "precision": 0.04938271604938271,
+        "recall": 0.9999999999999998,
+        "threshold": 1.0
+      },
+      "event_f1_squeeze": {
+        "f1": 0.025316455696202503,
+        "precision": 0.01282051282051282,
+        "recall": 0.9999999999999989,
+        "threshold": 1.0
+      },
+      "auprc": {
+        "value": 0.021011264644943788
+      },
+      "auroc": {
+        "value": 0.49990704166971456
+      }
+    },
+    "GP711MarkerLFM5z5": {
+      "point_f1": {
+        "f1": 0.7264150943396221,
+        "precision": 0.5703703703703704,
+        "recall": 1.0,
+        "threshold": 1.0
+      },
+      "event_f1": {
+        "f1": 0.064516129032258,
+        "precision": 0.03333333333333333,
+        "recall": 0.9999999999999998,
+        "threshold": 1.0
+      },
+      "event_f1_squeeze": {
+        "f1": 0.016949152542372867,
+        "precision": 0.008547008547008548,
+        "recall": 0.9999999999999989,
+        "threshold": 1.0
+      },
+      "auprc": {
+        "value": 0.02203898932641302
+      },
+      "auroc": {
+        "value": 0.4991626644274391
+      }
+    },
+    "InternalBleeding10": {
+      "point_f1": {
+        "f1": 0.7920792079207916,
+        "precision": 0.6557377049180327,
+        "recall": 1.0,
+        "threshold": 1.0
+      },
+      "event_f1": {
+        "f1": 0.15999999999999984,
+        "precision": 0.08695652173913043,
+        "recall": 0.9999999999999998,
+        "threshold": 1.0
+      },
+      "event_f1_squeeze": {
+        "f1": 0.04545454545454541,
+        "precision": 0.023255813953488372,
+        "recall": 0.9999999999999989,
+        "threshold": 1.0
+      },
+      "auprc": {
+        "value": 0.018769885831929626
+      },
+      "auroc": {
+        "value": 0.49711995249406177
+      }
+    },
+    "InternalBleeding14": {
+      "point_f1": {
+        "f1": 0.6416666666666662,
+        "precision": 0.4723926380368098,
+        "recall": 1.0,
+        "threshold": 1.0
+      },
+      "event_f1": {
+        "f1": 0.06521739130434775,
+        "precision": 0.033707865168539325,
+        "recall": 0.9999999999999997,
+        "threshold": 1.0
+      },
+      "event_f1_squeeze": {
+        "f1": 0.0227272727272727,
+        "precision": 0.011494252873563218,
+        "recall": 0.9999999999999989,
+        "threshold": 1.0
+      },
+      "auprc": {
+        "value": 0.01640076693127091
+      },
+      "auroc": {
+        "value": 0.49512034782510556
+      }
+    },
+    "InternalBleeding15": {
+      "point_f1": {
+        "f1": 0.7815275310834808,
+        "precision": 0.641399416909621,
+        "recall": 1.0,
+        "threshold": 1.0
+      },
+      "event_f1": {
+        "f1": 0.06106870229007627,
+        "precision": 0.031496062992125984,
+        "recall": 0.9999999999999998,
+        "threshold": 1.0
+      },
+      "event_f1_squeeze": {
+        "f1": 0.015999999999999983,
+        "precision": 0.008064516129032258,
+        "recall": 0.9999999999999989,
+        "threshold": 1.0
+      },
+      "auprc": {
+        "value": 0.03723540017096973
+      },
+      "auroc": {
+        "value": 0.4978995342113717
+      }
+    },
+    "InternalBleeding16": {
+      "point_f1": {
+        "f1": 0.59047619047619,
+        "precision": 0.4189189189189189,
+        "recall": 1.0,
+        "threshold": 1.0
+      },
+      "event_f1": {
+        "f1": 0.06521739130434775,
+        "precision": 0.033707865168539325,
+        "recall": 0.9999999999999997,
+        "threshold": 1.0
+      },
+      "event_f1_squeeze": {
+        "f1": 0.0227272727272727,
+        "precision": 0.011494252873563218,
+        "recall": 0.9999999999999989,
+        "threshold": 1.0
+      },
+      "auprc": {
+        "value": 0.010238783674651204
+      },
+      "auroc": {
+        "value": 0.5174981125050419
+      }
+    },
+    "InternalBleeding17": {
+      "point_f1": {
+        "f1": 0.8749999999999996,
+        "precision": 0.7777777777777778,
+        "recall": 1.0,
+        "threshold": 1.0
+      },
+      "event_f1": {
+        "f1": 0.148148148148148,
+        "precision": 0.08,
+        "recall": 0.9999999999999998,
+        "threshold": 1.0
+      },
+      "event_f1_squeeze": {
+        "f1": 0.04166666666666662,
+        "precision": 0.02127659574468085,
+        "recall": 0.9999999999999989,
+        "threshold": 1.0
+      },
+      "auprc": {
+        "value": 0.027484901892382375
+      },
+      "auroc": {
+        "value": 0.5047129596343887
+      }
+    },
+    "InternalBleeding18": {
+      "point_f1": {
+        "f1": 0.8238482384823842,
+        "precision": 0.7004608294930875,
+        "recall": 1.0,
+        "threshold": 1.0
+      },
+      "event_f1": {
+        "f1": 0.1095890410958903,
+        "precision": 0.057971014492753624,
+        "recall": 0.9999999999999998,
+        "threshold": 1.0
+      },
+      "event_f1_squeeze": {
+        "f1": 0.029850746268656685,
+        "precision": 0.015151515151515152,
+        "recall": 0.9999999999999989,
+        "threshold": 1.0
+      },
+      "auprc": {
+        "value": 0.029217903460267435
+      },
+      "auroc": {
+        "value": 0.4978374877248699
+      }
+    },
+    "InternalBleeding19": {
+      "point_f1": {
+        "f1": 0.7643312101910823,
+        "precision": 0.6185567010309279,
+        "recall": 1.0,
+        "threshold": 1.0
+      },
+      "event_f1": {
+        "f1": 0.13953488372093006,
+        "precision": 0.075,
+        "recall": 0.9999999999999997,
+        "threshold": 1.0
+      },
+      "event_f1_squeeze": {
+        "f1": 0.05128205128205122,
+        "precision": 0.02631578947368421,
+        "recall": 0.9999999999999989,
+        "threshold": 1.0
+      },
+      "auprc": {
+        "value": 0.013753623188405797
+      },
+      "auroc": {
+        "value": 0.4972804054054054
+      }
+    },
+    "InternalBleeding20": {
+      "point_f1": {
+        "f1": 0.8203124999999994,
+        "precision": 0.695364238410596,
+        "recall": 1.0,
+        "threshold": 1.0
+      },
+      "event_f1": {
+        "f1": 0.0799999999999999,
+        "precision": 0.041666666666666664,
+        "recall": 0.9999999999999998,
+        "threshold": 1.0
+      },
+      "event_f1_squeeze": {
+        "f1": 0.02127659574468083,
+        "precision": 0.010752688172043012,
+        "recall": 0.9999999999999989,
+        "threshold": 1.0
+      },
+      "auprc": {
+        "value": 0.04373172907676673
+      },
+      "auroc": {
+        "value": 0.5020152505446623
+      }
+    },
+    "InternalBleeding4": {
+      "point_f1": {
+        "f1": 0.8821621621621616,
+        "precision": 0.7891682785299806,
+        "recall": 1.0,
+        "threshold": 1.0
+      },
+      "event_f1": {
+        "f1": 0.08403361344537807,
+        "precision": 0.043859649122807015,
+        "recall": 0.9999999999999998,
+        "threshold": 1.0
+      },
+      "event_f1_squeeze": {
+        "f1": 0.018018018018017997,
+        "precision": 0.00909090909090909,
+        "recall": 0.9999999999999989,
+        "threshold": 1.0
+      },
+      "auprc": {
+        "value": 0.06461087334975618
+      },
+      "auroc": {
+        "value": 0.49548448877174767
+      }
+    },
+    "InternalBleeding5": {
+      "point_f1": {
+        "f1": 0.8627450980392151,
+        "precision": 0.7586206896551724,
+        "recall": 1.0,
+        "threshold": 1.0
+      },
+      "event_f1": {
+        "f1": 0.10256410256410245,
+        "precision": 0.05405405405405406,
+        "recall": 0.9999999999999998,
+        "threshold": 1.0
+      },
+      "event_f1_squeeze": {
+        "f1": 0.02777777777777775,
+        "precision": 0.014084507042253521,
+        "recall": 0.9999999999999989,
+        "threshold": 1.0
+      },
+      "auprc": {
+        "value": 0.06474229651355246
+      },
+      "auroc": {
+        "value": 0.5015070260969314
+      }
+    },
+    "InternalBleeding6": {
+      "point_f1": {
+        "f1": 0.8742004264392319,
+        "precision": 0.7765151515151515,
+        "recall": 1.0,
+        "threshold": 1.0
+      },
+      "event_f1": {
+        "f1": 0.11940298507462674,
+        "precision": 0.06349206349206349,
+        "recall": 0.9999999999999998,
+        "threshold": 1.0
+      },
+      "event_f1_squeeze": {
+        "f1": 0.032786885245901606,
+        "precision": 0.016666666666666666,
+        "recall": 0.9999999999999989,
+        "threshold": 1.0
+      },
+      "auprc": {
+        "value": 0.03308609839848094
+      },
+      "auroc": {
+        "value": 0.5009497630720631
+      }
+    },
+    "InternalBleeding8": {
+      "point_f1": {
+        "f1": 0.7517730496453896,
+        "precision": 0.6022727272727273,
+        "recall": 1.0,
+        "threshold": 1.0
+      },
+      "event_f1": {
+        "f1": 0.07079646017699108,
+        "precision": 0.03669724770642202,
+        "recall": 0.9999999999999998,
+        "threshold": 1.0
+      },
+      "event_f1_squeeze": {
+        "f1": 0.018691588785046707,
+        "precision": 0.009433962264150943,
+        "recall": 0.9999999999999989,
+        "threshold": 1.0
+      },
+      "auprc": {
+        "value": 0.031940440008120054
+      },
+      "auroc": {
+        "value": 0.5041361235370934
+      }
+    },
+    "InternalBleeding9": {
+      "point_f1": {
+        "f1": 0.7764705882352936,
+        "precision": 0.6346153846153846,
+        "recall": 1.0,
+        "threshold": 1.0
+      },
+      "event_f1": {
+        "f1": 0.09523809523809514,
+        "precision": 0.05,
+        "recall": 0.9999999999999998,
+        "threshold": 1.0
+      },
+      "event_f1_squeeze": {
+        "f1": 0.02564102564102562,
+        "precision": 0.012987012987012988,
+        "recall": 0.9999999999999989,
+        "threshold": 1.0
+      },
+      "auprc": {
+        "value": 0.0397704181050576
+      },
+      "auroc": {
+        "value": 0.5005894647229874
+      }
+    },
+    "Italianpowerdemand": {
+      "point_f1": {
+        "f1": 0.19397116644823045,
+        "precision": 0.10740203193033382,
+        "recall": 1.0,
+        "threshold": 1.0
+      },
+      "event_f1": {
+        "f1": 0.009661835748792258,
+        "precision": 0.0048543689320388345,
+        "recall": 0.9999999999999997,
+        "threshold": 1.0
+      },
+      "event_f1_squeeze": {
+        "f1": 0.0032414910858995106,
+        "precision": 0.0016233766233766235,
+        "recall": 0.9999999999999989,
+        "threshold": 1.0
+      },
+      "auprc": {
+        "value": 0.003507367559586382
+      },
+      "auroc": {
+        "value": 0.49605172409339465
+      }
+    },
+    "Lab2Cmac011215EPG1": {
+      "point_f1": {
+        "f1": 0.3929273084479368,
+        "precision": 0.24449877750611246,
+        "recall": 1.0,
+        "threshold": 1.0
+      },
+      "event_f1": {
+        "f1": 0.02523659305993688,
+        "precision": 0.012779552715654952,
+        "recall": 0.9999999999999998,
+        "threshold": 1.0
+      },
+      "event_f1_squeeze": {
+        "f1": 0.006430868167202565,
+        "precision": 0.0032258064516129032,
+        "recall": 0.9999999999999989,
+        "threshold": 1.0
+      },
+      "auprc": {
+        "value": 0.004076822852238071
+      },
+      "auroc": {
+        "value": 0.4896912414624348
+      }
+    },
+    "Lab2Cmac011215EPG2": {
+      "point_f1": {
+        "f1": 0.35190615835777095,
+        "precision": 0.21352313167259787,
+        "recall": 1.0,
+        "threshold": 1.0
+      },
+      "event_f1": {
+        "f1": 0.017777777777777757,
+        "precision": 0.008968609865470852,
+        "recall": 0.9999999999999998,
+        "threshold": 1.0
+      },
+      "event_f1_squeeze": {
+        "f1": 0.004504504504504499,
+        "precision": 0.002257336343115124,
+        "recall": 0.9999999999999989,
+        "threshold": 1.0
+      },
+      "auprc": {
+        "value": 0.004685148886451165
+      },
+      "auroc": {
+        "value": 0.473260781942765
+      }
+    },
+    "Lab2Cmac011215EPG3": {
+      "point_f1": {
+        "f1": 0.38004750593824194,
+        "precision": 0.23460410557184752,
+        "recall": 1.0,
+        "threshold": 1.0
+      },
+      "event_f1": {
+        "f1": 0.02973977695167283,
+        "precision": 0.01509433962264151,
+        "recall": 0.9999999999999998,
+        "threshold": 1.0
+      },
+      "event_f1_squeeze": {
+        "f1": 0.007604562737642577,
+        "precision": 0.003816793893129771,
+        "recall": 0.9999999999999989,
+        "threshold": 1.0
+      },
+      "auprc": {
+        "value": 0.0031615283700307086
+      },
+      "auroc": {
+        "value": 0.4567967806841047
+      }
+    },
+    "Lab2Cmac011215EPG4": {
+      "point_f1": {
+        "f1": 0.598006644518272,
+        "precision": 0.4265402843601896,
+        "recall": 1.0,
+        "threshold": 1.0
+      },
+      "event_f1": {
+        "f1": 0.031999999999999966,
+        "precision": 0.016260162601626018,
+        "recall": 0.9999999999999998,
+        "threshold": 1.0
+      },
+      "event_f1_squeeze": {
+        "f1": 0.008196721311475402,
+        "precision": 0.00411522633744856,
+        "recall": 0.9999999999999989,
+        "threshold": 1.0
+      },
+      "auprc": {
+        "value": 0.007414816941755485
+      },
+      "auroc": {
+        "value": 0.4493276568025311
+      }
+    },
+    "Lab2Cmac011215EPG5": {
+      "point_f1": {
+        "f1": 0.47493403693931363,
+        "precision": 0.31141868512110726,
+        "recall": 1.0,
+        "threshold": 0.9999998807907104
+      },
+      "event_f1": {
+        "f1": 0.019704433497536925,
+        "precision": 0.009950248756218905,
+        "recall": 0.9999999999999998,
+        "threshold": 0.9999998807907104
+      },
+      "event_f1_squeeze": {
+        "f1": 0.004999999999999995,
+        "precision": 0.002506265664160401,
+        "recall": 0.9999999999999989,
+        "threshold": 0.9999998807907104
+      },
+      "auprc": {
+        "value": 0.008203332257698112
+      },
+      "auroc": {
+        "value": 0.5277849002849003
+      }
+    },
+    "Lab2Cmac011215EPG6": {
+      "point_f1": {
+        "f1": 0.8308605341246286,
+        "precision": 0.7106598984771574,
+        "recall": 1.0,
+        "threshold": 1.0
+      },
+      "event_f1": {
+        "f1": 0.0806451612903225,
+        "precision": 0.04201680672268908,
+        "recall": 0.9999999999999998,
+        "threshold": 1.0
+      },
+      "event_f1_squeeze": {
+        "f1": 0.017241379310344807,
+        "precision": 0.008695652173913044,
+        "recall": 0.9999999999999989,
+        "threshold": 1.0
+      },
+      "auprc": {
+        "value": 0.012308539932418754
+      },
+      "auroc": {
+        "value": 0.4591203674374406
+      }
+    },
+    "MesoplodonDensirostris": {
+      "point_f1": {
+        "f1": 0.6060606060606056,
+        "precision": 0.43478260869565216,
+        "recall": 1.0,
+        "threshold": 1.0
+      },
+      "event_f1": {
+        "f1": 0.028469750889679686,
+        "precision": 0.01444043321299639,
+        "recall": 0.9999999999999998,
+        "threshold": 1.0
+      },
+      "event_f1_squeeze": {
+        "f1": 0.007272727272727265,
+        "precision": 0.0036496350364963502,
+        "recall": 0.9999999999999989,
+        "threshold": 1.0
+      },
+      "auprc": {
+        "value": 0.014980472780441168
+      },
+      "auroc": {
+        "value": 0.5270268620268621
+      }
+    },
+    "NOISE1sddb40": {
+      "point_f1": {
+        "f1": 0.7990459153249845,
+        "precision": 0.6653426017874876,
+        "recall": 1.0,
+        "threshold": 1.0
+      },
+      "event_f1": {
+        "f1": 0.02881844380403455,
+        "precision": 0.014619883040935672,
+        "recall": 0.9999999999999998,
+        "threshold": 1.0
+      },
+      "event_f1_squeeze": {
+        "f1": 0.005899705014749256,
+        "precision": 0.0029585798816568047,
+        "recall": 0.9999999999999989,
+        "threshold": 1.0
+      },
+      "auprc": {
+        "value": 0.01557158841215673
+      },
+      "auroc": {
+        "value": 0.5264024167467287
+      }
+    },
+    "NOISEBIDMC1": {
+      "point_f1": {
+        "f1": 0.8503401360544213,
+        "precision": 0.7396449704142012,
+        "recall": 1.0,
+        "threshold": 1.0
+      },
+      "event_f1": {
+        "f1": 0.1020408163265305,
+        "precision": 0.053763440860215055,
+        "recall": 0.9999999999999998,
+        "threshold": 1.0
+      },
+      "event_f1_squeeze": {
+        "f1": 0.022222222222222195,
+        "precision": 0.011235955056179775,
+        "recall": 0.9999999999999989,
+        "threshold": 1.0
+      },
+      "auprc": {
+        "value": 0.02929573569422217
+      },
+      "auroc": {
+        "value": 0.49823567961165055
+      }
+    },
+    "NOISECIMIS44AirTemperature4": {
+      "point_f1": {
+        "f1": 0.8099173553719003,
+        "precision": 0.6805555555555556,
+        "recall": 1.0,
+        "threshold": 1.0
+      },
+      "event_f1": {
+        "f1": 0.148148148148148,
+        "precision": 0.08,
+        "recall": 0.9999999999999998,
+        "threshold": 1.0
+      },
+      "event_f1_squeeze": {
+        "f1": 0.04166666666666662,
+        "precision": 0.02127659574468085,
+        "recall": 0.9999999999999989,
+        "threshold": 1.0
+      },
+      "auprc": {
+        "value": 0.023872986034685247
+      },
+      "auroc": {
+        "value": 0.5012968104727156
+      }
+    },
+    "NOISEECG4": {
+      "point_f1": {
+        "f1": 0.5980861244019134,
+        "precision": 0.42662116040955633,
+        "recall": 1.0,
+        "threshold": 1.0
+      },
+      "event_f1": {
+        "f1": 0.02890173410404621,
+        "precision": 0.01466275659824047,
+        "recall": 0.9999999999999998,
+        "threshold": 1.0
+      },
+      "event_f1_squeeze": {
+        "f1": 0.005917159763313602,
+        "precision": 0.002967359050445104,
+        "recall": 0.9999999999999989,
+        "threshold": 1.0
+      },
+      "auprc": {
+        "value": 0.00998327779641087
+      },
+      "auroc": {
+        "value": 0.48219878738884403
+      }
+    },
+    "NOISEGP711MarkerLFM5z3": {
+      "point_f1": {
+        "f1": 0.8675799086757985,
+        "precision": 0.7661290322580645,
+        "recall": 1.0,
+        "threshold": 1.0
+      },
+      "event_f1": {
+        "f1": 0.21621621621621598,
+        "precision": 0.12121212121212122,
+        "recall": 0.9999999999999998,
+        "threshold": 1.0
+      },
+      "event_f1_squeeze": {
+        "f1": 0.064516129032258,
+        "precision": 0.03333333333333333,
+        "recall": 0.9999999999999989,
+        "threshold": 1.0
+      },
+      "auprc": {
+        "value": 0.014027819142293306
+      },
+      "auroc": {
+        "value": 0.5170672875081104
+      }
+    },
+    "NOISEInternalBleeding16": {
+      "point_f1": {
+        "f1": 0.5821596244131451,
+        "precision": 0.4105960264900662,
+        "recall": 1.0,
+        "threshold": 1.0
+      },
+      "event_f1": {
+        "f1": 0.06315789473684202,
+        "precision": 0.03260869565217391,
+        "recall": 0.9999999999999997,
+        "threshold": 1.0
+      },
+      "event_f1_squeeze": {
+        "f1": 0.021978021978021955,
+        "precision": 0.011111111111111112,
+        "recall": 0.9999999999999989,
+        "threshold": 1.0
+      },
+      "auprc": {
+        "value": 0.009769254909733578
+      },
+      "auroc": {
+        "value": 0.4750191335105338
+      }
+    },
+    "NOISEInternalBleeding6": {
+      "point_f1": {
+        "f1": 0.8723404255319144,
+        "precision": 0.7735849056603774,
+        "recall": 1.0,
+        "threshold": 1.0
+      },
+      "event_f1": {
+        "f1": 0.11764705882352929,
+        "precision": 0.0625,
+        "recall": 0.9999999999999998,
+        "threshold": 1.0
+      },
+      "event_f1_squeeze": {
+        "f1": 0.032258064516129,
+        "precision": 0.01639344262295082,
+        "recall": 0.9999999999999989,
+        "threshold": 1.0
+      },
+      "auprc": {
+        "value": 0.033222006942984196
+      },
+      "auroc": {
+        "value": 0.49773492789595686
+      }
+    },
+    "NOISELab2Cmac011215EPG1": {
+      "point_f1": {
+        "f1": 0.4866180048661797,
+        "precision": 0.3215434083601286,
+        "recall": 1.0,
+        "threshold": 1.0
+      },
+      "event_f1": {
+        "f1": 0.03652968036529677,
+        "precision": 0.018604651162790697,
+        "recall": 0.9999999999999998,
+        "threshold": 1.0
+      },
+      "event_f1_squeeze": {
+        "f1": 0.009389671361502335,
+        "precision": 0.0047169811320754715,
+        "recall": 0.9999999999999989,
+        "threshold": 1.0
+      },
+      "auprc": {
+        "value": 0.004119087948705214
+      },
+      "auroc": {
+        "value": 0.4867717959019686
+      }
+    },
+    "NOISELab2Cmac011215EPG4": {
+      "point_f1": {
+        "f1": 0.5581395348837205,
+        "precision": 0.3870967741935484,
+        "recall": 1.0,
+        "threshold": 1.0
+      },
+      "event_f1": {
+        "f1": 0.027303754266211573,
+        "precision": 0.01384083044982699,
+        "recall": 0.9999999999999998,
+        "threshold": 1.0
+      },
+      "event_f1_squeeze": {
+        "f1": 0.006968641114982571,
+        "precision": 0.0034965034965034965,
+        "recall": 0.9999999999999989,
+        "threshold": 1.0
+      },
+      "auprc": {
+        "value": 0.007502743940182867
+      },
+      "auroc": {
+        "value": 0.4884016145542528
+      }
+    },
+    "NOISEMesoplodonDensirostris": {
+      "point_f1": {
+        "f1": 0.654205607476635,
+        "precision": 0.4861111111111111,
+        "recall": 1.0,
+        "threshold": 1.0
+      },
+      "event_f1": {
+        "f1": 0.03478260869565213,
+        "precision": 0.017699115044247787,
+        "recall": 0.9999999999999998,
+        "threshold": 1.0
+      },
+      "event_f1_squeeze": {
+        "f1": 0.008928571428571418,
+        "precision": 0.004484304932735426,
+        "recall": 0.9999999999999989,
+        "threshold": 1.0
+      },
+      "auprc": {
+        "value": 0.014188240694384586
+      },
+      "auroc": {
+        "value": 0.4892436392436393
+      }
+    },
+    "NOISETkeepThirdMARS": {
+      "point_f1": {
+        "f1": 0.8996960486322183,
+        "precision": 0.8176795580110497,
+        "recall": 1.0,
+        "threshold": 1.0
+      },
+      "event_f1": {
+        "f1": 0.195121951219512,
+        "precision": 0.10810810810810811,
+        "recall": 0.9999999999999998,
+        "threshold": 1.0
+      },
+      "event_f1_squeeze": {
+        "f1": 0.057142857142857086,
+        "precision": 0.029411764705882353,
+        "recall": 0.9999999999999989,
+        "threshold": 1.0
+      },
+      "auprc": {
+        "value": 0.019051236771092446
+      },
+      "auroc": {
+        "value": 0.4782771859679858
+      }
+    },
+    "NOISEapneaecg4": {
+      "point_f1": {
+        "f1": 0.5847953216374264,
+        "precision": 0.4132231404958678,
+        "recall": 1.0,
+        "threshold": 1.0
+      },
+      "event_f1": {
+        "f1": 0.036199095022624396,
+        "precision": 0.018433179723502304,
+        "recall": 0.9999999999999998,
+        "threshold": 1.0
+      },
+      "event_f1_squeeze": {
+        "f1": 0.009302325581395337,
+        "precision": 0.004672897196261682,
+        "recall": 0.9999999999999989,
+        "threshold": 1.0
+      },
+      "auprc": {
+        "value": 0.004629059371116873
+      },
+      "auroc": {
+        "value": 0.4777482866043614
+      }
+    },
+    "NOISEgait3": {
+      "point_f1": {
+        "f1": 0.6711409395973149,
+        "precision": 0.5050505050505051,
+        "recall": 1.0,
+        "threshold": 1.0
+      },
+      "event_f1": {
+        "f1": 0.015455950540958253,
+        "precision": 0.00778816199376947,
+        "recall": 0.9999999999999998,
+        "threshold": 1.0
+      },
+      "event_f1_squeeze": {
+        "f1": 0.0031298904538341124,
+        "precision": 0.001567398119122257,
+        "recall": 0.9999999999999989,
+        "threshold": 1.0
+      },
+      "auprc": {
+        "value": 0.016103547929810665
+      },
+      "auroc": {
+        "value": 0.5013566065051636
+      }
+    },
+    "NOISEgaitHunt2": {
+      "point_f1": {
+        "f1": 0.8279124778237724,
+        "precision": 0.7063572149344097,
+        "recall": 1.0,
+        "threshold": 1.0
+      },
+      "event_f1": {
+        "f1": 0.033222591362126214,
+        "precision": 0.016891891891891893,
+        "recall": 0.9999999999999998,
+        "threshold": 1.0
+      },
+      "event_f1_squeeze": {
+        "f1": 0.006825938566552893,
+        "precision": 0.003424657534246575,
+        "recall": 0.9999999999999989,
+        "threshold": 1.0
+      },
+      "auprc": {
+        "value": 0.015100375306081087
+      },
+      "auroc": {
+        "value": 0.48389725961845215
+      }
+    },
+    "NOISEinsectEPG3": {
+      "point_f1": {
+        "f1": 0.778210116731517,
+        "precision": 0.6369426751592356,
+        "recall": 1.0,
+        "threshold": 1.0
+      },
+      "event_f1": {
+        "f1": 0.12307692307692294,
+        "precision": 0.06557377049180328,
+        "recall": 0.9999999999999998,
+        "threshold": 1.0
+      },
+      "event_f1_squeeze": {
+        "f1": 0.03389830508474572,
+        "precision": 0.017241379310344827,
+        "recall": 0.9999999999999989,
+        "threshold": 1.0
+      },
+      "auprc": {
+        "value": 0.02093145625945826
+      },
+      "auroc": {
+        "value": 0.4930267665952891
+      }
+    },
+    "PowerDemand1": {
+      "point_f1": {
+        "f1": 0.7248826291079807,
+        "precision": 0.5684830633284241,
+        "recall": 1.0,
+        "threshold": 1.0
+      },
+      "event_f1": {
+        "f1": 0.033003300330032966,
+        "precision": 0.016778523489932886,
+        "recall": 0.9999999999999998,
+        "threshold": 1.0
+      },
+      "event_f1_squeeze": {
+        "f1": 0.006779661016949145,
+        "precision": 0.003401360544217687,
+        "recall": 0.9999999999999989,
+        "threshold": 1.0
+      },
+      "auprc": {
+        "value": 0.018513049561903954
+      },
+      "auroc": {
+        "value": 0.49914828639893843
+      }
+    },
+    "PowerDemand2": {
+      "point_f1": {
+        "f1": 0.748858447488584,
+        "precision": 0.5985401459854015,
+        "recall": 1.0,
+        "threshold": 1.0
+      },
+      "event_f1": {
+        "f1": 0.03508771929824558,
+        "precision": 0.017857142857142856,
+        "recall": 0.9999999999999998,
+        "threshold": 1.0
+      },
+      "event_f1_squeeze": {
+        "f1": 0.007220216606498187,
+        "precision": 0.0036231884057971015,
+        "recall": 0.9999999999999989,
+        "threshold": 1.0
+      },
+      "auprc": {
+        "value": 0.03204628055326317
+      },
+      "auroc": {
+        "value": 0.5692861296203168
+      }
+    },
+    "PowerDemand3": {
+      "point_f1": {
+        "f1": 0.5180467091295113,
+        "precision": 0.3495702005730659,
+        "recall": 1.0,
+        "threshold": 1.0
+      },
+      "event_f1": {
+        "f1": 0.03404255319148932,
+        "precision": 0.017316017316017316,
+        "recall": 0.9999999999999998,
+        "threshold": 1.0
+      },
+      "event_f1_squeeze": {
+        "f1": 0.00873362445414846,
+        "precision": 0.0043859649122807015,
+        "recall": 0.9999999999999989,
+        "threshold": 1.0
+      },
+      "auprc": {
+        "value": 0.00872366216666354
+      },
+      "auroc": {
+        "value": 0.4841397185146813
+      }
+    },
+    "PowerDemand4": {
+      "point_f1": {
+        "f1": 0.5700934579439249,
+        "precision": 0.39869281045751637,
+        "recall": 1.0,
+        "threshold": 1.0
+      },
+      "event_f1": {
+        "f1": 0.04166666666666662,
+        "precision": 0.02127659574468085,
+        "recall": 0.9999999999999998,
+        "threshold": 1.0
+      },
+      "event_f1_squeeze": {
+        "f1": 0.010752688172043,
+        "precision": 0.005405405405405406,
+        "recall": 0.9999999999999989,
+        "threshold": 1.0
+      },
+      "auprc": {
+        "value": 0.01026625069299347
+      },
+      "auroc": {
+        "value": 0.5040555969671854
+      }
+    },
+    "STAFFIIIDatabase": {
+      "point_f1": {
+        "f1": 0.5720338983050843,
+        "precision": 0.40059347181008903,
+        "recall": 1.0,
+        "threshold": 1.0
+      },
+      "event_f1": {
+        "f1": 0.024154589371980652,
+        "precision": 0.012224938875305624,
+        "recall": 0.9999999999999998,
+        "threshold": 1.0
+      },
+      "event_f1_squeeze": {
+        "f1": 0.004926108374384231,
+        "precision": 0.0024691358024691358,
+        "recall": 0.9999999999999989,
+        "threshold": 1.0
+      },
+      "auprc": {
+        "value": 0.0010343415420629451
+      },
+      "auroc": {
+        "value": 0.48689291078315666
+      }
+    },
+    "TkeepFifthMARS": {
+      "point_f1": {
+        "f1": 0.8235294117647053,
+        "precision": 0.7,
+        "recall": 1.0,
+        "threshold": 1.0
+      },
+      "event_f1": {
+        "f1": 0.11267605633802805,
+        "precision": 0.05970149253731343,
+        "recall": 0.9999999999999998,
+        "threshold": 1.0
+      },
+      "event_f1_squeeze": {
+        "f1": 0.030769230769230736,
+        "precision": 0.015625,
+        "recall": 0.9999999999999989,
+        "threshold": 1.0
+      },
+      "auprc": {
+        "value": 0.018873006457151342
+      },
+      "auroc": {
+        "value": 0.49778865079807794
+      }
+    },
+    "TkeepFirstMARS": {
+      "point_f1": {
+        "f1": 0.6878306878306873,
+        "precision": 0.5241935483870968,
+        "recall": 1.0,
+        "threshold": 1.0
+      },
+      "event_f1": {
+        "f1": 0.0923076923076922,
+        "precision": 0.04838709677419355,
+        "recall": 0.9999999999999997,
+        "threshold": 1.0
+      },
+      "event_f1_squeeze": {
+        "f1": 0.032786885245901606,
+        "precision": 0.016666666666666666,
+        "recall": 0.9999999999999989,
+        "threshold": 1.0
+      },
+      "auprc": {
+        "value": 0.00825969750993218
+      },
+      "auroc": {
+        "value": 0.49981223887933157
+      }
+    },
+    "TkeepForthMARS": {
+      "point_f1": {
+        "f1": 0.8010899182561303,
+        "precision": 0.6681818181818182,
+        "recall": 1.0,
+        "threshold": 1.0
+      },
+      "event_f1": {
+        "f1": 0.09876543209876533,
+        "precision": 0.05194805194805195,
+        "recall": 0.9999999999999998,
+        "threshold": 1.0
+      },
+      "event_f1_squeeze": {
+        "f1": 0.026666666666666634,
+        "precision": 0.013513513513513514,
+        "recall": 0.9999999999999989,
+        "threshold": 1.0
+      },
+      "auprc": {
+        "value": 0.028366574113685157
+      },
+      "auroc": {
+        "value": 0.5860122436535048
+      }
+    },
+    "TkeepSecondMARS": {
+      "point_f1": {
+        "f1": 0.42402826855123643,
+        "precision": 0.26905829596412556,
+        "recall": 1.0,
+        "threshold": 1.0
+      },
+      "event_f1": {
+        "f1": 0.035502958579881616,
+        "precision": 0.018072289156626505,
+        "recall": 0.9999999999999997,
+        "threshold": 1.0
+      },
+      "event_f1_squeeze": {
+        "f1": 0.012121212121212107,
+        "precision": 0.006097560975609756,
+        "recall": 0.9999999999999989,
+        "threshold": 1.0
+      },
+      "auprc": {
+        "value": 0.007676753907669938
+      },
+      "auroc": {
+        "value": 0.4807478632478632
+      }
+    },
+    "TkeepThirdMARS": {
+      "point_f1": {
+        "f1": 0.8835820895522383,
+        "precision": 0.7914438502673797,
+        "recall": 1.0,
+        "threshold": 1.0
+      },
+      "event_f1": {
+        "f1": 0.17021276595744664,
+        "precision": 0.09302325581395349,
+        "recall": 0.9999999999999998,
+        "threshold": 1.0
+      },
+      "event_f1_squeeze": {
+        "f1": 0.048780487804878,
+        "precision": 0.025,
+        "recall": 0.9999999999999989,
+        "threshold": 1.0
+      },
+      "auprc": {
+        "value": 0.01899224288527653
+      },
+      "auroc": {
+        "value": 0.49553022703832955
+      }
+    },
+    "WalkingAceleration1": {
+      "point_f1": {
+        "f1": 0.9366666666666661,
+        "precision": 0.8808777429467085,
+        "recall": 1.0,
+        "threshold": 1.0
+      },
+      "event_f1": {
+        "f1": 0.20833333333333312,
+        "precision": 0.11627906976744186,
+        "recall": 0.9999999999999998,
+        "threshold": 1.0
+      },
+      "event_f1_squeeze": {
+        "f1": 0.04999999999999995,
+        "precision": 0.02564102564102564,
+        "recall": 0.9999999999999989,
+        "threshold": 1.0
+      },
+      "auprc": {
+        "value": 0.05498522348388805
+      },
+      "auroc": {
+        "value": 0.5039336279603414
+      }
+    },
+    "WalkingAceleration5": {
+      "point_f1": {
+        "f1": 0.6987179487179482,
+        "precision": 0.5369458128078818,
+        "recall": 1.0,
+        "threshold": 1.0
+      },
+      "event_f1": {
+        "f1": 0.07843137254901952,
+        "precision": 0.04081632653061224,
+        "recall": 0.9999999999999998,
+        "threshold": 1.0
+      },
+      "event_f1_squeeze": {
+        "f1": 0.020833333333333308,
+        "precision": 0.010526315789473684,
+        "recall": 0.9999999999999989,
+        "threshold": 1.0
+      },
+      "auprc": {
+        "value": 0.027412510893368124
+      },
+      "auroc": {
+        "value": 0.4973770663642709
+      }
+    },
+    "apneaecg": {
+      "point_f1": {
+        "f1": 0.7892976588628757,
+        "precision": 0.6519337016574586,
+        "recall": 1.0,
+        "threshold": 1.0
+      },
+      "event_f1": {
+        "f1": 0.11267605633802805,
+        "precision": 0.05970149253731343,
+        "recall": 0.9999999999999998,
+        "threshold": 1.0
+      },
+      "event_f1_squeeze": {
+        "f1": 0.030769230769230736,
+        "precision": 0.015625,
+        "recall": 0.9999999999999989,
+        "threshold": 1.0
+      },
+      "auprc": {
+        "value": 0.004158559355704253
+      },
+      "auroc": {
+        "value": 0.49133566989820476
+      }
+    },
+    "apneaecg2": {
+      "point_f1": {
+        "f1": 0.5673758865248223,
+        "precision": 0.39603960396039606,
+        "recall": 1.0,
+        "threshold": 1.0
+      },
+      "event_f1": {
+        "f1": 0.025559105431309875,
+        "precision": 0.012944983818770227,
+        "recall": 0.9999999999999998,
+        "threshold": 1.0
+      },
+      "event_f1_squeeze": {
+        "f1": 0.006514657980456019,
+        "precision": 0.0032679738562091504,
+        "recall": 0.9999999999999989,
+        "threshold": 1.0
+      },
+      "auprc": {
+        "value": 0.007046894907584679
+      },
+      "auroc": {
+        "value": 0.4866111307420494
+      }
+    },
+    "apneaecg3": {
+      "point_f1": {
+        "f1": 0.6396588486140721,
+        "precision": 0.4702194357366771,
+        "recall": 1.0,
+        "threshold": 1.0
+      },
+      "event_f1": {
+        "f1": 0.0451977401129943,
+        "precision": 0.023121387283236993,
+        "recall": 0.9999999999999998,
+        "threshold": 1.0
+      },
+      "event_f1_squeeze": {
+        "f1": 0.011695906432748523,
+        "precision": 0.0058823529411764705,
+        "recall": 0.9999999999999989,
+        "threshold": 1.0
+      },
+      "auprc": {
+        "value": 0.004504165155560178
+      },
+      "auroc": {
+        "value": 0.4786907557964469
+      }
+    },
+    "apneaecg4": {
+      "point_f1": {
+        "f1": 0.5338078291814942,
+        "precision": 0.3640776699029126,
+        "recall": 1.0,
+        "threshold": 1.0
+      },
+      "event_f1": {
+        "f1": 0.0296296296296296,
+        "precision": 0.015037593984962405,
+        "recall": 0.9999999999999998,
+        "threshold": 1.0
+      },
+      "event_f1_squeeze": {
+        "f1": 0.007575757575757567,
+        "precision": 0.0038022813688212928,
+        "recall": 0.9999999999999989,
+        "threshold": 1.0
+      },
+      "auprc": {
+        "value": 0.0045677514559183275
+      },
+      "auroc": {
+        "value": 0.4874273104880582
+      }
+    },
+    "gait1": {
+      "point_f1": {
+        "f1": 0.5568814638027044,
+        "precision": 0.38588754134509373,
+        "recall": 1.0,
+        "threshold": 1.0
+      },
+      "event_f1": {
+        "f1": 0.01763668430335095,
+        "precision": 0.008896797153024912,
+        "recall": 0.9999999999999998,
+        "threshold": 1.0
+      },
+      "event_f1_squeeze": {
+        "f1": 0.003577817531305899,
+        "precision": 0.0017921146953405018,
+        "recall": 0.9999999999999989,
+        "threshold": 1.0
+      },
+      "auprc": {
+        "value": 0.007794200071395377
+      },
+      "auroc": {
+        "value": 0.5018033274676053
+      }
+    },
+    "gait2": {
+      "point_f1": {
+        "f1": 0.5021520803443325,
+        "precision": 0.33524904214559387,
+        "recall": 1.0,
+        "threshold": 1.0
+      },
+      "event_f1": {
+        "f1": 0.014204545454545438,
+        "precision": 0.00715307582260372,
+        "recall": 0.9999999999999998,
+        "threshold": 1.0
+      },
+      "event_f1_squeeze": {
+        "f1": 0.002873563218390802,
+        "precision": 0.0014388489208633094,
+        "recall": 0.9999999999999989,
+        "threshold": 1.0
+      },
+      "auprc": {
+        "value": 0.008134743667664623
+      },
+      "auroc": {
+        "value": 0.4909392589118199
+      }
+    },
+    "gait3": {
+      "point_f1": {
+        "f1": 0.6021306160259375,
+        "precision": 0.43074884029158383,
+        "recall": 1.0,
+        "threshold": 1.0
+      },
+      "event_f1": {
+        "f1": 0.01150747986191023,
+        "precision": 0.005787037037037037,
+        "recall": 0.9999999999999998,
+        "threshold": 1.0
+      },
+      "event_f1_squeeze": {
+        "f1": 0.002322880371660857,
+        "precision": 0.0011627906976744186,
+        "recall": 0.9999999999999989,
+        "threshold": 1.0
+      },
+      "auprc": {
+        "value": 0.01849638611164761
+      },
+      "auroc": {
+        "value": 0.5636151529775119
+      }
+    },
+    "gaitHunt1": {
+      "point_f1": {
+        "f1": 0.43835616438356123,
+        "precision": 0.2807017543859649,
+        "recall": 1.0,
+        "threshold": 1.0
+      },
+      "event_f1": {
+        "f1": 0.019138755980861222,
+        "precision": 0.00966183574879227,
+        "recall": 0.9999999999999998,
+        "threshold": 1.0
+      },
+      "event_f1_squeeze": {
+        "f1": 0.004854368932038829,
+        "precision": 0.0024330900243309003,
+        "recall": 0.9999999999999989,
+        "threshold": 1.0
+      },
+      "auprc": {
+        "value": 0.003983283651628053
+      },
+      "auroc": {
+        "value": 0.5501297026699029
+      }
+    },
+    "gaitHunt2": {
+      "point_f1": {
+        "f1": 0.7816862088218867,
+        "precision": 0.6416131989000916,
+        "recall": 1.0,
+        "threshold": 1.0
+      },
+      "event_f1": {
+        "f1": 0.0249376558603491,
+        "precision": 0.012626262626262626,
+        "recall": 0.9999999999999998,
+        "threshold": 1.0
+      },
+      "event_f1_squeeze": {
+        "f1": 0.005089058524173021,
+        "precision": 0.002551020408163265,
+        "recall": 0.9999999999999989,
+        "threshold": 1.0
+      },
+      "auprc": {
+        "value": 0.015436715354412952
+      },
+      "auroc": {
+        "value": 0.5000731991322658
+      }
+    },
+    "gaitHunt3": {
+      "point_f1": {
+        "f1": 0.7996237064910625,
+        "precision": 0.6661442006269592,
+        "recall": 1.0,
+        "threshold": 1.0
+      },
+      "event_f1": {
+        "f1": 0.02739726027397257,
+        "precision": 0.013888888888888888,
+        "recall": 0.9999999999999999,
+        "threshold": 1.0
+      },
+      "event_f1_squeeze": {
+        "f1": 0.004672897196261677,
+        "precision": 0.00234192037470726,
+        "recall": 0.9999999999999989,
+        "threshold": 1.0
+      },
+      "auprc": {
+        "value": 0.021953726024724535
+      },
+      "auroc": {
+        "value": 0.5300228692382841
+      }
+    },
+    "insectEPG1": {
+      "point_f1": {
+        "f1": 0.5673758865248223,
+        "precision": 0.39603960396039606,
+        "recall": 1.0,
+        "threshold": 1.0
+      },
+      "event_f1": {
+        "f1": 0.061538461538461466,
+        "precision": 0.031746031746031744,
+        "recall": 0.9999999999999998,
+        "threshold": 1.0
+      },
+      "event_f1_squeeze": {
+        "f1": 0.016129032258064502,
+        "precision": 0.008130081300813009,
+        "recall": 0.9999999999999989,
+        "threshold": 1.0
+      },
+      "auprc": {
+        "value": 0.011362624174637296
+      },
+      "auroc": {
+        "value": 0.4924258321273516
+      }
+    },
+    "insectEPG2": {
+      "point_f1": {
+        "f1": 0.5494505494505489,
+        "precision": 0.3787878787878788,
+        "recall": 1.0,
+        "threshold": 1.0
+      },
+      "event_f1": {
+        "f1": 0.046511627906976695,
+        "precision": 0.023809523809523808,
+        "recall": 0.9999999999999997,
+        "threshold": 1.0
+      },
+      "event_f1_squeeze": {
+        "f1": 0.015999999999999983,
+        "precision": 0.008064516129032258,
+        "recall": 0.9999999999999989,
+        "threshold": 1.0
+      },
+      "auprc": {
+        "value": 0.012142594247857406
+      },
+      "auroc": {
+        "value": 0.4938531073446328
+      }
+    },
+    "insectEPG3": {
+      "point_f1": {
+        "f1": 0.8130081300813002,
+        "precision": 0.684931506849315,
+        "recall": 1.0,
+        "threshold": 1.0
+      },
+      "event_f1": {
+        "f1": 0.148148148148148,
+        "precision": 0.08,
+        "recall": 0.9999999999999998,
+        "threshold": 1.0
+      },
+      "event_f1_squeeze": {
+        "f1": 0.04166666666666662,
+        "precision": 0.02127659574468085,
+        "recall": 0.9999999999999989,
+        "threshold": 1.0
+      },
+      "auprc": {
+        "value": 0.021179717738240674
+      },
+      "auroc": {
+        "value": 0.5028468950749465
+      }
+    },
+    "insectEPG4": {
+      "point_f1": {
+        "f1": 0.5586592178770945,
+        "precision": 0.3875968992248062,
+        "recall": 1.0,
+        "threshold": 1.0
+      },
+      "event_f1": {
+        "f1": 0.048192771084337296,
+        "precision": 0.024691358024691357,
+        "recall": 0.9999999999999998,
+        "threshold": 1.0
+      },
+      "event_f1_squeeze": {
+        "f1": 0.012499999999999987,
+        "precision": 0.006289308176100629,
+        "recall": 0.9999999999999989,
+        "threshold": 1.0
+      },
+      "auprc": {
+        "value": 0.011942527434654564
+      },
+      "auroc": {
+        "value": 0.5215822637106184
+      }
+    },
+    "insectEPG5": {
+      "point_f1": {
+        "f1": 0.383458646616541,
+        "precision": 0.2372093023255814,
+        "recall": 1.0,
+        "threshold": 1.0
+      },
+      "event_f1": {
+        "f1": 0.03529411764705878,
+        "precision": 0.017964071856287425,
+        "recall": 0.9999999999999997,
+        "threshold": 1.0
+      },
+      "event_f1_squeeze": {
+        "f1": 0.012048192771084322,
+        "precision": 0.006060606060606061,
+        "recall": 0.9999999999999989,
+        "threshold": 1.0
+      },
+      "auprc": {
+        "value": 0.007563523434233573
+      },
+      "auroc": {
+        "value": 0.49561224104969703
+      }
+    },
+    "ltstdbs30791AI": {
+      "point_f1": {
+        "f1": 0.40650406504065006,
+        "precision": 0.25510204081632654,
+        "recall": 1.0,
+        "threshold": 1.0
+      },
+      "event_f1": {
+        "f1": 0.013513513513513497,
+        "precision": 0.006802721088435374,
+        "recall": 0.9999999999999998,
+        "threshold": 1.0
+      },
+      "event_f1_squeeze": {
+        "f1": 0.002732240437158467,
+        "precision": 0.0013679890560875513,
+        "recall": 0.9999999999999989,
+        "threshold": 1.0
+      },
+      "auprc": {
+        "value": 0.0064875721190319445
+      },
+      "auroc": {
+        "value": 0.4871987989556136
+      }
+    },
+    "ltstdbs30791AS": {
+      "point_f1": {
+        "f1": 0.42122999157539975,
+        "precision": 0.26680896478121663,
+        "recall": 1.0,
+        "threshold": 1.0
+      },
+      "event_f1": {
+        "f1": 0.014347202295552352,
+        "precision": 0.0072254335260115606,
+        "recall": 0.9999999999999998,
+        "threshold": 1.0
+      },
+      "event_f1_squeeze": {
+        "f1": 0.002902757619738749,
+        "precision": 0.0014534883720930232,
+        "recall": 0.9999999999999989,
+        "threshold": 1.0
+      },
+      "auprc": {
+        "value": 0.007823074906359554
+      },
+      "auroc": {
+        "value": 0.5004583674755751
+      }
+    },
+    "ltstdbs30791ES": {
+      "point_f1": {
+        "f1": 0.37313432835820864,
+        "precision": 0.22935779816513763,
+        "recall": 1.0,
+        "threshold": 1.0
+      },
+      "event_f1": {
+        "f1": 0.011764705882352927,
+        "precision": 0.005917159763313609,
+        "recall": 0.9999999999999998,
+        "threshold": 1.0
+      },
+      "event_f1_squeeze": {
+        "f1": 0.0023752969121140113,
+        "precision": 0.0011890606420927466,
+        "recall": 0.9999999999999989,
+        "threshold": 1.0
+      },
+      "auprc": {
+        "value": 0.007161855383050509
+      },
+      "auroc": {
+        "value": 0.4998361646991074
+      }
+    },
+    "mit14046longtermecg": {
+      "point_f1": {
+        "f1": 0.5777310924369743,
+        "precision": 0.40620384047267355,
+        "recall": 1.0,
+        "threshold": 1.0
+      },
+      "event_f1": {
+        "f1": 0.01228501228501227,
+        "precision": 0.006180469715698393,
+        "recall": 0.9999999999999998,
+        "threshold": 1.0
+      },
+      "event_f1_squeeze": {
+        "f1": 0.002481389578163769,
+        "precision": 0.0012422360248447205,
+        "recall": 0.9999999999999989,
+        "threshold": 1.0
+      },
+      "auprc": {
+        "value": 0.004940538747574746
+      },
+      "auroc": {
+        "value": 0.45913094142637234
+      }
+    },
+    "mit14134longtermecg": {
+      "point_f1": {
+        "f1": 0.10186757215619684,
+        "precision": 0.05366726296958855,
+        "recall": 1.0,
+        "threshold": 0.9984538555145264
+      },
+      "event_f1": {
+        "f1": 0.005639097744360897,
+        "precision": 0.002827521206409048,
+        "recall": 0.9999999999999997,
+        "threshold": 0.9984538555145264
+      },
+      "event_f1_squeeze": {
+        "f1": 0.0018867924528301867,
+        "precision": 0.0009442870632672333,
+        "recall": 0.9999999999999989,
+        "threshold": 0.9984538555145264
+      },
+      "auprc": {
+        "value": 0.0013692327100109534
+      },
+      "auroc": {
+        "value": 0.4826849894291754
+      }
+    },
+    "mit14157longtermecg": {
+      "point_f1": {
+        "f1": 0.24546424759871907,
+        "precision": 0.13990267639902676,
+        "recall": 1.0,
+        "threshold": 1.0
+      },
+      "event_f1": {
+        "f1": 0.005625879043600557,
+        "precision": 0.0028208744710860366,
+        "recall": 0.9999999999999998,
+        "threshold": 1.0
+      },
+      "event_f1_squeeze": {
+        "f1": 0.001412429378531072,
+        "precision": 0.0007067137809187279,
+        "recall": 0.9999999999999989,
+        "threshold": 1.0
+      },
+      "auprc": {
+        "value": 0.0029434385298114946
+      },
+      "auroc": {
+        "value": 0.48777583767517074
+      }
+    },
+    "park3m": {
+      "point_f1": {
+        "f1": 0.7410881801125699,
+        "precision": 0.5886736214605067,
+        "recall": 1.0,
+        "threshold": 1.0
+      },
+      "event_f1": {
+        "f1": 0.034965034965034926,
+        "precision": 0.017793594306049824,
+        "recall": 0.9999999999999998,
+        "threshold": 1.0
+      },
+      "event_f1_squeeze": {
+        "f1": 0.0071942446043165385,
+        "precision": 0.0036101083032490976,
+        "recall": 0.9999999999999989,
+        "threshold": 1.0
+      },
+      "auprc": {
+        "value": 0.012797089541217225
+      },
+      "auroc": {
+        "value": 0.47329907067528376
+      }
+    },
+    "qtdbSel1005V": {
+      "point_f1": {
+        "f1": 0.7819287576020846,
+        "precision": 0.6419400855920114,
+        "recall": 1.0,
+        "threshold": 1.0
+      },
+      "event_f1": {
+        "f1": 0.03831417624521069,
+        "precision": 0.01953125,
+        "recall": 0.9999999999999998,
+        "threshold": 1.0
+      },
+      "event_f1_squeeze": {
+        "f1": 0.00790513833992094,
+        "precision": 0.003968253968253968,
+        "recall": 0.9999999999999989,
+        "threshold": 1.0
+      },
+      "auprc": {
+        "value": 0.014088994941495521
+      },
+      "auroc": {
+        "value": 0.5071479367093067
+      }
+    },
+    "qtdbSel100MLII": {
+      "point_f1": {
+        "f1": 0.7745266781411355,
+        "precision": 0.6320224719101124,
+        "recall": 1.0,
+        "threshold": 1.0
+      },
+      "event_f1": {
+        "f1": 0.0367647058823529,
+        "precision": 0.018726591760299626,
+        "recall": 0.9999999999999998,
+        "threshold": 1.0
+      },
+      "event_f1_squeeze": {
+        "f1": 0.007575757575757567,
+        "precision": 0.0038022813688212928,
+        "recall": 0.9999999999999989,
+        "threshold": 1.0
+      },
+      "auprc": {
+        "value": 0.017400580182256355
+      },
+      "auroc": {
+        "value": 0.5060066588327458
+      }
+    },
+    "resperation1": {
+      "point_f1": {
+        "f1": 0.6655683690280062,
+        "precision": 0.49876543209876545,
+        "recall": 1.0,
+        "threshold": 1.0
+      },
+      "event_f1": {
+        "f1": 0.037914691943127916,
+        "precision": 0.01932367149758454,
+        "recall": 0.9999999999999998,
+        "threshold": 1.0
+      },
+      "event_f1_squeeze": {
+        "f1": 0.0097560975609756,
+        "precision": 0.004901960784313725,
+        "recall": 0.9999999999999989,
+        "threshold": 1.0
+      },
+      "auprc": {
+        "value": 0.001855487064337603
+      },
+      "auroc": {
+        "value": 0.48995635598954934
+      }
+    },
+    "resperation10": {
+      "point_f1": {
+        "f1": 0.4951690821256035,
+        "precision": 0.3290529695024077,
+        "recall": 1.0,
+        "threshold": 1.0
+      },
+      "event_f1": {
+        "f1": 0.004761904761904756,
+        "precision": 0.002386634844868735,
+        "recall": 0.9999999999999999,
+        "threshold": 1.0
+      },
+      "event_f1_squeeze": {
+        "f1": 0.0007968127490039832,
+        "precision": 0.00039856516540454366,
+        "recall": 0.9999999999999989,
+        "threshold": 1.0
+      },
+      "auprc": {
+        "value": 0.008386158691042969
+      },
+      "auroc": {
+        "value": 0.497660503153704
+      }
+    },
+    "resperation11": {
+      "point_f1": {
+        "f1": 0.06657963446475187,
+        "precision": 0.03443619176232275,
+        "recall": 1.0,
+        "threshold": 1.0
+      },
+      "event_f1": {
+        "f1": 0.004178272980501388,
+        "precision": 0.00209351011863224,
+        "recall": 0.9999999999999997,
+        "threshold": 1.0
+      },
+      "event_f1_squeeze": {
+        "f1": 0.0013966480446927357,
+        "precision": 0.0006988120195667365,
+        "recall": 0.9999999999999989,
+        "threshold": 1.0
+      },
+      "auprc": {
+        "value": 0.00037385474075932494
+      },
+      "auroc": {
+        "value": 0.4358113744077187
+      }
+    },
+    "resperation3": {
+      "point_f1": {
+        "f1": 0.032671364509929496,
+        "precision": 0.01660696841419733,
+        "recall": 1.0,
+        "threshold": 1.0
+      },
+      "event_f1": {
+        "f1": 0.0019828155981493696,
+        "precision": 0.0009923916639100231,
+        "recall": 0.9999999999999997,
+        "threshold": 1.0
+      },
+      "event_f1_squeeze": {
+        "f1": 0.0006618133686300457,
+        "precision": 0.00033101621979476995,
+        "recall": 0.9999999999999989,
+        "threshold": 1.0
+      },
+      "auprc": {
+        "value": 0.00040750313529039155
+      },
+      "auroc": {
+        "value": 0.5298926692011159
+      }
+    },
+    "resperation4": {
+      "point_f1": {
+        "f1": 0.07193229901269386,
+        "precision": 0.03730797366495977,
+        "recall": 1.0,
+        "threshold": 1.0
+      },
+      "event_f1": {
+        "f1": 0.004538577912254155,
+        "precision": 0.002274450341167551,
+        "recall": 0.9999999999999997,
+        "threshold": 1.0
+      },
+      "event_f1_squeeze": {
+        "f1": 0.0015174506828528056,
+        "precision": 0.0007593014426727411,
+        "recall": 0.9999999999999989,
+        "threshold": 1.0
+      },
+      "auprc": {
+        "value": 0.0004004167464224472
+      },
+      "auroc": {
+        "value": 0.3703652021276245
+      }
+    },
+    "resperation9": {
+      "point_f1": {
+        "f1": 0.0927357032457495,
+        "precision": 0.04862236628849271,
+        "recall": 1.0,
+        "threshold": 1.0
+      },
+      "event_f1": {
+        "f1": 0.0027183146449201467,
+        "precision": 0.0013610071452875127,
+        "recall": 0.9999999999999998,
+        "threshold": 1.0
+      },
+      "event_f1_squeeze": {
+        "f1": 0.0006809669731018038,
+        "precision": 0.0003405994550408719,
+        "recall": 0.9999999999999989,
+        "threshold": 1.0
+      },
+      "auprc": {
+        "value": 0.0010002618356995114
+      },
+      "auroc": {
+        "value": 0.528553408994304
+      }
+    },
+    "s20101m": {
+      "point_f1": {
+        "f1": 0.34883720930232526,
+        "precision": 0.2112676056338028,
+        "recall": 1.0,
+        "threshold": 1.0
+      },
+      "event_f1": {
+        "f1": 0.014084507042253506,
+        "precision": 0.0070921985815602835,
+        "recall": 0.9999999999999998,
+        "threshold": 1.0
+      },
+      "event_f1_squeeze": {
+        "f1": 0.0035587188612099608,
+        "precision": 0.0017825311942959,
+        "recall": 0.9999999999999989,
+        "threshold": 1.0
+      },
+      "auprc": {
+        "value": 0.0050368681505579445
+      },
+      "auroc": {
+        "value": 0.5029829145728644
+      }
+    },
+    "s20101mML2": {
+      "point_f1": {
+        "f1": 0.37546933667083815,
+        "precision": 0.23112480739599384,
+        "recall": 1.0,
+        "threshold": 1.0
+      },
+      "event_f1": {
+        "f1": 0.015779092702169605,
+        "precision": 0.007952286282306162,
+        "recall": 0.9999999999999998,
+        "threshold": 1.0
+      },
+      "event_f1_squeeze": {
+        "f1": 0.003992015968063868,
+        "precision": 0.002,
+        "recall": 0.9999999999999989,
+        "threshold": 1.0
+      },
+      "auprc": {
+        "value": 0.0053216941707185245
+      },
+      "auroc": {
+        "value": 0.4589804837164751
+      }
+    },
+    "sddb49": {
+      "point_f1": {
+        "f1": 0.29013539651837494,
+        "precision": 0.16968325791855204,
+        "recall": 1.0,
+        "threshold": 1.0
+      },
+      "event_f1": {
+        "f1": 0.006765899864681995,
+        "precision": 0.0033944331296673455,
+        "recall": 0.9999999999999998,
+        "threshold": 1.0
+      },
+      "event_f1_squeeze": {
+        "f1": 0.0013605442176870732,
+        "precision": 0.0006807351940095302,
+        "recall": 0.9999999999999989,
+        "threshold": 1.0
+      },
+      "auprc": {
+        "value": 0.005005600014144076
+      },
+      "auroc": {
+        "value": 0.4966533500837521
+      }
+    },
+    "sel840mECG1": {
+      "point_f1": {
+        "f1": 0.4761904761904758,
+        "precision": 0.3125,
+        "recall": 1.0,
+        "threshold": 1.0
+      },
+      "event_f1": {
+        "f1": 0.01070663811563168,
+        "precision": 0.005382131324004306,
+        "recall": 0.9999999999999998,
+        "threshold": 1.0
+      },
+      "event_f1_squeeze": {
+        "f1": 0.0021598272138228917,
+        "precision": 0.001081081081081081,
+        "recall": 0.9999999999999989,
+        "threshold": 1.0
+      },
+      "auprc": {
+        "value": 0.009767289172822838
+      },
+      "auroc": {
+        "value": 0.49182461380135795
+      }
+    },
+    "sel840mECG2": {
+      "point_f1": {
+        "f1": 0.5353728489483743,
+        "precision": 0.36553524804177545,
+        "recall": 1.0,
+        "threshold": 1.0
+      },
+      "event_f1": {
+        "f1": 0.013531799729363992,
+        "precision": 0.006811989100817439,
+        "recall": 0.9999999999999998,
+        "threshold": 1.0
+      },
+      "event_f1_squeeze": {
+        "f1": 0.0027359781121750995,
+        "precision": 0.0013698630136986301,
+        "recall": 0.9999999999999989,
+        "threshold": 1.0
+      },
+      "auprc": {
+        "value": 0.01152226623790377
+      },
+      "auroc": {
+        "value": 0.5048858679375496
+      }
+    },
+    "taichidbS0715Master": {
+      "point_f1": {
+        "f1": 0.21216407355021194,
+        "precision": 0.11867088607594936,
+        "recall": 1.0,
+        "threshold": 1.0
+      },
+      "event_f1": {
+        "f1": 0.0071301247771835925,
+        "precision": 0.0035778175313059034,
+        "recall": 0.9999999999999998,
+        "threshold": 1.0
+      },
+      "event_f1_squeeze": {
+        "f1": 0.0017921146953404996,
+        "precision": 0.0008968609865470852,
+        "recall": 0.9999999999999989,
+        "threshold": 1.0
+      },
+      "auprc": {
+        "value": 0.0002365998370353782
+      },
+      "auroc": {
+        "value": 0.5207689117233993
+      }
+    },
+    "tilt12744mtable": {
+      "point_f1": {
+        "f1": 0.8599167822468787,
+        "precision": 0.754257907542579,
+        "recall": 1.0,
+        "threshold": 1.0
+      },
+      "event_f1": {
+        "f1": 0.09009009009008999,
+        "precision": 0.04716981132075472,
+        "recall": 0.9999999999999998,
+        "threshold": 1.0
+      },
+      "event_f1_squeeze": {
+        "f1": 0.01941747572815532,
+        "precision": 0.00980392156862745,
+        "recall": 0.9999999999999989,
+        "threshold": 1.0
+      },
+      "auprc": {
+        "value": 0.001489872342598466
+      },
+      "auroc": {
+        "value": 0.4504726884028494
+      }
+    },
+    "tilt12754table": {
+      "point_f1": {
+        "f1": 0.8707865168539322,
+        "precision": 0.7711442786069652,
+        "recall": 1.0,
+        "threshold": 1.0
+      },
+      "event_f1": {
+        "f1": 0.0980392156862744,
+        "precision": 0.05154639175257732,
+        "recall": 0.9999999999999998,
+        "threshold": 1.0
+      },
+      "event_f1_squeeze": {
+        "f1": 0.02127659574468083,
+        "precision": 0.010752688172043012,
+        "recall": 0.9999999999999989,
+        "threshold": 1.0
+      },
+      "auprc": {
+        "value": 0.0017665431488884447
+      },
+      "auroc": {
+        "value": 0.5506120012069948
+      }
+    },
+    "tilt12755mtable": {
+      "point_f1": {
+        "f1": 0.17144387891776033,
+        "precision": 0.09375915616759449,
+        "recall": 1.0,
+        "threshold": 1.0
+      },
+      "event_f1": {
+        "f1": 0.0032226877215597773,
+        "precision": 0.0016139444803098773,
+        "recall": 0.9999999999999998,
+        "threshold": 1.0
+      },
+      "event_f1_squeeze": {
+        "f1": 0.0006462035541195468,
+        "precision": 0.0003232062055591467,
+        "recall": 0.9999999999999989,
+        "threshold": 1.0
+      },
+      "auprc": {
+        "value": 0.0014605093001529067
+      },
+      "auroc": {
+        "value": 0.38133976163899064
+      }
+    },
+    "tiltAPB1": {
+      "point_f1": {
+        "f1": 0.4112478031634443,
+        "precision": 0.2588495575221239,
+        "recall": 1.0,
+        "threshold": 1.0
+      },
+      "event_f1": {
+        "f1": 0.02332361516034983,
+        "precision": 0.011799410029498525,
+        "recall": 0.9999999999999998,
+        "threshold": 1.0
+      },
+      "event_f1_squeeze": {
+        "f1": 0.0059347181008902,
+        "precision": 0.002976190476190476,
+        "recall": 0.9999999999999989,
+        "threshold": 1.0
+      },
+      "auprc": {
+        "value": 0.00520199087204087
+      },
+      "auroc": {
+        "value": 0.582560590290738
+      }
+    },
+    "tiltAPB2": {
+      "point_f1": {
+        "f1": 0.4408656265727223,
+        "precision": 0.2827630729502905,
+        "recall": 1.0,
+        "threshold": 1.0
+      },
+      "event_f1": {
+        "f1": 0.005371530886302591,
+        "precision": 0.0026929982046678637,
+        "recall": 0.9999999999999999,
+        "threshold": 1.0
+      },
+      "event_f1_squeeze": {
+        "f1": 0.0008992805755395675,
+        "precision": 0.000449842555105713,
+        "recall": 0.9999999999999989,
+        "threshold": 1.0
+      },
+      "auprc": {
+        "value": 0.01109535815058735
+      },
+      "auroc": {
+        "value": 0.49185813038577836
+      }
+    },
+    "tiltAPB3": {
+      "point_f1": {
+        "f1": 0.2699228791773777,
+        "precision": 0.15601783060921248,
+        "recall": 1.0,
+        "threshold": 1.0
+      },
+      "event_f1": {
+        "f1": 0.004382120946538119,
+        "precision": 0.0021958717610891525,
+        "recall": 0.9999999999999998,
+        "threshold": 1.0
+      },
+      "event_f1_squeeze": {
+        "f1": 0.0008795074758135435,
+        "precision": 0.0004399472063352398,
+        "recall": 0.9999999999999989,
+        "threshold": 1.0
+      },
+      "auprc": {
+        "value": 0.004721873711886547
+      },
+      "auroc": {
+        "value": 0.5018216932999615
+      }
+    },
+    "tiltAPB4": {
+      "point_f1": {
+        "f1": 0.061705989110707744,
+        "precision": 0.031835205992509365,
+        "recall": 1.0,
+        "threshold": 1.0
+      },
+      "event_f1": {
+        "f1": 0.0038535645472061613,
+        "precision": 0.0019305019305019305,
+        "recall": 0.9999999999999997,
+        "threshold": 1.0
+      },
+      "event_f1_squeeze": {
+        "f1": 0.0012878300064391485,
+        "precision": 0.0006443298969072165,
+        "recall": 0.9999999999999989,
+        "threshold": 1.0
+      },
+      "auprc": {
+        "value": 0.00047620911906927604
+      },
+      "auroc": {
+        "value": 0.498535528487581
+      }
+    },
+    "weallwalk": {
+      "point_f1": {
+        "f1": 0.4999999999999996,
+        "precision": 0.3333333333333333,
+        "recall": 1.0,
+        "threshold": 1.0
+      },
+      "event_f1": {
+        "f1": 0.04761904761904757,
+        "precision": 0.024390243902439025,
+        "recall": 0.9999999999999998,
+        "threshold": 1.0
+      },
+      "event_f1_squeeze": {
+        "f1": 0.012345679012345666,
+        "precision": 0.006211180124223602,
+        "recall": 0.9999999999999989,
+        "threshold": 1.0
+      },
+      "auprc": {
+        "value": 0.01038284550259575
+      },
+      "auroc": {
+        "value": 0.49078917425227575
+      }
+    }
+  }
+}

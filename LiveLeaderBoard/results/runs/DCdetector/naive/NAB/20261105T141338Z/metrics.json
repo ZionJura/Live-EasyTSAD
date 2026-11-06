@@ -1,0 +1,297 @@
+{
+  "summary": {
+    "point_f1": {
+      "f1": 0.9560585268250584,
+      "precision": 0.9170935969010665,
+      "recall": 1.0
+    },
+    "event_f1": {
+      "f1": 0.33727358984324896,
+      "precision": 0.3013127505593061,
+      "recall": 0.9444444444444443
+    },
+    "event_f1_squeeze": {
+      "f1": 0.2103401243451873,
+      "precision": 0.2226475494593704,
+      "recall": 0.9499999999999991
+    },
+    "auprc": {
+      "value": 0.07554893562472995
+    },
+    "auroc": {
+      "value": 0.5025549622304846
+    }
+  },
+  "n_curves_scored": 10,
+  "n_curves_evaluated": 10,
+  "skipped_all_normal": [],
+  "protocols": {
+    "point_f1": "best f1 under pa",
+    "event_f1": "event-based f1 under pa with mode log",
+    "event_f1_squeeze": "event-based f1 under pa with mode squeeze",
+    "auprc": "point-based auprc",
+    "auroc": "point-based auroc"
+  },
+  "per_curve": {
+    "Twitter_volume_AAPL": {
+      "point_f1": {
+        "f1": 0.9695493300852613,
+        "precision": 0.9408983451536643,
+        "recall": 1.0,
+        "threshold": 1.0
+      },
+      "event_f1": {
+        "f1": 0.2857142857142854,
+        "precision": 0.16666666666666666,
+        "recall": 0.9999999999999998,
+        "threshold": 1.0
+      },
+      "event_f1_squeeze": {
+        "f1": 0.07407407407407399,
+        "precision": 0.038461538461538464,
+        "recall": 0.9999999999999989,
+        "threshold": 1.0
+      },
+      "auprc": {
+        "value": 0.05096969801952003
+      },
+      "auroc": {
+        "value": 0.5031320532748489
+      }
+    },
+    "Twitter_volume_AMZN": {
+      "point_f1": {
+        "f1": 0.9507803121248494,
+        "precision": 0.9061784897025171,
+        "recall": 1.0,
+        "threshold": 1.0
+      },
+      "event_f1": {
+        "f1": 0.1960784313725488,
+        "precision": 0.10869565217391304,
+        "recall": 0.9999999999999998,
+        "threshold": 1.0
+      },
+      "event_f1_squeeze": {
+        "f1": 0.046511627906976695,
+        "precision": 0.023809523809523808,
+        "recall": 0.9999999999999996,
+        "threshold": 1.0
+      },
+      "auprc": {
+        "value": 0.10237355740526402
+      },
+      "auroc": {
+        "value": 0.5167233051848437
+      }
+    },
+    "Twitter_volume_CRM": {
+      "point_f1": {
+        "f1": 0.9999999999999996,
+        "precision": 1.0,
+        "recall": 1.0,
+        "threshold": 1.0
+      },
+      "event_f1": {
+        "f1": 0.9999999999999993,
+        "precision": 0.9999999999999998,
+        "recall": 0.9999999999999998,
+        "threshold": 1.0
+      },
+      "event_f1_squeeze": {
+        "f1": 0.9999999999999983,
+        "precision": 0.9999999999999989,
+        "recall": 0.9999999999999989,
+        "threshold": 1.0
+      },
+      "auprc": {
+        "value": 0.04403098876089308
+      },
+      "auroc": {
+        "value": 0.5029886645075253
+      }
+    },
+    "Twitter_volume_CVS": {
+      "point_f1": {
+        "f1": 0.9347985347985343,
+        "precision": 0.8775790921595599,
+        "recall": 1.0,
+        "threshold": 1.0
+      },
+      "event_f1": {
+        "f1": 0.6153846153846148,
+        "precision": 0.9999999999999998,
+        "recall": 0.44444444444444436,
+        "threshold": 1.0
+      },
+      "event_f1_squeeze": {
+        "f1": 0.6666666666666657,
+        "precision": 0.9999999999999989,
+        "recall": 0.4999999999999998,
+        "threshold": 1.0
+      },
+      "auprc": {
+        "value": 0.08089013620190919
+      },
+      "auroc": {
+        "value": 0.4990235510069489
+      }
+    },
+    "Twitter_volume_FB": {
+      "point_f1": {
+        "f1": 0.9753694581280782,
+        "precision": 0.9519230769230769,
+        "recall": 1.0,
+        "threshold": 1.0
+      },
+      "event_f1": {
+        "f1": 0.2307692307692305,
+        "precision": 0.13043478260869565,
+        "recall": 0.9999999999999999,
+        "threshold": 1.0
+      },
+      "event_f1_squeeze": {
+        "f1": 0.04761904761904757,
+        "precision": 0.024390243902439025,
+        "recall": 0.9999999999999989,
+        "threshold": 1.0
+      },
+      "auprc": {
+        "value": 0.10058228991695611
+      },
+      "auroc": {
+        "value": 0.5022682979413748
+      }
+    },
+    "Twitter_volume_GOOG": {
+      "point_f1": {
+        "f1": 0.9660194174757277,
+        "precision": 0.9342723004694836,
+        "recall": 1.0,
+        "threshold": 1.0
+      },
+      "event_f1": {
+        "f1": 0.26315789473684187,
+        "precision": 0.15151515151515152,
+        "recall": 0.9999999999999998,
+        "threshold": 1.0
+      },
+      "event_f1_squeeze": {
+        "f1": 0.06666666666666658,
+        "precision": 0.034482758620689655,
+        "recall": 0.9999999999999989,
+        "threshold": 1.0
+      },
+      "auprc": {
+        "value": 0.05224436106695936
+      },
+      "auroc": {
+        "value": 0.5238220816926964
+      }
+    },
+    "Twitter_volume_IBM": {
+      "point_f1": {
+        "f1": 0.9009620826259191,
+        "precision": 0.819773429454171,
+        "recall": 1.0,
+        "threshold": 1.0
+      },
+      "event_f1": {
+        "f1": 0.06417112299465233,
+        "precision": 0.03314917127071823,
+        "recall": 0.9999999999999999,
+        "threshold": 1.0
+      },
+      "event_f1_squeeze": {
+        "f1": 0.011299435028248577,
+        "precision": 0.005681818181818182,
+        "recall": 0.9999999999999989,
+        "threshold": 1.0
+      },
+      "auprc": {
+        "value": 0.10243463282476427
+      },
+      "auroc": {
+        "value": 0.5138715580993118
+      }
+    },
+    "Twitter_volume_KO": {
+      "point_f1": {
+        "f1": 0.9584086799276667,
+        "precision": 0.9201388888888888,
+        "recall": 1.0,
+        "threshold": 1.0
+      },
+      "event_f1": {
+        "f1": 0.17857142857142835,
+        "precision": 0.09803921568627451,
+        "recall": 0.9999999999999998,
+        "threshold": 1.0
+      },
+      "event_f1_squeeze": {
+        "f1": 0.04166666666666662,
+        "precision": 0.02127659574468085,
+        "recall": 0.9999999999999996,
+        "threshold": 1.0
+      },
+      "auprc": {
+        "value": 0.132667905321404
+      },
+      "auroc": {
+        "value": 0.48058054623466634
+      }
+    },
+    "Twitter_volume_PFE": {
+      "point_f1": {
+        "f1": 0.9277389277389271,
+        "precision": 0.8652173913043478,
+        "recall": 1.0,
+        "threshold": 1.0
+      },
+      "event_f1": {
+        "f1": 0.13888888888888873,
+        "precision": 0.07462686567164178,
+        "recall": 0.9999999999999998,
+        "threshold": 1.0
+      },
+      "event_f1_squeeze": {
+        "f1": 0.031249999999999965,
+        "precision": 0.015873015873015872,
+        "recall": 0.9999999999999989,
+        "threshold": 1.0
+      },
+      "auprc": {
+        "value": 0.049310678757129155
+      },
+      "auroc": {
+        "value": 0.49466706705556496
+      }
+    },
+    "Twitter_volume_UPS": {
+      "point_f1": {
+        "f1": 0.9769585253456216,
+        "precision": 0.954954954954955,
+        "recall": 1.0,
+        "threshold": 1.0
+      },
+      "event_f1": {
+        "f1": 0.39999999999999963,
+        "precision": 0.25,
+        "recall": 0.9999999999999998,
+        "threshold": 1.0
+      },
+      "event_f1_squeeze": {
+        "f1": 0.11764705882352929,
+        "precision": 0.0625,
+        "recall": 0.9999999999999989,
+        "threshold": 1.0
+      },
+      "auprc": {
+        "value": 0.03998510797250019
+      },
+      "auroc": {
+        "value": 0.4884724973070641
+      }
+    }
+  }
+}

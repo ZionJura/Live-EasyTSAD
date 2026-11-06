@@ -1,0 +1,79 @@
+{
+  "schema_version": 1,
+  "run_id": "20261104T122527Z",
+  "experiment": "smoke_all",
+  "method": "MatrixProfile",
+  "schema": "naive",
+  "dataset_type": "UTS",
+  "dataset": "NAB",
+  "status": "success",
+  "started_at": "2026-11-04T12:25:33Z",
+  "finished_at": "2026-11-04T12:25:35Z",
+  "duration_s": 1.17,
+  "config_hash": "ec4c1c0ae177f3ac",
+  "config": {
+    "method": "MatrixProfile",
+    "schema": "naive",
+    "dataset_type": "UTS",
+    "dataset": "NAB",
+    "curves": [
+      "Twitter_volume_AAPL",
+      "Twitter_volume_AMZN"
+    ],
+    "data_params": {
+      "preprocess": "z-score",
+      "diff_order": 0
+    },
+    "hparams": {
+      "window": 100,
+      "n_jobs": 4
+    },
+    "evals": [
+      "point_f1",
+      "event_f1",
+      "auprc"
+    ],
+    "margins": [
+      0,
+      0
+    ],
+    "seed": 2026,
+    "train_proportion": 1,
+    "valid_proportion": 0.2,
+    "transfer": null
+  },
+  "git": {
+    "commit": "68dea7bd11f5857ad807af0e428db24646444ad3",
+    "branch": "main",
+    "dirty": true
+  },
+  "env": {
+    "name": "legacy",
+    "python": "3.9.25",
+    "uv_lock_sha256": "52dce11f26a231e5cb0458a1a2522db3a43db7003e28869be58a651a1f0e8517",
+    "packages": {
+      "easytsad": "0.3.0.2",
+      "numpy": "1.23.5",
+      "scipy": "1.13.1",
+      "scikit-learn": "1.6.1",
+      "pandas": "2.3.3",
+      "tslearn": "0.5.3.2",
+      "matrixprofile": "1.1.10",
+      "stumpy": "1.13.0"
+    },
+    "host": "sp-1",
+    "cuda_visible_devices": "7"
+  },
+  "command": [
+    "/home/v-zzr25/workplace/Live-EasyTSAD/LiveLeaderBoard/pipeline/run.py",
+    "--spec",
+    "/home/v-zzr25/workplace/Live-EasyTSAD/LiveLeaderBoard/experiments/smoke_all.toml",
+    "--method",
+    "MatrixProfile",
+    "--run-id",
+    "20261104T122527Z",
+    "--datasets",
+    "NAB"
+  ],
+  "error": null
+}

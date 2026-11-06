@@ -8,18 +8,24 @@
 python = "3.11"
 description = "Default. PyTorch 2.6 + CUDA 12.4, lightning, transformers, sklearn."
 methods = [
-    "AE", "AR", "AnomalyTransformer", "CAD", "DCdetector", "Diff", "Donut",
+    "AE", "AR", "AnomalyTransformer", "CAD", "DCdetector", "DIFR", "Diff", "Donut",
     "EncDecAD", "Example", "FCVAE", "FITS", "LOF", "LSTMADalpha", "LSTMADbeta",
     "OCSVM", "OFA", "SRCNN", "SubLOF", "SubOCSVM", "TFAD", "TimesNet", "TranAD",
 ]
 
 [envs.legacy]
 python = "3.9"
-description = "Old pinned libraries: tslearn==0.4.1, matrixprofile."
+description = "Old libraries: tslearn 0.5.x (Cython build), matrixprofile, numpy<1.24."
 methods = ["SAND", "MatrixProfile"]
 
 # Free-form notes shown in ENVIRONMENTS.md (known issues, caveats).
 [notes]
 FCVAE = "Broken upstream: SyntaxError at EasyTSAD/Methods/FCVAE/TSDataset.py:46."
 Example = "Template method, not a real baseline."
+SAND = "Uses tslearn 0.5.x instead of the original 0.4.1 pin (0.4.1 needs scikit-learn<0.24, which has no Python 3.9 wheels); model.py imports cycc from either location."
 Spot = "Helper module (SPOT/biSPOT/...), not a BaseMethod; not registered."
+
+[envs.harness]
+python = "3.11"
+description = "Tooling env for the reproduction harness (DSH runtime, MCP tools, paper ingestion). Runs no methods."
+methods = []

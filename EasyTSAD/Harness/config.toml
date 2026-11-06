@@ -1,0 +1,88 @@
+# TSAD reproduction harness configuration.
+# Paths are relative to the Live-EasyTSAD repository root unless absolute.
+# Secrets never go in this file: only the *name* of the environment variable.
+
+[llm]
+# One OpenAI-compatible route, rendered into the DSH `llm-pi-ai` provider config.
+provider = "yyt"                      # DSH route key (lowercase, hyphenated)
+display_name = "YYT API"
+base_url = "https://yyt.s-flag.com/v1"
+wire_api = "responses"                # "responses" (OpenAI Responses) | "chat" (Chat Completions)
+model = "gpt-6.1-sol"
+api_key_env = "yyt_api"               # env var the user exports (source of the key)
+# Name the key gets inside dsh. Must match DSH's scrub regex /KEY|PASSWORD|SECRET|TOKEN/i so
+# bash/MCP children never inherit it; the source var above is removed from every child env.
+dsh_key_env = "YYT_API_KEY"
+# Fallback when the env var is unset: JSON file + key (Codex CLI layout).
+api_key_file = "~/.codex/auth.json"
+api_key_file_field = "OPENAI_API_KEY"
+context_window = 400000
+max_output_tokens = 64000
+reasoning_effort = "high"             # "" to leave the provider default
+max_retries = 6                       # DSH per-request retries (incl. PI_AI_ERROR from dropped proxy streams)
+bypass_proxy = true                   # the local HTTP proxy cannot reach this host
+
+[network]
+# Hosts reached directly (added to NO_PROXY for every harness subprocess).
+# Everything else (e.g. github.com) goes through the ambient http(s)_proxy.
+direct_hosts = ["yyt.s-flag.com", "arxiv.org", "export.arxiv.org"]
+drop_socks_proxy = true               # DSH cannot use all_proxy=socks5://...
+
+[paths]
+tasks_dir = "EasyTSAD/Harness/tasks"
+dsh_home = "runtime/dsh-home"         # DSH profiles/storage (sessions go to each task dir)
+methods_dir = "EasyTSAD/Methods"
+
+[dsh]
+profile = "headless"
+permission_mode = "danger-full-access"   # writes are policed by the harness file guard instead
+trim_patch = "EasyTSAD/Harness/dsh/trim.patch.yml"
+mcp_tool_timeout_ms = 3600000            # smoke runs can take a while
+mcp_startup_timeout_ms = 300000          # cold `import mcp` on the networked /home can exceed 60 s
+
+[budget]
+# Per agent phase. A phase that hits a limit fails and waits for a human.
+max_steps_per_run = 120               # model steps in one DSH run (counted from the event stream)
+max_wall_minutes_per_run = 90
+max_repair_rounds = 4                 # re-prompts of the same phase after a failed validation
+max_smoke_runs = 8                    # smoke/eval tool calls per task
+max_transient_resumes = 3            # resume the session after upstream LLM failures (dropped streams, 5xx)
+
+[human]
+# Phases after which the pipeline stops for `harness approve` / `harness correct`.
+review_after = ["EVIDENCE"]
+
+[smoke]
+# Small deterministic run used to prove the method executes end-to-end.
+schema = "naive"
+dataset_type = "UTS"
+dataset = "NAB"
+curves = ["Twitter_volume_AAPL", "Twitter_volume_AMZN"]
+evals = ["point_f1", "event_f1", "auprc"]
+max_epochs = 2                        # the only hyper-parameter the smoke tool may override
+timeout_minutes = 30
+
+[eval]
+# Full evaluation launched by `harness eval` (deterministic, no LLM).
+schema = "naive"
+dataset_type = "UTS"
+datasets = ["NAB", "TODS", "AIOPS", "WSD", "Yahoo", "UCR"]
+evals = ["point_f1", "event_f1", "auprc"]
+seed = 2026
+gpus = "0"
+
+[report]
+default_family = "深度学习"           # one of 深度学习 / 传统方法 / 预训练模型
+leaderboard_dir = "leaderboard"
+deploy_script = "leaderboard/scripts/deploy_webhost.sh"
+
+[protect]
+# Repository paths the agent must not modify (checked after every agent run).
+# The method folder, its env and the task dir are always writable.
+paths = [
+    "EasyTSAD/Controller", "EasyTSAD/DataFactory", "EasyTSAD/Evaluations",
+    "EasyTSAD/TrainingSchema", "EasyTSAD/Exptools", "EasyTSAD/Methods/__init__.py",
+    "EasyTSAD/Summary.py", "EasyTSAD/utils.py",
+    "LiveLeaderBoard/pipeline", "LiveLeaderBoard/catalog.toml", "LiveLeaderBoard/experiments",
+    "scripts", "leaderboard/src", "pyproject.toml",
+]

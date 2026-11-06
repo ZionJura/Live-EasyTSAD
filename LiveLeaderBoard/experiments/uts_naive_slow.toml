@@ -1,0 +1,9 @@
+# Slow univariate baselines, same setting as uts_naive.toml. Expect days of runtime:
+# Donut trains a VAE per curve; SubOCSVM is super-linear in the series length.
+name = "uts_naive_slow"
+schema = "naive"
+dataset_type = "UTS"
+datasets = ["NAB", "TODS", "AIOPS", "WSD", "Yahoo", "UCR"]
+methods = ["Donut", "SubOCSVM"]
+evals = ["point_f1", "event_f1", "event_f1_squeeze", "auprc", "auroc"]
+seed = 2026

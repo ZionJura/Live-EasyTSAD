@@ -203,6 +203,128 @@ def cmd_remove(reg, a):
         print(f"removed {venv.relative_to(ROOT)} (definition and lock file kept)")
 
 
+def cmd_exp(reg, a):
+    """Run an experiment spec. The unit of work is one (method, dataset) pair, run
+    in the method's env and pinned to one GPU slot; pairs are spread over all
+    slots. Results go to LiveLeaderBoard/results/runs."""
+    import datetime as dt
+    import signal
+    import time
+
+    spec_path = Path(a.spec).resolve()
+    with open(spec_path, "rb") as f:
+        spec = tomllib.load(f)
+    methods = a.methods or spec.get("methods", [])
+    datasets = a.datasets or spec.get("datasets", [])
+    if not methods:
+        die("no methods given (spec 'methods' or --methods)")
+    missing = [m for m in methods if m not in reg["method_env"]]
+    if missing:
+        die(f"methods not registered in envs/registry.toml: {', '.join(missing)}")
+    run_id = dt.datetime.now(dt.timezone.utc).strftime("%Y%m%dT%H%M%SZ")
+    name = spec.get("name", spec_path.stem)
+    logs = ROOT / "LiveLeaderBoard" / "results" / "logs" / f"{run_id}_{name}"
+    logs.mkdir(parents=True, exist_ok=True)
+    slots = [g.strip() for g in a.gpus.split(",")] if a.gpus else [None]
+    slots = slots * max(1, a.per_gpu)
+    # Datasets in spec order, methods interleaved, so every method makes progress early.
+    threads = max(1, (os.cpu_count() or 1) // (len(slots) * max(1, a.concurrent_exps)))
+    queue = [(m, d) for d in datasets for m in methods]
+    running: dict[int, tuple[subprocess.Popen, str, str, Path]] = {}  # slot index -> job
+    failed = []
+    print(f"experiment '{name}' run_id={run_id} jobs={len(queue)} slots={slots}", flush=True)
+
+    def stop(signum, frame):
+        for p, *_ in running.values():
+            p.send_signal(signal.SIGTERM)
+        for p, *_ in running.values():
+            p.wait()
+        print("interrupted; running jobs were marked 'aborted'", flush=True)
+        sys.exit(130)
+    signal.signal(signal.SIGTERM, stop)
+    signal.signal(signal.SIGINT, stop)
+
+    while queue or running:
+        for i, gpu in enumerate(slots):
+            if i in running or not queue:
+                continue
+            m, d = queue.pop(0)
+            env = reg["method_env"][m]
+            e = env_vars(env)
+            e["TSAD_ENV"] = env
+            e.setdefault("TQDM_DISABLE", "1")  # progress bars would bloat the logs
+            # Share the CPU cores between concurrent jobs instead of oversubscribing them.
+            for var in ("OMP_NUM_THREADS", "MKL_NUM_THREADS", "OPENBLAS_NUM_THREADS"):
+                e.setdefault(var, str(threads))
+            if gpu is not None:
+                e["CUDA_VISIBLE_DEVICES"] = gpu
+            out = logs / f"{m}_{d}.out"
+            cmd = ["uv", "run", "--project", str(ENVS_DIR / env), "--", "python",
+                   str(ROOT / "LiveLeaderBoard" / "pipeline" / "run.py"),
+                   "--spec", str(spec_path), "--method", m, "--run-id", run_id,
+                   "--datasets", d, *(["--force"] if a.force else [])]
+            fh = open(out, "w")
+            running[i] = (subprocess.Popen(cmd, env=e, cwd=ROOT, stdout=fh, stderr=subprocess.STDOUT), m, d, out)
+            print(f"  start  {m:<14} {d:<8} env={env:<8} gpu={gpu}", flush=True)
+        time.sleep(2)
+        for i, (p, m, d, out) in list(running.items()):
+            if p.poll() is None:
+                continue
+            del running[i]
+            if p.returncode != 0:
+                failed.append(f"{m}/{d}")
+            res = [l for l in out.read_text(errors="replace").splitlines()
+                   if l.startswith(("[success]", "[failed]", "[skip]", "[aborted]"))]
+            print(f"  {'done' if p.returncode == 0 else 'FAILED':<6} {m:<14} {d:<8} "
+                  f"{res[-1].split(' ')[0] if res else f'(exit {p.returncode})'}  "
+                  f"[{len(queue)} queued, {len(running)} running]", flush=True)
+            try:
+                cmd_export(reg, a)  # keep leaderboard files current while the experiment runs
+            except Exception as ex:  # never let export problems kill the scheduler
+                print(f"  export failed: {ex}", flush=True)
+    cmd_export(reg, a)
+    if failed:
+        print("failed: " + ", ".join(failed) + " (see manifest.json 'error' in their run dirs)")
+        sys.exit(1)
+
+
+def _lb_export():
+    sys.path.insert(0, str(ROOT / "LiveLeaderBoard" / "pipeline"))
+    import export  # noqa: E402
+    return export
+
+
+def cmd_export(reg, a):
+    lb, bm = _lb_export().export()
+    print(f"wrote {lb.relative_to(ROOT)} and {bm.relative_to(ROOT)}")
+
+
+def cmd_table(reg, a):
+    ex = _lb_export()
+    ex.export()
+    print(ex.table(a.schema, a.metric))
+
+
+def cmd_status(reg, a):
+    """Show runs that are still in progress, with curve-level progress."""
+    runs = ROOT / "LiveLeaderBoard" / "results" / "runs"
+    found = False
+    for man_path in sorted(runs.glob("*/*/*/*/manifest.json")):
+        import json
+        man = json.loads(man_path.read_text())
+        if man.get("status") != "running":
+            continue
+        found = True
+        d = man_path.parent
+        total = len(man["config"].get("curves") or
+                    [p for p in (ROOT / "datasets" / man["dataset_type"] / man["dataset"]).iterdir() if p.is_dir()])
+        done = len(list((d / "scores").glob("*.npy")))
+        print(f"{man['method']:<14} {man['schema']:<10} {man['dataset']:<8} {done:>4}/{total:<4} "
+              f"started {man['started_at']}  ({d.relative_to(ROOT)})")
+    if not found:
+        print("no runs in progress")
+
+
 def cmd_doc(reg, a):
     lines = [
         "# Environments",
@@ -261,6 +383,22 @@ def main():
     s.add_argument("env"); s.set_defaults(fn=cmd_remove)
     s = sub.add_parser("doc", help="regenerate envs/ENVIRONMENTS.md")
     s.set_defaults(fn=cmd_doc)
+    s = sub.add_parser("exp", help="run an experiment spec into LiveLeaderBoard/results")
+    s.add_argument("spec"); s.add_argument("--methods", nargs="*")
+    s.add_argument("--datasets", nargs="*", help="subset of the spec's datasets")
+    s.add_argument("--gpus", help="comma-separated GPU ids, one method process per slot, e.g. 0,1,2")
+    s.add_argument("--per-gpu", type=int, default=1, help="concurrent jobs per GPU (default 1)")
+    s.add_argument("--concurrent-exps", type=int, default=1,
+                   help="number of experiments running side by side, used to split CPU threads (default 1)")
+    s.add_argument("--force", action="store_true", help="re-run even if an identical successful run exists")
+    s.set_defaults(fn=cmd_exp)
+    s = sub.add_parser("export", help="rebuild results/leaderboard.json and results/benchmark.json")
+    s.set_defaults(fn=cmd_export)
+    s = sub.add_parser("status", help="show in-progress runs and their curve progress")
+    s.set_defaults(fn=cmd_status)
+    s = sub.add_parser("table", help="print the current leaderboard as a text table")
+    s.add_argument("--schema"); s.add_argument("--metric", default="event_f1")
+    s.set_defaults(fn=cmd_table)
 
     a = p.parse_args()
     if getattr(a, "command", None) and a.command[:1] == ["--"]:

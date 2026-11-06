@@ -1,0 +1,61 @@
+{
+  "summary": {
+    "point_f1": {
+      "f1": 0.9987405541561707,
+      "precision": 0.9974874371859297,
+      "recall": 1.0
+    },
+    "event_f1": {
+      "f1": 0.9166666666666661,
+      "precision": 0.857142857142857,
+      "recall": 0.9999999999999998
+    },
+    "auprc": {
+      "value": 0.17442576795356696
+    }
+  },
+  "n_curves_scored": 2,
+  "n_curves_evaluated": 2,
+  "skipped_all_normal": [],
+  "protocols": {
+    "point_f1": "best f1 under pa",
+    "event_f1": "event-based f1 under pa with mode log",
+    "auprc": "point-based auprc"
+  },
+  "per_curve": {
+    "Twitter_volume_AAPL": {
+      "point_f1": {
+        "f1": 0.9999999999999996,
+        "precision": 1.0,
+        "recall": 1.0,
+        "threshold": 2.76434588432312
+      },
+      "event_f1": {
+        "f1": 0.9999999999999993,
+        "precision": 0.9999999999999998,
+        "recall": 0.9999999999999998,
+        "threshold": 2.76434588432312
+      },
+      "auprc": {
+        "value": 0.15498821289329578
+      }
+    },
+    "Twitter_volume_AMZN": {
+      "point_f1": {
+        "f1": 0.9974811083123419,
+        "precision": 0.9949748743718593,
+        "recall": 1.0,
+        "threshold": 0.030454151332378387
+      },
+      "event_f1": {
+        "f1": 0.8333333333333327,
+        "precision": 0.7142857142857142,
+        "recall": 0.9999999999999998,
+        "threshold": 0.030454151332378387
+      },
+      "auprc": {
+        "value": 0.19386332301383813
+      }
+    }
+  }
+}

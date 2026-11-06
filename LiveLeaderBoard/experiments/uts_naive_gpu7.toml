@@ -1,0 +1,12 @@
+# Full UTS benchmark for the seven GPU methods that passed the small NAB check.
+# Omit "curves" so every curve in each dataset is included.
+name = "uts_naive_gpu7"
+schema = "naive"
+dataset_type = "UTS"
+datasets = ["AIOPS", "NAB", "TODS", "UCR", "WSD", "Yahoo"]
+methods = ["FITS", "TranAD", "LSTMADbeta", "EncDecAD", "DCdetector", "FCVAE", "SRCNN"]
+evals = ["point_f1", "event_f1", "event_f1_squeeze", "auprc", "auroc"]
+seed = 2026
+require_cuda = true
+monitor_gpu = true
+isolate_workdir = true

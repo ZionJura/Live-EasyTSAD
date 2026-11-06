@@ -1,0 +1,12 @@
+# Pipeline check for every UTS method not yet benchmarked: two NAB curves each.
+# Partial runs (curve subset), so they never reach benchmark.json.
+name = "smoke_all"
+schema = "naive"
+dataset_type = "UTS"
+datasets = ["NAB"]
+curves = ["Twitter_volume_AAPL", "Twitter_volume_AMZN"]
+methods = ["AnomalyTransformer", "DCdetector", "Diff", "EncDecAD", "FCVAE", "FITS", "LOF",
+           "LSTMADbeta", "OCSVM", "OFA", "SRCNN", "TFAD", "TimesNet", "TranAD",
+           "SAND", "MatrixProfile"]
+evals = ["point_f1", "event_f1", "auprc"]
+seed = 2026

@@ -1,0 +1,115 @@
+{
+  "schema_version": 1,
+  "run_id": "20261104T122527Z",
+  "experiment": "smoke_all",
+  "method": "TFAD",
+  "schema": "naive",
+  "dataset_type": "UTS",
+  "dataset": "NAB",
+  "status": "failed",
+  "started_at": "2026-11-04T12:25:37Z",
+  "finished_at": "2026-11-04T12:26:11Z",
+  "duration_s": 25.02,
+  "config_hash": "ba5de74604abd28d",
+  "config": {
+    "method": "TFAD",
+    "schema": "naive",
+    "dataset_type": "UTS",
+    "dataset": "NAB",
+    "curves": [
+      "Twitter_volume_AAPL",
+      "Twitter_volume_AMZN"
+    ],
+    "data_params": {
+      "preprocess": "z-score",
+      "diff_order": 0
+    },
+    "hparams": {
+      "epochs": 1000,
+      "ts_channels": 1,
+      "limit_val_batches": 1.0,
+      "num_sanity_val_steps": 0,
+      "injection_method": "local_outliers",
+      "ratio_injected_spikes": 0.01176,
+      "window_length": 150,
+      "suspect_window_length": 12,
+      "validation_portion": 0.3,
+      "train_split_method": "past_future_with_warmup",
+      "num_series_in_train_batch": 8,
+      "num_crops_per_series": 16,
+      "rate_true_anomalies": 0.0,
+      "num_workers_loader": 0,
+      "tcn_kernel_size": 7,
+      "tcn_layers": 4,
+      "tcn_out_channels": 35,
+      "tcn_maxpool_out_channels": 50,
+      "embedding_rep_dim": 40,
+      "normalize_embedding": true,
+      "distance": "L2",
+      "classifier_threshold": 0.5,
+      "threshold_grid_length_val": 0.05,
+      "threshold_grid_length_test": 0.02,
+      "coe_rate": 0.6,
+      "mixup_rate": 0.4,
+      "fft_sea_rate": 0.1,
+      "fft_noise_rate": 0.1,
+      "learning_rate": 0.0005,
+      "check_val_every_n_epoch": 50,
+      "stride_roll_pred_val_test": 1,
+      "val_labels_adj": true,
+      "test_labels_adj": true,
+      "max_windows_unfold_batch": 5000,
+      "rnd_seed": 123,
+      "label_reduction_method": "any"
+    },
+    "evals": [
+      "point_f1",
+      "event_f1",
+      "auprc"
+    ],
+    "margins": [
+      0,
+      0
+    ],
+    "seed": 2026,
+    "train_proportion": 1,
+    "valid_proportion": 0.2,
+    "transfer": null
+  },
+  "git": {
+    "commit": "68dea7bd11f5857ad807af0e428db24646444ad3",
+    "branch": "main",
+    "dirty": true
+  },
+  "env": {
+    "name": "torch2",
+    "python": "3.11.17",
+    "uv_lock_sha256": "43aba9b7c1de1ff1b1ffed9bb68d6e76c9a428fb204e57c6eaa670b02cb04ae4",
+    "packages": {
+      "easytsad": "0.3.0.2",
+      "numpy": "1.26.4",
+      "scipy": "1.17.1",
+      "scikit-learn": "1.9.1",
+      "pandas": "3.0.6",
+      "torch": "2.6.0+cu124",
+      "pytorch-lightning": "2.6.6",
+      "transformers": "5.22.1",
+      "stumpy": "1.14.1"
+    },
+    "host": "sp-1",
+    "cuda_visible_devices": "3",
+    "gpu": "NVIDIA GeForce RTX 3080 Ti"
+  },
+  "command": [
+    "/home/v-zzr25/workplace/Live-EasyTSAD/LiveLeaderBoard/pipeline/run.py",
+    "--spec",
+    "/home/v-zzr25/workplace/Live-EasyTSAD/LiveLeaderBoard/experiments/smoke_all.toml",
+    "--method",
+    "TFAD",
+    "--run-id",
+    "20261104T122527Z",
+    "--datasets",
+    "NAB"
+  ],
+  "error": "ModuleNotFoundError: Neither `tensorboard` nor `tensorboardX` is available. Try `pip install`ing either.\nRequirement 'tensorboardX' not met. HINT: Try running `pip install -U 'tensorboardX'`\nRequirement 'tensorboard' not met. HINT: Try running `pip install -U 'tensorboard'`\nTraceback (most recent call last):\n  File \"/home/v-zzr25/workplace/Live-EasyTSAD/LiveLeaderBoard/pipeline/run.py\", line 256, in run_one\n    exp.do_exp(tsDatas=exp.load_data(), hparams=hparams)\n  File \"/home/v-zzr25/workplace/Live-EasyTSAD/EasyTSAD/TrainingSchema/Naive.py\", line 48, in do_exp\n    method = BaseMethodMeta.registry[self.method](model_params)\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/v-zzr25/workplace/Live-EasyTSAD/EasyTSAD/Methods/TFAD/TFAD.py\", line 142, in __init__\n    logger = TensorBoardLogger(save_dir=self.log_dir, name=self.exp_name)\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/v-zzr25/workplace/Live-EasyTSAD/envs/torch2/venv/lib/python3.11/site-packages/pytorch_lightning/loggers/tensorboard.py\", line 96, in __init__\n    super().__init__(\n  File \"/home/v-zzr25/workplace/Live-EasyTSAD/envs/torch2/venv/lib/python3.11/site-packages/lightning_fabric/loggers/tensorboard.py\", line 93, in __init__\n    raise ModuleNotFoundError(\nModuleNotFoundError: Neither `tensorboard` nor `tensorboardX` is available. Try `pip install`ing either.\nRequirement 'tensorboardX' not met. HINT: Try running `pip install -U 'tensorboardX'`\nRequirement 'tensorboard' not met. HINT: Try running `pip install -U 'tensorboard'`\n"
+}

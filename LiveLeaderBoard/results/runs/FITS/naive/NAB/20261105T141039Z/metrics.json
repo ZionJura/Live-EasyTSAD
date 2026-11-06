@@ -1,0 +1,63 @@
+{
+  "summary": {
+    "point_f1": {
+      "f1": 0.9999999999999996,
+      "precision": 1.0,
+      "recall": 1.0
+    },
+    "event_f1": {
+      "f1": 0.9999999999999993,
+      "precision": 0.9999999999999998,
+      "recall": 0.9999999999999998
+    },
+    "event_f1_squeeze": {
+      "f1": 0.9999999999999983,
+      "precision": 0.9999999999999989,
+      "recall": 0.9999999999999989
+    },
+    "auprc": {
+      "value": 0.21365640401046723
+    },
+    "auroc": {
+      "value": 0.7397117732477789
+    }
+  },
+  "n_curves_scored": 1,
+  "n_curves_evaluated": 1,
+  "skipped_all_normal": [],
+  "protocols": {
+    "point_f1": "best f1 under pa",
+    "event_f1": "event-based f1 under pa with mode log",
+    "event_f1_squeeze": "event-based f1 under pa with mode squeeze",
+    "auprc": "point-based auprc",
+    "auroc": "point-based auroc"
+  },
+  "per_curve": {
+    "Twitter_volume_AAPL": {
+      "point_f1": {
+        "f1": 0.9999999999999996,
+        "precision": 1.0,
+        "recall": 1.0,
+        "threshold": 2.2281675338745117
+      },
+      "event_f1": {
+        "f1": 0.9999999999999993,
+        "precision": 0.9999999999999998,
+        "recall": 0.9999999999999998,
+        "threshold": 2.2281675338745117
+      },
+      "event_f1_squeeze": {
+        "f1": 0.9999999999999983,
+        "precision": 0.9999999999999989,
+        "recall": 0.9999999999999989,
+        "threshold": 2.2281675338745117
+      },
+      "auprc": {
+        "value": 0.21365640401046723
+      },
+      "auroc": {
+        "value": 0.7397117732477789
+      }
+    }
+  }
+}

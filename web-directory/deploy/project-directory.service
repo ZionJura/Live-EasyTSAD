@@ -1,0 +1,15 @@
+[Unit]
+Description=Discover local HTML services for the project directory
+After=network.target nginx.service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/python3 /opt/project-directory/current/discover.py --config /etc/project-directory/config.json --output /var/www/project-directory/data/projects.json --state /var/lib/project-directory/state.json
+TimeoutStartSec=90
+UMask=0022
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=read-only
+# nginx -T opens its existing PID/log files while validating the configuration.
+ReadWritePaths=/var/www/project-directory/data /var/lib/project-directory /var/log/nginx /run/nginx.pid

@@ -1,0 +1,65 @@
+===============================================================================================
+Layer (type:depth-idx)                        Output Shape              Param #
+===============================================================================================
+DCdetectorModel                               [128, 1, 30, 30]          257
+├─DataEmbedding: 1-1                          [128, 30, 256]            --
+│    └─TokenEmbedding: 2-1                    [128, 30, 256]            --
+│    │    └─Conv1d: 3-1                       [128, 256, 30]            768
+│    └─PositionalEmbedding: 2-2               [1, 30, 256]              --
+│    └─Dropout: 2-3                           [128, 30, 256]            --
+├─ModuleList: 1-8                             --                        (recursive)
+│    └─DataEmbedding: 2-4                     [128, 30, 256]            --
+│    │    └─TokenEmbedding: 3-2               [128, 30, 256]            768
+│    │    └─PositionalEmbedding: 3-3          [1, 30, 256]              --
+│    │    └─Dropout: 3-4                      [128, 30, 256]            --
+├─ModuleList: 1-9                             --                        (recursive)
+│    └─DataEmbedding: 2-5                     [128, 1, 256]             --
+│    │    └─TokenEmbedding: 3-5               [128, 1, 256]             23,040
+│    │    └─PositionalEmbedding: 3-6          [1, 1, 256]               --
+│    │    └─Dropout: 3-7                      [128, 1, 256]             --
+├─Encoder: 1-4                                [128, 1, 30, 30]          512
+│    └─ModuleList: 2-12                       --                        (recursive)
+│    │    └─AttentionLayer: 3-8               [128, 1, 30, 30]          263,680
+│    │    └─AttentionLayer: 3-9               [128, 1, 30, 30]          263,680
+│    │    └─AttentionLayer: 3-10              [128, 1, 30, 30]          263,680
+├─ModuleList: 1-8                             --                        (recursive)
+│    └─DataEmbedding: 2-7                     [128, 10, 256]            --
+│    │    └─TokenEmbedding: 3-11              [128, 10, 256]            2,304
+│    │    └─PositionalEmbedding: 3-12         [1, 10, 256]              --
+│    │    └─Dropout: 3-13                     [128, 10, 256]            --
+├─ModuleList: 1-9                             --                        (recursive)
+│    └─DataEmbedding: 2-8                     [128, 3, 256]             --
+│    │    └─TokenEmbedding: 3-14              [128, 3, 256]             7,680
+│    │    └─PositionalEmbedding: 3-15         [1, 3, 256]               --
+│    │    └─Dropout: 3-16                     [128, 3, 256]             --
+├─Encoder: 1-7                                [128, 1, 30, 30]          (recursive)
+│    └─ModuleList: 2-12                       --                        (recursive)
+│    │    └─AttentionLayer: 3-17              [128, 1, 30, 30]          (recursive)
+│    │    └─AttentionLayer: 3-18              [128, 1, 30, 30]          (recursive)
+│    │    └─AttentionLayer: 3-19              [128, 1, 30, 30]          (recursive)
+├─ModuleList: 1-8                             --                        (recursive)
+│    └─DataEmbedding: 2-10                    [128, 6, 256]             --
+│    │    └─TokenEmbedding: 3-20              [128, 6, 256]             3,840
+│    │    └─PositionalEmbedding: 3-21         [1, 6, 256]               --
+│    │    └─Dropout: 3-22                     [128, 6, 256]             --
+├─ModuleList: 1-9                             --                        (recursive)
+│    └─DataEmbedding: 2-11                    [128, 5, 256]             --
+│    │    └─TokenEmbedding: 3-23              [128, 5, 256]             4,608
+│    │    └─PositionalEmbedding: 3-24         [1, 5, 256]               --
+│    │    └─Dropout: 3-25                     [128, 5, 256]             --
+├─Encoder: 1-10                               [128, 1, 30, 30]          (recursive)
+│    └─ModuleList: 2-12                       --                        (recursive)
+│    │    └─AttentionLayer: 3-26              [128, 1, 30, 30]          (recursive)
+│    │    └─AttentionLayer: 3-27              [128, 1, 30, 30]          (recursive)
+│    │    └─AttentionLayer: 3-28              [128, 1, 30, 30]          (recursive)
+===============================================================================================
+Total params: 834,817
+Trainable params: 834,817
+Non-trainable params: 0
+Total mult-adds (Units.MEGABYTES): 399.61
+===============================================================================================
+Input size (MB): 0.02
+Forward/backward pass size (MB): 179.57
+Params size (MB): 2.54
+Estimated Total Size (MB): 182.12
+===============================================================================================

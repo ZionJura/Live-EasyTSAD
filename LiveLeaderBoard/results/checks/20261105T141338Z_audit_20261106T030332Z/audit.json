@@ -1,0 +1,2698 @@
+{
+  "checked_at": "2026-11-06T03:03:54.654530+00:00",
+  "run_id": "20261105T141338Z",
+  "datasets": {
+    "AIOPS": {
+      "curves": 29,
+      "evaluated": 29,
+      "all_normal": 0
+    },
+    "NAB": {
+      "curves": 10,
+      "evaluated": 10,
+      "all_normal": 0
+    },
+    "TODS": {
+      "curves": 15,
+      "evaluated": 15,
+      "all_normal": 0
+    },
+    "UCR": {
+      "curves": 203,
+      "evaluated": 201,
+      "all_normal": 2
+    },
+    "WSD": {
+      "curves": 210,
+      "evaluated": 161,
+      "all_normal": 49
+    },
+    "Yahoo": {
+      "curves": 367,
+      "evaluated": 352,
+      "all_normal": 15
+    }
+  },
+  "runs_checked": 42,
+  "score_files_checked": 5838,
+  "errors": [
+    {
+      "kind": "lost_all_anomalies_after_alignment",
+      "method": "FITS",
+      "dataset": "Yahoo",
+      "curve": "A3Benchmark-TS17",
+      "offset": 99
+    },
+    {
+      "kind": "lost_all_anomalies_after_alignment",
+      "method": "FITS",
+      "dataset": "Yahoo",
+      "curve": "A3Benchmark-TS38",
+      "offset": 99
+    },
+    {
+      "kind": "lost_all_anomalies_after_alignment",
+      "method": "FITS",
+      "dataset": "Yahoo",
+      "curve": "A3Benchmark-TS57",
+      "offset": 99
+    },
+    {
+      "kind": "lost_all_anomalies_after_alignment",
+      "method": "FITS",
+      "dataset": "Yahoo",
+      "curve": "A4Benchmark-TS51",
+      "offset": 99
+    },
+    {
+      "kind": "lost_all_anomalies_after_alignment",
+      "method": "FITS",
+      "dataset": "Yahoo",
+      "curve": "A4Benchmark-TS54",
+      "offset": 99
+    },
+    {
+      "kind": "lost_all_anomalies_after_alignment",
+      "method": "LSTMADbeta",
+      "dataset": "Yahoo",
+      "curve": "A3Benchmark-TS17",
+      "offset": 103
+    },
+    {
+      "kind": "lost_all_anomalies_after_alignment",
+      "method": "LSTMADbeta",
+      "dataset": "Yahoo",
+      "curve": "A3Benchmark-TS38",
+      "offset": 103
+    },
+    {
+      "kind": "lost_all_anomalies_after_alignment",
+      "method": "LSTMADbeta",
+      "dataset": "Yahoo",
+      "curve": "A3Benchmark-TS57",
+      "offset": 103
+    },
+    {
+      "kind": "lost_all_anomalies_after_alignment",
+      "method": "LSTMADbeta",
+      "dataset": "Yahoo",
+      "curve": "A4Benchmark-TS51",
+      "offset": 103
+    },
+    {
+      "kind": "lost_all_anomalies_after_alignment",
+      "method": "LSTMADbeta",
+      "dataset": "Yahoo",
+      "curve": "A4Benchmark-TS54",
+      "offset": 103
+    },
+    {
+      "kind": "lost_all_anomalies_after_alignment",
+      "method": "LSTMADbeta",
+      "dataset": "Yahoo",
+      "curve": "A4Benchmark-TS96",
+      "offset": 103
+    },
+    {
+      "kind": "lost_all_anomalies_after_alignment",
+      "method": "EncDecAD",
+      "dataset": "Yahoo",
+      "curve": "A3Benchmark-TS17",
+      "offset": 99
+    },
+    {
+      "kind": "lost_all_anomalies_after_alignment",
+      "method": "EncDecAD",
+      "dataset": "Yahoo",
+      "curve": "A3Benchmark-TS38",
+      "offset": 99
+    },
+    {
+      "kind": "lost_all_anomalies_after_alignment",
+      "method": "EncDecAD",
+      "dataset": "Yahoo",
+      "curve": "A3Benchmark-TS57",
+      "offset": 99
+    },
+    {
+      "kind": "lost_all_anomalies_after_alignment",
+      "method": "EncDecAD",
+      "dataset": "Yahoo",
+      "curve": "A4Benchmark-TS51",
+      "offset": 99
+    },
+    {
+      "kind": "lost_all_anomalies_after_alignment",
+      "method": "EncDecAD",
+      "dataset": "Yahoo",
+      "curve": "A4Benchmark-TS54",
+      "offset": 99
+    },
+    {
+      "kind": "lost_all_anomalies_after_alignment",
+      "method": "FCVAE",
+      "dataset": "Yahoo",
+      "curve": "A3Benchmark-TS17",
+      "offset": 47
+    },
+    {
+      "kind": "lost_all_anomalies_after_alignment",
+      "method": "FCVAE",
+      "dataset": "Yahoo",
+      "curve": "A4Benchmark-TS51",
+      "offset": 47
+    },
+    {
+      "kind": "lost_all_anomalies_after_alignment",
+      "method": "FCVAE",
+      "dataset": "Yahoo",
+      "curve": "A4Benchmark-TS54",
+      "offset": 47
+    }
+  ],
+  "warnings": [],
+  "identical_scores_across_methods": [],
+  "runs": [
+    {
+      "method": "FITS",
+      "dataset": "AIOPS",
+      "scored": 29,
+      "evaluated": 29,
+      "skipped_normal": 0,
+      "duration_s": 1584.92,
+      "runtime": {
+        "train_and_valid": 979.5194792067632,
+        "test": 247.14375031366944
+      },
+      "sampled_peak_mib": 338.0,
+      "summary": {
+        "point_f1": {
+          "f1": 0.912705313315157,
+          "precision": 0.9067133246426012,
+          "recall": 0.9253074168559979
+        },
+        "event_f1": {
+          "f1": 0.7139237428728425,
+          "precision": 0.7042339952414752,
+          "recall": 0.7524659895830119
+        },
+        "event_f1_squeeze": {
+          "f1": 0.6296184684351809,
+          "precision": 0.6723772863683911,
+          "recall": 0.6566300464232522
+        },
+        "auprc": {
+          "value": 0.23300270387923122
+        },
+        "auroc": {
+          "value": 0.6965777140927536
+        }
+      },
+      "logs": {
+        "fatal": {
+          "count": 0,
+          "examples": []
+        },
+        "nonfinite_training": {
+          "count": 0,
+          "examples": []
+        },
+        "runtime_warning": {
+          "count": 0,
+          "examples": []
+        },
+        "user_warning": {
+          "count": 29,
+          "examples": [
+            "/home/v-zzr25/workplace/Live-EasyTSAD/envs/torch2/venv/lib/python3.11/site-packages/torch/nn/modules/module.py:1313: UserWarning: Complex modules are a new feature under active development whose design may change, and some modules might not work as expected when using complex tensors as parameters or buffers. Please file an issue at https://github.com/pytorch/pytorch/issues/new?template=bug-report"
+          ]
+        },
+        "future_warning": {
+          "count": 0,
+          "examples": []
+        }
+      },
+      "constant_scores": 0
+    },
+    {
+      "method": "FITS",
+      "dataset": "NAB",
+      "scored": 10,
+      "evaluated": 10,
+      "skipped_normal": 0,
+      "duration_s": 303.19,
+      "runtime": {
+        "train_and_valid": 44.923808466643095,
+        "test": 6.761521283537149
+      },
+      "sampled_peak_mib": 338.0,
+      "summary": {
+        "point_f1": {
+          "f1": 0.9950533045083152,
+          "precision": 0.9902491790009738,
+          "recall": 1.0
+        },
+        "event_f1": {
+          "f1": 0.8605042016806717,
+          "precision": 0.8388888888888888,
+          "recall": 0.9555555555555554
+        },
+        "event_f1_squeeze": {
+          "f1": 0.7444444444444434,
+          "precision": 0.7449999999999993,
+          "recall": 0.9499999999999991
+        },
+        "auprc": {
+          "value": 0.1354382907330086
+        },
+        "auroc": {
+          "value": 0.6074208831648551
+        }
+      },
+      "logs": {
+        "fatal": {
+          "count": 0,
+          "examples": []
+        },
+        "nonfinite_training": {
+          "count": 0,
+          "examples": []
+        },
+        "runtime_warning": {
+          "count": 0,
+          "examples": []
+        },
+        "user_warning": {
+          "count": 9,
+          "examples": [
+            "/home/v-zzr25/workplace/Live-EasyTSAD/envs/torch2/venv/lib/python3.11/site-packages/torch/nn/modules/module.py:1313: UserWarning: Complex modules are a new feature under active development whose design may change, and some modules might not work as expected when using complex tensors as parameters or buffers. Please file an issue at https://github.com/pytorch/pytorch/issues/new?template=bug-report"
+          ]
+        },
+        "future_warning": {
+          "count": 0,
+          "examples": []
+        }
+      },
+      "constant_scores": 0
+    },
+    {
+      "method": "FITS",
+      "dataset": "TODS",
+      "scored": 15,
+      "evaluated": 15,
+      "skipped_normal": 0,
+      "duration_s": 231.62,
+      "runtime": {
+        "train_and_valid": 201.4686484495178,
+        "test": 3.7133870916441083
+      },
+      "sampled_peak_mib": 338.0,
+      "summary": {
+        "point_f1": {
+          "f1": 0.7459702410793657,
+          "precision": 0.8160666243507974,
+          "recall": 0.7102217921481818
+        },
+        "event_f1": {
+          "f1": 0.5686641626919999,
+          "precision": 0.7086129857503601,
+          "recall": 0.5122303755912658
+        },
+        "event_f1_squeeze": {
+          "f1": 0.5148177467985361,
+          "precision": 0.6862693539301231,
+          "recall": 0.4620773990241983
+        },
+        "auprc": {
+          "value": 0.27297946452040694
+        },
+        "auroc": {
+          "value": 0.5213421702787592
+        }
+      },
+      "logs": {
+        "fatal": {
+          "count": 0,
+          "examples": []
+        },
+        "nonfinite_training": {
+          "count": 0,
+          "examples": []
+        },
+        "runtime_warning": {
+          "count": 0,
+          "examples": []
+        },
+        "user_warning": {
+          "count": 15,
+          "examples": [
+            "/home/v-zzr25/workplace/Live-EasyTSAD/envs/torch2/venv/lib/python3.11/site-packages/torch/nn/modules/module.py:1313: UserWarning: Complex modules are a new feature under active development whose design may change, and some modules might not work as expected when using complex tensors as parameters or buffers. Please file an issue at https://github.com/pytorch/pytorch/issues/new?template=bug-report"
+          ]
+        },
+        "future_warning": {
+          "count": 0,
+          "examples": []
+        }
+      },
+      "constant_scores": 0
+    },
+    {
+      "method": "FITS",
+      "dataset": "UCR",
+      "scored": 203,
+      "evaluated": 201,
+      "skipped_normal": 2,
+      "duration_s": 2967.83,
+      "runtime": {
+        "train_and_valid": 2493.799473496154,
+        "test": 323.87412556633353
+      },
+      "sampled_peak_mib": 340.0,
+      "summary": {
+        "point_f1": {
+          "f1": 0.7554263592398519,
+          "precision": 0.6858747371282603,
+          "recall": 1.0
+        },
+        "event_f1": {
+          "f1": 0.40724403151174865,
+          "precision": 0.36447525602076114,
+          "recall": 0.9999999999999999
+        },
+        "event_f1_squeeze": {
+          "f1": 0.32532751430973544,
+          "precision": 0.2967810148697583,
+          "recall": 0.9999999999999989
+        },
+        "auprc": {
+          "value": 0.044072043370208654
+        },
+        "auroc": {
+          "value": 0.5464534902368497
+        }
+      },
+      "logs": {
+        "fatal": {
+          "count": 0,
+          "examples": []
+        },
+        "nonfinite_training": {
+          "count": 0,
+          "examples": []
+        },
+        "runtime_warning": {
+          "count": 0,
+          "examples": []
+        },
+        "user_warning": {
+          "count": 198,
+          "examples": [
+            "/home/v-zzr25/workplace/Live-EasyTSAD/envs/torch2/venv/lib/python3.11/site-packages/torch/nn/modules/module.py:1313: UserWarning: Complex modules are a new feature under active development whose design may change, and some modules might not work as expected when using complex tensors as parameters or buffers. Please file an issue at https://github.com/pytorch/pytorch/issues/new?template=bug-report"
+          ]
+        },
+        "future_warning": {
+          "count": 0,
+          "examples": []
+        }
+      },
+      "constant_scores": 0
+    },
+    {
+      "method": "FITS",
+      "dataset": "WSD",
+      "scored": 210,
+      "evaluated": 161,
+      "skipped_normal": 49,
+      "duration_s": 1566.22,
+      "runtime": {
+        "train_and_valid": 1328.0228426819667,
+        "test": 158.02487041149288
+      },
+      "sampled_peak_mib": 340.0,
+      "summary": {
+        "point_f1": {
+          "f1": 0.9708226080755326,
+          "precision": 0.9596678207132985,
+          "recall": 0.985926856179484
+        },
+        "event_f1": {
+          "f1": 0.883587459778503,
+          "precision": 0.8927794546573606,
+          "recall": 0.9170931314080154
+        },
+        "event_f1_squeeze": {
+          "f1": 0.8433239124564708,
+          "precision": 0.8775047904650498,
+          "recall": 0.8740402280373338
+        },
+        "auprc": {
+          "value": 0.31019947599151276
+        },
+        "auroc": {
+          "value": 0.7545768717587216
+        }
+      },
+      "logs": {
+        "fatal": {
+          "count": 0,
+          "examples": []
+        },
+        "nonfinite_training": {
+          "count": 0,
+          "examples": []
+        },
+        "runtime_warning": {
+          "count": 0,
+          "examples": []
+        },
+        "user_warning": {
+          "count": 205,
+          "examples": [
+            "/home/v-zzr25/workplace/Live-EasyTSAD/envs/torch2/venv/lib/python3.11/site-packages/torch/nn/modules/module.py:1313: UserWarning: Complex modules are a new feature under active development whose design may change, and some modules might not work as expected when using complex tensors as parameters or buffers. Please file an issue at https://github.com/pytorch/pytorch/issues/new?template=bug-report"
+          ]
+        },
+        "future_warning": {
+          "count": 0,
+          "examples": []
+        }
+      },
+      "constant_scores": 0
+    },
+    {
+      "method": "FITS",
+      "dataset": "Yahoo",
+      "scored": 367,
+      "evaluated": 352,
+      "skipped_normal": 15,
+      "duration_s": 740.98,
+      "runtime": {
+        "train_and_valid": 625.0940206730738,
+        "test": 16.02319530863315
+      },
+      "sampled_peak_mib": 338.0,
+      "summary": {
+        "point_f1": {
+          "f1": 0.8143001666816684,
+          "precision": 0.8153167106962627,
+          "recall": 0.8832789339112247
+        },
+        "event_f1": {
+          "f1": 0.749571741103585,
+          "precision": 0.7734812241989015,
+          "recall": 0.8316647984554066
+        },
+        "event_f1_squeeze": {
+          "f1": 0.7180434166414983,
+          "precision": 0.7622438375648932,
+          "recall": 0.8001533189033183
+        },
+        "auprc": {
+          "value": 0.28578173945476926
+        },
+        "auroc": {
+          "value": 0.661545127872153
+        }
+      },
+      "logs": {
+        "fatal": {
+          "count": 0,
+          "examples": []
+        },
+        "nonfinite_training": {
+          "count": 0,
+          "examples": []
+        },
+        "runtime_warning": {
+          "count": 0,
+          "examples": []
+        },
+        "user_warning": {
+          "count": 137,
+          "examples": [
+            "/home/v-zzr25/workplace/Live-EasyTSAD/envs/torch2/venv/lib/python3.11/site-packages/torch/nn/modules/module.py:1313: UserWarning: Complex modules are a new feature under active development whose design may change, and some modules might not work as expected when using complex tensors as parameters or buffers. Please file an issue at https://github.com/pytorch/pytorch/issues/new?template=bug-report",
+            "/home/v-zzr25/workplace/Live-EasyTSAD/envs/torch2/venv/lib/python3.11/site-packages/sklearn/metrics/_ranking.py:1192: UserWarning: No positive class found in y_true, recall is set to one for all thresholds."
+          ]
+        },
+        "future_warning": {
+          "count": 0,
+          "examples": []
+        }
+      },
+      "constant_scores": 0
+    },
+    {
+      "method": "TranAD",
+      "dataset": "AIOPS",
+      "scored": 29,
+      "evaluated": 29,
+      "skipped_normal": 0,
+      "duration_s": 2937.06,
+      "runtime": {
+        "train_and_valid": 2402.366801646538,
+        "test": 243.95801097992808
+      },
+      "sampled_peak_mib": 332.0,
+      "summary": {
+        "point_f1": {
+          "f1": 0.7816652575788655,
+          "precision": 0.8534452645856662,
+          "recall": 0.771891250931818
+        },
+        "event_f1": {
+          "f1": 0.6321816943285363,
+          "precision": 0.7581665632018644,
+          "recall": 0.5815104929699569
+        },
+        "event_f1_squeeze": {
+          "f1": 0.5954035419517216,
+          "precision": 0.8008431665446867,
+          "recall": 0.5210398865554888
+        },
+        "auprc": {
+          "value": 0.273884583233935
+        },
+        "auroc": {
+          "value": 0.6514753989198058
+        }
+      },
+      "logs": {
+        "fatal": {
+          "count": 0,
+          "examples": []
+        },
+        "nonfinite_training": {
+          "count": 0,
+          "examples": []
+        },
+        "runtime_warning": {
+          "count": 0,
+          "examples": []
+        },
+        "user_warning": {
+          "count": 29,
+          "examples": [
+            "/home/v-zzr25/workplace/Live-EasyTSAD/envs/torch2/venv/lib/python3.11/site-packages/torch/nn/modules/transformer.py:385: UserWarning: enable_nested_tensor is True, but self.use_nested_tensor is False because encoder_layer was not TransformerEncoderLayer"
+          ]
+        },
+        "future_warning": {
+          "count": 0,
+          "examples": []
+        }
+      },
+      "constant_scores": 0
+    },
+    {
+      "method": "TranAD",
+      "dataset": "NAB",
+      "scored": 10,
+      "evaluated": 10,
+      "skipped_normal": 0,
+      "duration_s": 311.36,
+      "runtime": {
+        "train_and_valid": 67.04756944719702,
+        "test": 8.122536272741854
+      },
+      "sampled_peak_mib": 332.0,
+      "summary": {
+        "point_f1": {
+          "f1": 0.9991413760754446,
+          "precision": 0.9982876921155486,
+          "recall": 1.0
+        },
+        "event_f1": {
+          "f1": 0.9499999999999993,
+          "precision": 0.914285714285714,
+          "recall": 0.9999999999999998
+        },
+        "event_f1_squeeze": {
+          "f1": 0.8499999999999988,
+          "precision": 0.7999999999999994,
+          "recall": 0.9999999999999989
+        },
+        "auprc": {
+          "value": 0.1731902184330361
+        },
+        "auroc": {
+          "value": 0.630048439578448
+        }
+      },
+      "logs": {
+        "fatal": {
+          "count": 0,
+          "examples": []
+        },
+        "nonfinite_training": {
+          "count": 0,
+          "examples": []
+        },
+        "runtime_warning": {
+          "count": 0,
+          "examples": []
+        },
+        "user_warning": {
+          "count": 10,
+          "examples": [
+            "/home/v-zzr25/workplace/Live-EasyTSAD/envs/torch2/venv/lib/python3.11/site-packages/torch/nn/modules/transformer.py:385: UserWarning: enable_nested_tensor is True, but self.use_nested_tensor is False because encoder_layer was not TransformerEncoderLayer"
+          ]
+        },
+        "future_warning": {
+          "count": 0,
+          "examples": []
+        }
+      },
+      "constant_scores": 0
+    },
+    {
+      "method": "TranAD",
+      "dataset": "TODS",
+      "scored": 15,
+      "evaluated": 15,
+      "skipped_normal": 0,
+      "duration_s": 72.5,
+      "runtime": {
+        "train_and_valid": 56.39493322838098,
+        "test": 6.206258623860776
+      },
+      "sampled_peak_mib": 332.0,
+      "summary": {
+        "point_f1": {
+          "f1": 0.5117680139611529,
+          "precision": 0.5319177305206785,
+          "recall": 0.6919928601028879
+        },
+        "event_f1": {
+          "f1": 0.21950814235302618,
+          "precision": 0.3371029390824652,
+          "recall": 0.3468471673241721
+        },
+        "event_f1_squeeze": {
+          "f1": 0.17615015444626475,
+          "precision": 0.2991685230726927,
+          "recall": 0.3044478305740598
+        },
+        "auprc": {
+          "value": 0.162488505499303
+        },
+        "auroc": {
+          "value": 0.4826014136575352
+        }
+      },
+      "logs": {
+        "fatal": {
+          "count": 0,
+          "examples": []
+        },
+        "nonfinite_training": {
+          "count": 0,
+          "examples": []
+        },
+        "runtime_warning": {
+          "count": 0,
+          "examples": []
+        },
+        "user_warning": {
+          "count": 12,
+          "examples": [
+            "/home/v-zzr25/workplace/Live-EasyTSAD/envs/torch2/venv/lib/python3.11/site-packages/torch/nn/modules/transformer.py:385: UserWarning: enable_nested_tensor is True, but self.use_nested_tensor is False because encoder_layer was not TransformerEncoderLayer"
+          ]
+        },
+        "future_warning": {
+          "count": 0,
+          "examples": []
+        }
+      },
+      "constant_scores": 0
+    },
+    {
+      "method": "TranAD",
+      "dataset": "UCR",
+      "scored": 203,
+      "evaluated": 201,
+      "skipped_normal": 2,
+      "duration_s": 3449.44,
+      "runtime": {
+        "train_and_valid": 2696.7434575576335,
+        "test": 625.25889558997
+      },
+      "sampled_peak_mib": 332.0,
+      "summary": {
+        "point_f1": {
+          "f1": 0.6118531542219632,
+          "precision": 0.5367282151981535,
+          "recall": 1.0
+        },
+        "event_f1": {
+          "f1": 0.24925179920023322,
+          "precision": 0.21347621439161057,
+          "recall": 0.9999999999999999
+        },
+        "event_f1_squeeze": {
+          "f1": 0.18485180395087464,
+          "precision": 0.1666799020466388,
+          "recall": 0.9999999999999989
+        },
+        "auprc": {
+          "value": 0.026386896898413784
+        },
+        "auroc": {
+          "value": 0.49243796148750146
+        }
+      },
+      "logs": {
+        "fatal": {
+          "count": 0,
+          "examples": []
+        },
+        "nonfinite_training": {
+          "count": 0,
+          "examples": []
+        },
+        "runtime_warning": {
+          "count": 0,
+          "examples": []
+        },
+        "user_warning": {
+          "count": 167,
+          "examples": [
+            "/home/v-zzr25/workplace/Live-EasyTSAD/envs/torch2/venv/lib/python3.11/site-packages/torch/nn/modules/transformer.py:385: UserWarning: enable_nested_tensor is True, but self.use_nested_tensor is False because encoder_layer was not TransformerEncoderLayer"
+          ]
+        },
+        "future_warning": {
+          "count": 0,
+          "examples": []
+        }
+      },
+      "constant_scores": 0
+    },
+    {
+      "method": "TranAD",
+      "dataset": "WSD",
+      "scored": 210,
+      "evaluated": 161,
+      "skipped_normal": 49,
+      "duration_s": 3297.68,
+      "runtime": {
+        "train_and_valid": 2927.7735150186345,
+        "test": 302.9955412019044
+      },
+      "sampled_peak_mib": 332.0,
+      "summary": {
+        "point_f1": {
+          "f1": 0.7788925952083101,
+          "precision": 0.8565337752051542,
+          "recall": 0.8172955829233788
+        },
+        "event_f1": {
+          "f1": 0.7284578124946327,
+          "precision": 0.8210144153101322,
+          "recall": 0.7640405943205815
+        },
+        "event_f1_squeeze": {
+          "f1": 0.704113843111868,
+          "precision": 0.7970067139674295,
+          "recall": 0.7558553126572789
+        },
+        "auprc": {
+          "value": 0.1847408262457992
+        },
+        "auroc": {
+          "value": 0.5908908591803987
+        }
+      },
+      "logs": {
+        "fatal": {
+          "count": 0,
+          "examples": []
+        },
+        "nonfinite_training": {
+          "count": 0,
+          "examples": []
+        },
+        "runtime_warning": {
+          "count": 0,
+          "examples": []
+        },
+        "user_warning": {
+          "count": 210,
+          "examples": [
+            "/home/v-zzr25/workplace/Live-EasyTSAD/envs/torch2/venv/lib/python3.11/site-packages/torch/nn/modules/transformer.py:385: UserWarning: enable_nested_tensor is True, but self.use_nested_tensor is False because encoder_layer was not TransformerEncoderLayer"
+          ]
+        },
+        "future_warning": {
+          "count": 0,
+          "examples": []
+        }
+      },
+      "constant_scores": 0
+    },
+    {
+      "method": "TranAD",
+      "dataset": "Yahoo",
+      "scored": 367,
+      "evaluated": 352,
+      "skipped_normal": 15,
+      "duration_s": 308.92,
+      "runtime": {
+        "train_and_valid": 241.14270687941462,
+        "test": 26.23471242375672
+      },
+      "sampled_peak_mib": 332.0,
+      "summary": {
+        "point_f1": {
+          "f1": 0.5816871836581253,
+          "precision": 0.6179397090719047,
+          "recall": 0.7680993863597562
+        },
+        "event_f1": {
+          "f1": 0.5156526688639872,
+          "precision": 0.5778772661692622,
+          "recall": 0.7279684214886419
+        },
+        "event_f1_squeeze": {
+          "f1": 0.4893486397992147,
+          "precision": 0.5665795712598092,
+          "recall": 0.7118014561196374
+        },
+        "auprc": {
+          "value": 0.16980639625371063
+        },
+        "auroc": {
+          "value": 0.5233142345736442
+        }
+      },
+      "logs": {
+        "fatal": {
+          "count": 0,
+          "examples": []
+        },
+        "nonfinite_training": {
+          "count": 0,
+          "examples": []
+        },
+        "runtime_warning": {
+          "count": 0,
+          "examples": []
+        },
+        "user_warning": {
+          "count": 58,
+          "examples": [
+            "/home/v-zzr25/workplace/Live-EasyTSAD/envs/torch2/venv/lib/python3.11/site-packages/torch/nn/modules/transformer.py:385: UserWarning: enable_nested_tensor is True, but self.use_nested_tensor is False because encoder_layer was not TransformerEncoderLayer"
+          ]
+        },
+        "future_warning": {
+          "count": 0,
+          "examples": []
+        }
+      },
+      "constant_scores": 0
+    },
+    {
+      "method": "LSTMADbeta",
+      "dataset": "AIOPS",
+      "scored": 29,
+      "evaluated": 29,
+      "skipped_normal": 0,
+      "duration_s": 3150.66,
+      "runtime": {
+        "train_and_valid": 2488.7932557715103,
+        "test": 319.043552829884
+      },
+      "sampled_peak_mib": 384.0,
+      "summary": {
+        "point_f1": {
+          "f1": 0.9227829581584618,
+          "precision": 0.9050761465407646,
+          "recall": 0.9494939053114075
+        },
+        "event_f1": {
+          "f1": 0.8058890616070082,
+          "precision": 0.8804936230564798,
+          "recall": 0.7806451652683347
+        },
+        "event_f1_squeeze": {
+          "f1": 0.7678569401757888,
+          "precision": 0.8415783230732695,
+          "recall": 0.7424810934819126
+        },
+        "auprc": {
+          "value": 0.29376001187430456
+        },
+        "auroc": {
+          "value": 0.7548510293179601
+        }
+      },
+      "logs": {
+        "fatal": {
+          "count": 0,
+          "examples": []
+        },
+        "nonfinite_training": {
+          "count": 0,
+          "examples": []
+        },
+        "runtime_warning": {
+          "count": 0,
+          "examples": []
+        },
+        "user_warning": {
+          "count": 0,
+          "examples": []
+        },
+        "future_warning": {
+          "count": 0,
+          "examples": []
+        }
+      },
+      "constant_scores": 0
+    },
+    {
+      "method": "LSTMADbeta",
+      "dataset": "NAB",
+      "scored": 10,
+      "evaluated": 10,
+      "skipped_normal": 0,
+      "duration_s": 329.49,
+      "runtime": {
+        "train_and_valid": 79.06246426422149,
+        "test": 9.290620099753141
+      },
+      "sampled_peak_mib": 384.0,
+      "summary": {
+        "point_f1": {
+          "f1": 0.9903036717323704,
+          "precision": 0.9818704634341373,
+          "recall": 1.0
+        },
+        "event_f1": {
+          "f1": 0.9031135531135526,
+          "precision": 0.8894841269841267,
+          "recall": 0.9555555555555554
+        },
+        "event_f1_squeeze": {
+          "f1": 0.7899999999999988,
+          "precision": 0.7783333333333327,
+          "recall": 0.9499999999999991
+        },
+        "auprc": {
+          "value": 0.11711957955345575
+        },
+        "auroc": {
+          "value": 0.578779067153258
+        }
+      },
+      "logs": {
+        "fatal": {
+          "count": 0,
+          "examples": []
+        },
+        "nonfinite_training": {
+          "count": 0,
+          "examples": []
+        },
+        "runtime_warning": {
+          "count": 0,
+          "examples": []
+        },
+        "user_warning": {
+          "count": 0,
+          "examples": []
+        },
+        "future_warning": {
+          "count": 0,
+          "examples": []
+        }
+      },
+      "constant_scores": 0
+    },
+    {
+      "method": "LSTMADbeta",
+      "dataset": "TODS",
+      "scored": 15,
+      "evaluated": 15,
+      "skipped_normal": 0,
+      "duration_s": 163.07,
+      "runtime": {
+        "train_and_valid": 145.7632947023958,
+        "test": 5.071936552412808
+      },
+      "sampled_peak_mib": 384.0,
+      "summary": {
+        "point_f1": {
+          "f1": 0.8708479223661082,
+          "precision": 0.9034256297248608,
+          "recall": 0.8554803707189016
+        },
+        "event_f1": {
+          "f1": 0.746410807715482,
+          "precision": 0.8088817262060427,
+          "recall": 0.7397595386370729
+        },
+        "event_f1_squeeze": {
+          "f1": 0.6970415656774441,
+          "precision": 0.7951388319725287,
+          "recall": 0.6793237596745073
+        },
+        "auprc": {
+          "value": 0.46454382941625094
+        },
+        "auroc": {
+          "value": 0.6959205741262213
+        }
+      },
+      "logs": {
+        "fatal": {
+          "count": 0,
+          "examples": []
+        },
+        "nonfinite_training": {
+          "count": 0,
+          "examples": []
+        },
+        "runtime_warning": {
+          "count": 0,
+          "examples": []
+        },
+        "user_warning": {
+          "count": 0,
+          "examples": []
+        },
+        "future_warning": {
+          "count": 0,
+          "examples": []
+        }
+      },
+      "constant_scores": 0
+    },
+    {
+      "method": "LSTMADbeta",
+      "dataset": "UCR",
+      "scored": 203,
+      "evaluated": 201,
+      "skipped_normal": 2,
+      "duration_s": 5437.67,
+      "runtime": {
+        "train_and_valid": 4832.709572445601,
+        "test": 469.5529095400125
+      },
+      "sampled_peak_mib": 384.0,
+      "summary": {
+        "point_f1": {
+          "f1": 0.7694077389985168,
+          "precision": 0.7094236072226553,
+          "recall": 1.0
+        },
+        "event_f1": {
+          "f1": 0.453520560786362,
+          "precision": 0.4118966851398113,
+          "recall": 0.9999999999999999
+        },
+        "event_f1_squeeze": {
+          "f1": 0.37583049578919364,
+          "precision": 0.3470775057387685,
+          "recall": 0.9999999999999989
+        },
+        "auprc": {
+          "value": 0.06782961136696791
+        },
+        "auroc": {
+          "value": 0.5751940157812515
+        }
+      },
+      "logs": {
+        "fatal": {
+          "count": 0,
+          "examples": []
+        },
+        "nonfinite_training": {
+          "count": 0,
+          "examples": []
+        },
+        "runtime_warning": {
+          "count": 0,
+          "examples": []
+        },
+        "user_warning": {
+          "count": 0,
+          "examples": []
+        },
+        "future_warning": {
+          "count": 0,
+          "examples": []
+        }
+      },
+      "constant_scores": 0
+    },
+    {
+      "method": "LSTMADbeta",
+      "dataset": "WSD",
+      "scored": 210,
+      "evaluated": 161,
+      "skipped_normal": 49,
+      "duration_s": 4237.37,
+      "runtime": {
+        "train_and_valid": 3917.887273840606,
+        "test": 217.3557157004252
+      },
+      "sampled_peak_mib": 384.0,
+      "summary": {
+        "point_f1": {
+          "f1": 0.9855500329739623,
+          "precision": 0.9815656871490508,
+          "recall": 0.9912420477328393
+        },
+        "event_f1": {
+          "f1": 0.9374861757542189,
+          "precision": 0.9299466590957961,
+          "recall": 0.9639436752909092
+        },
+        "event_f1_squeeze": {
+          "f1": 0.9006823427023518,
+          "precision": 0.900665448304098,
+          "recall": 0.941269012446203
+        },
+        "auprc": {
+          "value": 0.3753332616823693
+        },
+        "auroc": {
+          "value": 0.8230649795231784
+        }
+      },
+      "logs": {
+        "fatal": {
+          "count": 0,
+          "examples": []
+        },
+        "nonfinite_training": {
+          "count": 0,
+          "examples": []
+        },
+        "runtime_warning": {
+          "count": 0,
+          "examples": []
+        },
+        "user_warning": {
+          "count": 0,
+          "examples": []
+        },
+        "future_warning": {
+          "count": 0,
+          "examples": []
+        }
+      },
+      "constant_scores": 0
+    },
+    {
+      "method": "LSTMADbeta",
+      "dataset": "Yahoo",
+      "scored": 367,
+      "evaluated": 352,
+      "skipped_normal": 15,
+      "duration_s": 781.99,
+      "runtime": {
+        "train_and_valid": 711.9968989761546,
+        "test": 18.07145944610238
+      },
+      "sampled_peak_mib": 384.0,
+      "summary": {
+        "point_f1": {
+          "f1": 0.5906758378127578,
+          "precision": 0.6163463724892655,
+          "recall": 0.7755677558986096
+        },
+        "event_f1": {
+          "f1": 0.5254805399013684,
+          "precision": 0.5846188938402412,
+          "recall": 0.7395366157628022
+        },
+        "event_f1_squeeze": {
+          "f1": 0.5000826732463689,
+          "precision": 0.5794859320983587,
+          "recall": 0.7271272997835493
+        },
+        "auprc": {
+          "value": 0.17662906365813158
+        },
+        "auroc": {
+          "value": 0.49873259292276106
+        }
+      },
+      "logs": {
+        "fatal": {
+          "count": 0,
+          "examples": []
+        },
+        "nonfinite_training": {
+          "count": 0,
+          "examples": []
+        },
+        "runtime_warning": {
+          "count": 0,
+          "examples": []
+        },
+        "user_warning": {
+          "count": 6,
+          "examples": [
+            "/home/v-zzr25/workplace/Live-EasyTSAD/envs/torch2/venv/lib/python3.11/site-packages/sklearn/metrics/_ranking.py:1192: UserWarning: No positive class found in y_true, recall is set to one for all thresholds."
+          ]
+        },
+        "future_warning": {
+          "count": 0,
+          "examples": []
+        }
+      },
+      "constant_scores": 0
+    },
+    {
+      "method": "EncDecAD",
+      "dataset": "AIOPS",
+      "scored": 29,
+      "evaluated": 29,
+      "skipped_normal": 0,
+      "duration_s": 3405.55,
+      "runtime": {
+        "train_and_valid": 1868.558311172761,
+        "test": 1232.5390277123079
+      },
+      "sampled_peak_mib": 398.0,
+      "summary": {
+        "point_f1": {
+          "f1": 0.9020756172293716,
+          "precision": 0.8941766964100037,
+          "recall": 0.917163955168655
+        },
+        "event_f1": {
+          "f1": 0.7745326940088265,
+          "precision": 0.8478100967528498,
+          "recall": 0.7396239972478158
+        },
+        "event_f1_squeeze": {
+          "f1": 0.724342884732394,
+          "precision": 0.77538408419189,
+          "recall": 0.7181563241700843
+        },
+        "auprc": {
+          "value": 0.2762169916241507
+        },
+        "auroc": {
+          "value": 0.7502536471341309
+        }
+      },
+      "logs": {
+        "fatal": {
+          "count": 0,
+          "examples": []
+        },
+        "nonfinite_training": {
+          "count": 0,
+          "examples": []
+        },
+        "runtime_warning": {
+          "count": 0,
+          "examples": []
+        },
+        "user_warning": {
+          "count": 0,
+          "examples": []
+        },
+        "future_warning": {
+          "count": 0,
+          "examples": []
+        }
+      },
+      "constant_scores": 0
+    },
+    {
+      "method": "EncDecAD",
+      "dataset": "NAB",
+      "scored": 10,
+      "evaluated": 10,
+      "skipped_normal": 0,
+      "duration_s": 117.76,
+      "runtime": {
+        "train_and_valid": 64.41189705580473,
+        "test": 30.93650149181485
+      },
+      "sampled_peak_mib": 398.0,
+      "summary": {
+        "point_f1": {
+          "f1": 0.990995359708404,
+          "precision": 0.9829891833763427,
+          "recall": 1.0
+        },
+        "event_f1": {
+          "f1": 0.8941849816849812,
+          "precision": 0.8793831168831167,
+          "recall": 0.9555555555555554
+        },
+        "event_f1_squeeze": {
+          "f1": 0.7816666666666655,
+          "precision": 0.772619047619047,
+          "recall": 0.9499999999999991
+        },
+        "auprc": {
+          "value": 0.13289474105213672
+        },
+        "auroc": {
+          "value": 0.5829329413276684
+        }
+      },
+      "logs": {
+        "fatal": {
+          "count": 0,
+          "examples": []
+        },
+        "nonfinite_training": {
+          "count": 0,
+          "examples": []
+        },
+        "runtime_warning": {
+          "count": 0,
+          "examples": []
+        },
+        "user_warning": {
+          "count": 0,
+          "examples": []
+        },
+        "future_warning": {
+          "count": 0,
+          "examples": []
+        }
+      },
+      "constant_scores": 0
+    },
+    {
+      "method": "EncDecAD",
+      "dataset": "TODS",
+      "scored": 15,
+      "evaluated": 15,
+      "skipped_normal": 0,
+      "duration_s": 252.58,
+      "runtime": {
+        "train_and_valid": 212.35733466316015,
+        "test": 29.851022632792592
+      },
+      "sampled_peak_mib": 398.0,
+      "summary": {
+        "point_f1": {
+          "f1": 0.734188022132525,
+          "precision": 0.7726829918574182,
+          "recall": 0.7803833619785976
+        },
+        "event_f1": {
+          "f1": 0.6356261245240135,
+          "precision": 0.7463686841633236,
+          "recall": 0.6695772458755963
+        },
+        "event_f1_squeeze": {
+          "f1": 0.6178755391574768,
+          "precision": 0.7345737027458482,
+          "recall": 0.6538767401243313
+        },
+        "auprc": {
+          "value": 0.3524770005724847
+        },
+        "auroc": {
+          "value": 0.6031231905791157
+        }
+      },
+      "logs": {
+        "fatal": {
+          "count": 0,
+          "examples": []
+        },
+        "nonfinite_training": {
+          "count": 0,
+          "examples": []
+        },
+        "runtime_warning": {
+          "count": 0,
+          "examples": []
+        },
+        "user_warning": {
+          "count": 0,
+          "examples": []
+        },
+        "future_warning": {
+          "count": 0,
+          "examples": []
+        }
+      },
+      "constant_scores": 0
+    },
+    {
+      "method": "EncDecAD",
+      "dataset": "UCR",
+      "scored": 203,
+      "evaluated": 201,
+      "skipped_normal": 2,
+      "duration_s": 7497.31,
+      "runtime": {
+        "train_and_valid": 4374.122941733338,
+        "test": 2939.8521742280573
+      },
+      "sampled_peak_mib": 398.0,
+      "summary": {
+        "point_f1": {
+          "f1": 0.6652218775443626,
+          "precision": 0.5902919594631139,
+          "recall": 1.0
+        },
+        "event_f1": {
+          "f1": 0.32640485407234837,
+          "precision": 0.2921132272537651,
+          "recall": 0.9999999999999999
+        },
+        "event_f1_squeeze": {
+          "f1": 0.262524162578572,
+          "precision": 0.24206573529542072,
+          "recall": 0.9999999999999989
+        },
+        "auprc": {
+          "value": 0.034274504187566196
+        },
+        "auroc": {
+          "value": 0.5308069168496827
+        }
+      },
+      "logs": {
+        "fatal": {
+          "count": 0,
+          "examples": []
+        },
+        "nonfinite_training": {
+          "count": 0,
+          "examples": []
+        },
+        "runtime_warning": {
+          "count": 0,
+          "examples": []
+        },
+        "user_warning": {
+          "count": 0,
+          "examples": []
+        },
+        "future_warning": {
+          "count": 0,
+          "examples": []
+        }
+      },
+      "constant_scores": 0
+    },
+    {
+      "method": "EncDecAD",
+      "dataset": "WSD",
+      "scored": 210,
+      "evaluated": 161,
+      "skipped_normal": 49,
+      "duration_s": 6104.61,
+      "runtime": {
+        "train_and_valid": 4543.524500755593,
+        "test": 1482.3922717561945
+      },
+      "sampled_peak_mib": 398.0,
+      "summary": {
+        "point_f1": {
+          "f1": 0.9813247806300296,
+          "precision": 0.9793906982175548,
+          "recall": 0.986395366727963
+        },
+        "event_f1": {
+          "f1": 0.9286274337483824,
+          "precision": 0.9285533966679931,
+          "recall": 0.9513892159365765
+        },
+        "event_f1_squeeze": {
+          "f1": 0.8965148162538873,
+          "precision": 0.9034790852138447,
+          "recall": 0.9283996785364964
+        },
+        "auprc": {
+          "value": 0.3410790309004852
+        },
+        "auroc": {
+          "value": 0.7946226686525775
+        }
+      },
+      "logs": {
+        "fatal": {
+          "count": 0,
+          "examples": []
+        },
+        "nonfinite_training": {
+          "count": 0,
+          "examples": []
+        },
+        "runtime_warning": {
+          "count": 0,
+          "examples": []
+        },
+        "user_warning": {
+          "count": 0,
+          "examples": []
+        },
+        "future_warning": {
+          "count": 0,
+          "examples": []
+        }
+      },
+      "constant_scores": 0
+    },
+    {
+      "method": "EncDecAD",
+      "dataset": "Yahoo",
+      "scored": 367,
+      "evaluated": 352,
+      "skipped_normal": 15,
+      "duration_s": 1611.85,
+      "runtime": {
+        "train_and_valid": 1440.369176024571,
+        "test": 104.30636926274747
+      },
+      "sampled_peak_mib": 398.0,
+      "summary": {
+        "point_f1": {
+          "f1": 0.5672198620601403,
+          "precision": 0.6061551675899222,
+          "recall": 0.7559578992667888
+        },
+        "event_f1": {
+          "f1": 0.502664292062853,
+          "precision": 0.5808174961773948,
+          "recall": 0.7096909828047026
+        },
+        "event_f1_squeeze": {
+          "f1": 0.4780736227109658,
+          "precision": 0.5627292168077198,
+          "recall": 0.6978896103896098
+        },
+        "auprc": {
+          "value": 0.1749649501982901
+        },
+        "auroc": {
+          "value": 0.491348276251534
+        }
+      },
+      "logs": {
+        "fatal": {
+          "count": 0,
+          "examples": []
+        },
+        "nonfinite_training": {
+          "count": 0,
+          "examples": []
+        },
+        "runtime_warning": {
+          "count": 0,
+          "examples": []
+        },
+        "user_warning": {
+          "count": 5,
+          "examples": [
+            "/home/v-zzr25/workplace/Live-EasyTSAD/envs/torch2/venv/lib/python3.11/site-packages/sklearn/metrics/_ranking.py:1192: UserWarning: No positive class found in y_true, recall is set to one for all thresholds."
+          ]
+        },
+        "future_warning": {
+          "count": 0,
+          "examples": []
+        }
+      },
+      "constant_scores": 0
+    },
+    {
+      "method": "DCdetector",
+      "dataset": "AIOPS",
+      "scored": 29,
+      "evaluated": 29,
+      "skipped_normal": 0,
+      "duration_s": 17254.53,
+      "runtime": {
+        "train_and_valid": 16896.438367841765,
+        "test": 31.990780086256564
+      },
+      "sampled_peak_mib": 1370.0,
+      "summary": {
+        "point_f1": {
+          "f1": 0.5310118107009739,
+          "precision": 0.4771386272001943,
+          "recall": 0.673032305245849
+        },
+        "event_f1": {
+          "f1": 0.09100997242363391,
+          "precision": 0.062415809902551085,
+          "recall": 0.32485221662098357
+        },
+        "event_f1_squeeze": {
+          "f1": 0.042446613833367466,
+          "precision": 0.056201978371162024,
+          "recall": 0.2529297923091415
+        },
+        "auprc": {
+          "value": 0.023835839558977688
+        },
+        "auroc": {
+          "value": 0.5277575115327294
+        }
+      },
+      "logs": {
+        "fatal": {
+          "count": 0,
+          "examples": []
+        },
+        "nonfinite_training": {
+          "count": 0,
+          "examples": []
+        },
+        "runtime_warning": {
+          "count": 0,
+          "examples": []
+        },
+        "user_warning": {
+          "count": 0,
+          "examples": []
+        },
+        "future_warning": {
+          "count": 0,
+          "examples": []
+        }
+      },
+      "constant_scores": 0
+    },
+    {
+      "method": "DCdetector",
+      "dataset": "NAB",
+      "scored": 10,
+      "evaluated": 10,
+      "skipped_normal": 0,
+      "duration_s": 628.05,
+      "runtime": {
+        "train_and_valid": 598.2648343583569,
+        "test": 3.5774120027199388
+      },
+      "sampled_peak_mib": 994.0,
+      "summary": {
+        "point_f1": {
+          "f1": 0.9560585268250584,
+          "precision": 0.9170935969010665,
+          "recall": 1.0
+        },
+        "event_f1": {
+          "f1": 0.33727358984324896,
+          "precision": 0.3013127505593061,
+          "recall": 0.9444444444444443
+        },
+        "event_f1_squeeze": {
+          "f1": 0.2103401243451873,
+          "precision": 0.2226475494593704,
+          "recall": 0.9499999999999991
+        },
+        "auprc": {
+          "value": 0.07554893562472995
+        },
+        "auroc": {
+          "value": 0.5025549622304846
+        }
+      },
+      "logs": {
+        "fatal": {
+          "count": 0,
+          "examples": []
+        },
+        "nonfinite_training": {
+          "count": 0,
+          "examples": []
+        },
+        "runtime_warning": {
+          "count": 0,
+          "examples": []
+        },
+        "user_warning": {
+          "count": 0,
+          "examples": []
+        },
+        "future_warning": {
+          "count": 0,
+          "examples": []
+        }
+      },
+      "constant_scores": 0
+    },
+    {
+      "method": "DCdetector",
+      "dataset": "TODS",
+      "scored": 15,
+      "evaluated": 15,
+      "skipped_normal": 0,
+      "duration_s": 530.57,
+      "runtime": {
+        "train_and_valid": 513.589943616651,
+        "test": 2.7029899759218097
+      },
+      "sampled_peak_mib": 1148.0,
+      "summary": {
+        "point_f1": {
+          "f1": 0.5526035805928126,
+          "precision": 0.5719827482478662,
+          "recall": 0.6120192717893617
+        },
+        "event_f1": {
+          "f1": 0.2190913185867933,
+          "precision": 0.21567525077103772,
+          "recall": 0.3635244918676514
+        },
+        "event_f1_squeeze": {
+          "f1": 0.140770428746626,
+          "precision": 0.12397086321787901,
+          "recall": 0.3302914418942928
+        },
+        "auprc": {
+          "value": 0.1485598739669319
+        },
+        "auroc": {
+          "value": 0.5008056211496836
+        }
+      },
+      "logs": {
+        "fatal": {
+          "count": 0,
+          "examples": []
+        },
+        "nonfinite_training": {
+          "count": 0,
+          "examples": []
+        },
+        "runtime_warning": {
+          "count": 0,
+          "examples": []
+        },
+        "user_warning": {
+          "count": 0,
+          "examples": []
+        },
+        "future_warning": {
+          "count": 0,
+          "examples": []
+        }
+      },
+      "constant_scores": 0
+    },
+    {
+      "method": "DCdetector",
+      "dataset": "UCR",
+      "scored": 203,
+      "evaluated": 201,
+      "skipped_normal": 2,
+      "duration_s": 20792.73,
+      "runtime": {
+        "train_and_valid": 20541.359205791727,
+        "test": 95.97285539843142
+      },
+      "sampled_peak_mib": 2126.0,
+      "summary": {
+        "point_f1": {
+          "f1": 0.6177299504504848,
+          "precision": 0.48422579776042096,
+          "recall": 1.0
+        },
+        "event_f1": {
+          "f1": 0.06487812874409211,
+          "precision": 0.034596370515280944,
+          "recall": 0.9999999999999999
+        },
+        "event_f1_squeeze": {
+          "f1": 0.01782297332874708,
+          "precision": 0.009077406343792251,
+          "recall": 0.9999999999999989
+        },
+        "auprc": {
+          "value": 0.01468553568175655
+        },
+        "auroc": {
+          "value": 0.4946757646509705
+        }
+      },
+      "logs": {
+        "fatal": {
+          "count": 0,
+          "examples": []
+        },
+        "nonfinite_training": {
+          "count": 0,
+          "examples": []
+        },
+        "runtime_warning": {
+          "count": 0,
+          "examples": []
+        },
+        "user_warning": {
+          "count": 0,
+          "examples": []
+        },
+        "future_warning": {
+          "count": 0,
+          "examples": []
+        }
+      },
+      "constant_scores": 0
+    },
+    {
+      "method": "DCdetector",
+      "dataset": "WSD",
+      "scored": 210,
+      "evaluated": 161,
+      "skipped_normal": 49,
+      "duration_s": 21807.57,
+      "runtime": {
+        "train_and_valid": 21644.02889483422,
+        "test": 64.52312594652176
+      },
+      "sampled_peak_mib": 1968.0,
+      "summary": {
+        "point_f1": {
+          "f1": 0.34807169446558905,
+          "precision": 0.30182471285578716,
+          "recall": 0.7042655238902433
+        },
+        "event_f1": {
+          "f1": 0.10492851610764284,
+          "precision": 0.09985369475605582,
+          "recall": 0.5514629277425422
+        },
+        "event_f1_squeeze": {
+          "f1": 0.06417103369001374,
+          "precision": 0.0694031810677938,
+          "recall": 0.5143546458382553
+        },
+        "auprc": {
+          "value": 0.0115393425122877
+        },
+        "auroc": {
+          "value": 0.5077394106118671
+        }
+      },
+      "logs": {
+        "fatal": {
+          "count": 0,
+          "examples": []
+        },
+        "nonfinite_training": {
+          "count": 0,
+          "examples": []
+        },
+        "runtime_warning": {
+          "count": 0,
+          "examples": []
+        },
+        "user_warning": {
+          "count": 0,
+          "examples": []
+        },
+        "future_warning": {
+          "count": 0,
+          "examples": []
+        }
+      },
+      "constant_scores": 0
+    },
+    {
+      "method": "DCdetector",
+      "dataset": "Yahoo",
+      "scored": 367,
+      "evaluated": 352,
+      "skipped_normal": 15,
+      "duration_s": 3957.41,
+      "runtime": {
+        "train_and_valid": 3797.1693172436208,
+        "test": 50.374958890490234
+      },
+      "sampled_peak_mib": 2162.0,
+      "summary": {
+        "point_f1": {
+          "f1": 0.21203250387918704,
+          "precision": 0.19421043973090615,
+          "recall": 0.7215998492148732
+        },
+        "event_f1": {
+          "f1": 0.11326744178991376,
+          "precision": 0.09634026069810324,
+          "recall": 0.6927806596255792
+        },
+        "event_f1_squeeze": {
+          "f1": 0.07345109637768336,
+          "precision": 0.05954204398292613,
+          "recall": 0.6817991194411643
+        },
+        "auprc": {
+          "value": 0.030002100738473262
+        },
+        "auroc": {
+          "value": 0.48595485478564854
+        }
+      },
+      "logs": {
+        "fatal": {
+          "count": 0,
+          "examples": []
+        },
+        "nonfinite_training": {
+          "count": 0,
+          "examples": []
+        },
+        "runtime_warning": {
+          "count": 0,
+          "examples": []
+        },
+        "user_warning": {
+          "count": 0,
+          "examples": []
+        },
+        "future_warning": {
+          "count": 0,
+          "examples": []
+        }
+      },
+      "constant_scores": 0
+    },
+    {
+      "method": "FCVAE",
+      "dataset": "AIOPS",
+      "scored": 29,
+      "evaluated": 29,
+      "skipped_normal": 0,
+      "duration_s": 18797.0,
+      "runtime": {
+        "train_and_valid": 14802.631540969945,
+        "test": 3689.6984012387693
+      },
+      "sampled_peak_mib": 410.0,
+      "summary": {
+        "point_f1": {
+          "f1": 0.9330165519217497,
+          "precision": 0.9269937899469328,
+          "recall": 0.9416931410511798
+        },
+        "event_f1": {
+          "f1": 0.7828271979844056,
+          "precision": 0.8003458491461931,
+          "recall": 0.7822038864875772
+        },
+        "event_f1_squeeze": {
+          "f1": 0.731736276672577,
+          "precision": 0.793266248287226,
+          "recall": 0.7071317279528443
+        },
+        "auprc": {
+          "value": 0.19623022641327648
+        },
+        "auroc": {
+          "value": 0.782562322793818
+        }
+      },
+      "logs": {
+        "fatal": {
+          "count": 0,
+          "examples": []
+        },
+        "nonfinite_training": {
+          "count": 0,
+          "examples": []
+        },
+        "runtime_warning": {
+          "count": 0,
+          "examples": []
+        },
+        "user_warning": {
+          "count": 0,
+          "examples": []
+        },
+        "future_warning": {
+          "count": 0,
+          "examples": []
+        }
+      },
+      "constant_scores": 0
+    },
+    {
+      "method": "FCVAE",
+      "dataset": "NAB",
+      "scored": 10,
+      "evaluated": 10,
+      "skipped_normal": 0,
+      "duration_s": 1254.58,
+      "runtime": {
+        "train_and_valid": 1146.007244870998,
+        "test": 99.95509199146181
+      },
+      "sampled_peak_mib": 388.0,
+      "summary": {
+        "point_f1": {
+          "f1": 0.990036111545016,
+          "precision": 0.9815414108804976,
+          "recall": 1.0
+        },
+        "event_f1": {
+          "f1": 0.8641812865497069,
+          "precision": 0.8359242250287025,
+          "recall": 0.9999999999999998
+        },
+        "event_f1_squeeze": {
+          "f1": 0.8164583333333321,
+          "precision": 0.7932539682539675,
+          "recall": 0.9499999999999991
+        },
+        "auprc": {
+          "value": 0.12451625835336574
+        },
+        "auroc": {
+          "value": 0.6353213966325348
+        }
+      },
+      "logs": {
+        "fatal": {
+          "count": 0,
+          "examples": []
+        },
+        "nonfinite_training": {
+          "count": 0,
+          "examples": []
+        },
+        "runtime_warning": {
+          "count": 0,
+          "examples": []
+        },
+        "user_warning": {
+          "count": 0,
+          "examples": []
+        },
+        "future_warning": {
+          "count": 0,
+          "examples": []
+        }
+      },
+      "constant_scores": 0
+    },
+    {
+      "method": "FCVAE",
+      "dataset": "TODS",
+      "scored": 15,
+      "evaluated": 15,
+      "skipped_normal": 0,
+      "duration_s": 504.11,
+      "runtime": {
+        "train_and_valid": 402.77036182489246,
+        "test": 91.87653656397015
+      },
+      "sampled_peak_mib": 388.0,
+      "summary": {
+        "point_f1": {
+          "f1": 0.8553637973283922,
+          "precision": 0.9047785414862816,
+          "recall": 0.832515381175463
+        },
+        "event_f1": {
+          "f1": 0.7101950391655598,
+          "precision": 0.753019404128528,
+          "recall": 0.7286514761675058
+        },
+        "event_f1_squeeze": {
+          "f1": 0.6629991861545,
+          "precision": 0.6948471766976194,
+          "recall": 0.6965646697660667
+        },
+        "auprc": {
+          "value": 0.48173331828607396
+        },
+        "auroc": {
+          "value": 0.7101010004436364
+        }
+      },
+      "logs": {
+        "fatal": {
+          "count": 0,
+          "examples": []
+        },
+        "nonfinite_training": {
+          "count": 0,
+          "examples": []
+        },
+        "runtime_warning": {
+          "count": 0,
+          "examples": []
+        },
+        "user_warning": {
+          "count": 0,
+          "examples": []
+        },
+        "future_warning": {
+          "count": 0,
+          "examples": []
+        }
+      },
+      "constant_scores": 0
+    },
+    {
+      "method": "FCVAE",
+      "dataset": "UCR",
+      "scored": 203,
+      "evaluated": 201,
+      "skipped_normal": 2,
+      "duration_s": 25144.78,
+      "runtime": {
+        "train_and_valid": 15949.692031878978,
+        "test": 9027.772679162212
+      },
+      "sampled_peak_mib": 392.0,
+      "summary": {
+        "point_f1": {
+          "f1": 0.8267826034147797,
+          "precision": 0.7834728254494697,
+          "recall": 1.0
+        },
+        "event_f1": {
+          "f1": 0.5614023481147048,
+          "precision": 0.5173236442850059,
+          "recall": 0.9999999999999999
+        },
+        "event_f1_squeeze": {
+          "f1": 0.4774431356053798,
+          "precision": 0.44831583514535117,
+          "recall": 0.9999999999999989
+        },
+        "auprc": {
+          "value": 0.1085185895262638
+        },
+        "auroc": {
+          "value": 0.6267052710220623
+        }
+      },
+      "logs": {
+        "fatal": {
+          "count": 0,
+          "examples": []
+        },
+        "nonfinite_training": {
+          "count": 0,
+          "examples": []
+        },
+        "runtime_warning": {
+          "count": 0,
+          "examples": []
+        },
+        "user_warning": {
+          "count": 0,
+          "examples": []
+        },
+        "future_warning": {
+          "count": 0,
+          "examples": []
+        }
+      },
+      "constant_scores": 0
+    },
+    {
+      "method": "FCVAE",
+      "dataset": "WSD",
+      "scored": 210,
+      "evaluated": 161,
+      "skipped_normal": 49,
+      "duration_s": 19201.83,
+      "runtime": {
+        "train_and_valid": 17571.323389554396,
+        "test": 1545.5575280589983
+      },
+      "sampled_peak_mib": 840.0,
+      "summary": {
+        "point_f1": {
+          "f1": 0.969513558514915,
+          "precision": 0.9657733841687891,
+          "recall": 0.978955130113855
+        },
+        "event_f1": {
+          "f1": 0.9078022282962698,
+          "precision": 0.8997026612931417,
+          "recall": 0.9458862947681806
+        },
+        "event_f1_squeeze": {
+          "f1": 0.8662807956398542,
+          "precision": 0.8615618004386961,
+          "recall": 0.929046599698461
+        },
+        "auprc": {
+          "value": 0.2875394676296866
+        },
+        "auroc": {
+          "value": 0.8276651675218211
+        }
+      },
+      "logs": {
+        "fatal": {
+          "count": 0,
+          "examples": []
+        },
+        "nonfinite_training": {
+          "count": 0,
+          "examples": []
+        },
+        "runtime_warning": {
+          "count": 0,
+          "examples": []
+        },
+        "user_warning": {
+          "count": 0,
+          "examples": []
+        },
+        "future_warning": {
+          "count": 0,
+          "examples": []
+        }
+      },
+      "constant_scores": 0
+    },
+    {
+      "method": "FCVAE",
+      "dataset": "Yahoo",
+      "scored": 367,
+      "evaluated": 352,
+      "skipped_normal": 15,
+      "duration_s": 3525.99,
+      "runtime": {
+        "train_and_valid": 3059.8192961253226,
+        "test": 386.84145112056285
+      },
+      "sampled_peak_mib": 394.0,
+      "summary": {
+        "point_f1": {
+          "f1": 0.7320441029544792,
+          "precision": 0.7690816536160099,
+          "recall": 0.8291293467510943
+        },
+        "event_f1": {
+          "f1": 0.6857370922715424,
+          "precision": 0.7359156134002837,
+          "recall": 0.8057307199540653
+        },
+        "event_f1_squeeze": {
+          "f1": 0.6657911796814087,
+          "precision": 0.7314637957397653,
+          "recall": 0.7922314664502159
+        },
+        "auprc": {
+          "value": 0.22767465837023612
+        },
+        "auroc": {
+          "value": 0.5519987019547655
+        }
+      },
+      "logs": {
+        "fatal": {
+          "count": 0,
+          "examples": []
+        },
+        "nonfinite_training": {
+          "count": 0,
+          "examples": []
+        },
+        "runtime_warning": {
+          "count": 0,
+          "examples": []
+        },
+        "user_warning": {
+          "count": 3,
+          "examples": [
+            "/home/v-zzr25/workplace/Live-EasyTSAD/envs/torch2/venv/lib/python3.11/site-packages/sklearn/metrics/_ranking.py:1192: UserWarning: No positive class found in y_true, recall is set to one for all thresholds."
+          ]
+        },
+        "future_warning": {
+          "count": 0,
+          "examples": []
+        }
+      },
+      "constant_scores": 0
+    },
+    {
+      "method": "SRCNN",
+      "dataset": "AIOPS",
+      "scored": 29,
+      "evaluated": 29,
+      "skipped_normal": 0,
+      "duration_s": 8248.0,
+      "runtime": {
+        "train_and_valid": 3911.938705423847,
+        "test": 4030.7717804284766
+      },
+      "sampled_peak_mib": 362.0,
+      "summary": {
+        "point_f1": {
+          "f1": 0.5010635749104735,
+          "precision": 0.5120708768563961,
+          "recall": 0.6422926704337507
+        },
+        "event_f1": {
+          "f1": 0.1674929357474038,
+          "precision": 0.2199053444179478,
+          "recall": 0.3515105585275652
+        },
+        "event_f1_squeeze": {
+          "f1": 0.10612911097831831,
+          "precision": 0.15610077840066397,
+          "recall": 0.2755506104986484
+        },
+        "auprc": {
+          "value": 0.06139101292069583
+        },
+        "auroc": {
+          "value": 0.5778961809219417
+        }
+      },
+      "logs": {
+        "fatal": {
+          "count": 0,
+          "examples": []
+        },
+        "nonfinite_training": {
+          "count": 0,
+          "examples": []
+        },
+        "runtime_warning": {
+          "count": 0,
+          "examples": []
+        },
+        "user_warning": {
+          "count": 0,
+          "examples": []
+        },
+        "future_warning": {
+          "count": 770,
+          "examples": [
+            "/home/v-zzr25/workplace/Live-EasyTSAD/EasyTSAD/Methods/SRCNN/SRCNN.py:96: FutureWarning: `torch.nn.utils.clip_grad_norm` is now deprecated in favor of `torch.nn.utils.clip_grad_norm_`."
+          ]
+        }
+      },
+      "constant_scores": 0
+    },
+    {
+      "method": "SRCNN",
+      "dataset": "NAB",
+      "scored": 10,
+      "evaluated": 10,
+      "skipped_normal": 0,
+      "duration_s": 239.47,
+      "runtime": {
+        "train_and_valid": 114.99584706965834,
+        "test": 111.65963783953339
+      },
+      "sampled_peak_mib": 362.0,
+      "summary": {
+        "point_f1": {
+          "f1": 0.9608639727935199,
+          "precision": 0.9334107799641249,
+          "recall": 1.0
+        },
+        "event_f1": {
+          "f1": 0.765336624160153,
+          "precision": 0.7664738039738037,
+          "recall": 0.8999999999999998
+        },
+        "event_f1_squeeze": {
+          "f1": 0.62778398510242,
+          "precision": 0.5955617977528085,
+          "recall": 0.8999999999999991
+        },
+        "auprc": {
+          "value": 0.1358370300521162
+        },
+        "auroc": {
+          "value": 0.5464882701878616
+        }
+      },
+      "logs": {
+        "fatal": {
+          "count": 0,
+          "examples": []
+        },
+        "nonfinite_training": {
+          "count": 0,
+          "examples": []
+        },
+        "runtime_warning": {
+          "count": 0,
+          "examples": []
+        },
+        "user_warning": {
+          "count": 0,
+          "examples": []
+        },
+        "future_warning": {
+          "count": 30,
+          "examples": [
+            "/home/v-zzr25/workplace/Live-EasyTSAD/EasyTSAD/Methods/SRCNN/SRCNN.py:96: FutureWarning: `torch.nn.utils.clip_grad_norm` is now deprecated in favor of `torch.nn.utils.clip_grad_norm_`."
+          ]
+        }
+      },
+      "constant_scores": 0
+    },
+    {
+      "method": "SRCNN",
+      "dataset": "TODS",
+      "scored": 15,
+      "evaluated": 15,
+      "skipped_normal": 0,
+      "duration_s": 318.39,
+      "runtime": {
+        "train_and_valid": 162.96694501955062,
+        "test": 143.2550948522985
+      },
+      "sampled_peak_mib": 366.0,
+      "summary": {
+        "point_f1": {
+          "f1": 0.616936366116421,
+          "precision": 0.5760759903682244,
+          "recall": 0.7144970175276248
+        },
+        "event_f1": {
+          "f1": 0.28239087956881903,
+          "precision": 0.2602747429081978,
+          "recall": 0.4743612597899214
+        },
+        "event_f1_squeeze": {
+          "f1": 0.1816451287416905,
+          "precision": 0.1549869070986613,
+          "recall": 0.38537527930841314
+        },
+        "auprc": {
+          "value": 0.15425635001456992
+        },
+        "auroc": {
+          "value": 0.49324912082721395
+        }
+      },
+      "logs": {
+        "fatal": {
+          "count": 0,
+          "examples": []
+        },
+        "nonfinite_training": {
+          "count": 0,
+          "examples": []
+        },
+        "runtime_warning": {
+          "count": 0,
+          "examples": []
+        },
+        "user_warning": {
+          "count": 0,
+          "examples": []
+        },
+        "future_warning": {
+          "count": 45,
+          "examples": [
+            "/home/v-zzr25/workplace/Live-EasyTSAD/EasyTSAD/Methods/SRCNN/SRCNN.py:96: FutureWarning: `torch.nn.utils.clip_grad_norm` is now deprecated in favor of `torch.nn.utils.clip_grad_norm_`."
+          ]
+        }
+      },
+      "constant_scores": 0
+    },
+    {
+      "method": "SRCNN",
+      "dataset": "UCR",
+      "scored": 203,
+      "evaluated": 201,
+      "skipped_normal": 2,
+      "duration_s": 14593.75,
+      "runtime": {
+        "train_and_valid": 4423.015829976648,
+        "test": 10019.315438403748
+      },
+      "sampled_peak_mib": 362.0,
+      "summary": {
+        "point_f1": {
+          "f1": 0.7644216501588376,
+          "precision": 0.6873535198745638,
+          "recall": 1.0
+        },
+        "event_f1": {
+          "f1": 0.30155764279802105,
+          "precision": 0.23523596234339372,
+          "recall": 0.9999999999999999
+        },
+        "event_f1_squeeze": {
+          "f1": 0.18273950859474902,
+          "precision": 0.1469666947499005,
+          "recall": 0.9999999999999989
+        },
+        "auprc": {
+          "value": 0.024878229298601357
+        },
+        "auroc": {
+          "value": 0.5111339292683456
+        }
+      },
+      "logs": {
+        "fatal": {
+          "count": 0,
+          "examples": []
+        },
+        "nonfinite_training": {
+          "count": 0,
+          "examples": []
+        },
+        "runtime_warning": {
+          "count": 0,
+          "examples": []
+        },
+        "user_warning": {
+          "count": 0,
+          "examples": []
+        },
+        "future_warning": {
+          "count": 1044,
+          "examples": [
+            "/home/v-zzr25/workplace/Live-EasyTSAD/EasyTSAD/Methods/SRCNN/SRCNN.py:96: FutureWarning: `torch.nn.utils.clip_grad_norm` is now deprecated in favor of `torch.nn.utils.clip_grad_norm_`."
+          ]
+        }
+      },
+      "constant_scores": 0
+    },
+    {
+      "method": "SRCNN",
+      "dataset": "WSD",
+      "scored": 210,
+      "evaluated": 161,
+      "skipped_normal": 49,
+      "duration_s": 10181.31,
+      "runtime": {
+        "train_and_valid": 4904.08184539061,
+        "test": 5174.51117983833
+      },
+      "sampled_peak_mib": 362.0,
+      "summary": {
+        "point_f1": {
+          "f1": 0.5410176308042772,
+          "precision": 0.4783413064886627,
+          "recall": 0.8035747485299429
+        },
+        "event_f1": {
+          "f1": 0.2547876943682002,
+          "precision": 0.24331129951098338,
+          "recall": 0.6155360847829939
+        },
+        "event_f1_squeeze": {
+          "f1": 0.1865777451687137,
+          "precision": 0.1933158238945699,
+          "recall": 0.568193373814359
+        },
+        "auprc": {
+          "value": 0.059378712959482716
+        },
+        "auroc": {
+          "value": 0.7239178615061413
+        }
+      },
+      "logs": {
+        "fatal": {
+          "count": 0,
+          "examples": []
+        },
+        "nonfinite_training": {
+          "count": 0,
+          "examples": []
+        },
+        "runtime_warning": {
+          "count": 0,
+          "examples": []
+        },
+        "user_warning": {
+          "count": 0,
+          "examples": []
+        },
+        "future_warning": {
+          "count": 1126,
+          "examples": [
+            "/home/v-zzr25/workplace/Live-EasyTSAD/EasyTSAD/Methods/SRCNN/SRCNN.py:96: FutureWarning: `torch.nn.utils.clip_grad_norm` is now deprecated in favor of `torch.nn.utils.clip_grad_norm_`."
+          ]
+        }
+      },
+      "constant_scores": 0
+    },
+    {
+      "method": "SRCNN",
+      "dataset": "Yahoo",
+      "scored": 367,
+      "evaluated": 352,
+      "skipped_normal": 15,
+      "duration_s": 1023.09,
+      "runtime": {
+        "train_and_valid": 556.0193538339809,
+        "test": 339.53503595199436
+      },
+      "sampled_peak_mib": 342.0,
+      "summary": {
+        "point_f1": {
+          "f1": 0.3564803719426987,
+          "precision": 0.2908280855198388,
+          "recall": 0.7941480909201055
+        },
+        "event_f1": {
+          "f1": 0.20126642135408995,
+          "precision": 0.16466532677586743,
+          "recall": 0.7209438180005525
+        },
+        "event_f1_squeeze": {
+          "f1": 0.1382553916983427,
+          "precision": 0.11325278433096249,
+          "recall": 0.6942992219270624
+        },
+        "auprc": {
+          "value": 0.04991126104334506
+        },
+        "auroc": {
+          "value": 0.563717916734663
+        }
+      },
+      "logs": {
+        "fatal": {
+          "count": 0,
+          "examples": []
+        },
+        "nonfinite_training": {
+          "count": 0,
+          "examples": []
+        },
+        "runtime_warning": {
+          "count": 0,
+          "examples": []
+        },
+        "user_warning": {
+          "count": 0,
+          "examples": []
+        },
+        "future_warning": {
+          "count": 179,
+          "examples": [
+            "/home/v-zzr25/workplace/Live-EasyTSAD/EasyTSAD/Methods/SRCNN/SRCNN.py:96: FutureWarning: `torch.nn.utils.clip_grad_norm` is now deprecated in favor of `torch.nn.utils.clip_grad_norm_`."
+          ]
+        }
+      },
+      "constant_scores": 0
+    }
+  ]
+}

@@ -1,6 +1,6 @@
 # Environment: legacy
 # Methods pinned to old, unmaintained libraries that conflict with torch2:
-#   - SAND           -> tslearn==0.4.1
+#   - SAND           -> tslearn (0.5.x; see the note in envs/registry.toml)
 #   - MatrixProfile  -> matrixprofile
 # Python 3.9 is the oldest version supported by the EasyTSAD core.
 
@@ -12,9 +12,11 @@ dependencies = [
     "easytsad",
     "numpy<1.24",
     "scipy",
-    "tslearn==0.4.1",
+    "tslearn>=0.5,<0.6",       # 0.4.1 (the original pin) needs scikit-learn<0.24, which has no py3.9 wheels
+    "scikit-learn>=1.0",
     "stumpy",
     "matrixprofile",
+    "statsmodels>=0.14.6",
 ]
 
 [tool.uv]
@@ -22,3 +24,10 @@ package = false
 
 [tool.uv.sources]
 easytsad = { path = "../..", editable = true }
+
+# tslearn and matrixprofile ship no wheels for this Python and build
+# from source with Cython extensions, but do not declare numpy/Cython as
+# build requirements.
+[tool.uv.extra-build-dependencies]
+tslearn = ["numpy<1.24", "cython"]
+matrixprofile = ["numpy<1.24", "cython<3"]

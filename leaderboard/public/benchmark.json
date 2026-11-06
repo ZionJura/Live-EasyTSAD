@@ -1,0 +1,443 @@
+{
+  "version": 1,
+  "demo": false,
+  "updatedAt": "2026-11-05",
+  "methods": [
+    {
+      "id": "AE",
+      "name": "AutoEncoder",
+      "family": "深度学习",
+      "description": "AutoEncoder reconstruction baseline",
+      "color": "#a28a68"
+    },
+    {
+      "id": "AR",
+      "name": "AR",
+      "family": "深度学习",
+      "description": "Autoregression (linear, first-order difference)",
+      "color": "#8c7a5b"
+    },
+    {
+      "id": "Donut",
+      "name": "Donut",
+      "family": "深度学习",
+      "description": "VAE for seasonal KPIs",
+      "color": "#6f8fae"
+    },
+    {
+      "id": "LSTMADalpha",
+      "name": "LSTMAD-α",
+      "family": "深度学习",
+      "description": "LSTM anomaly detection, seq2seq",
+      "color": "#8e7fa8"
+    },
+    {
+      "id": "SubLOF",
+      "name": "SubLOF",
+      "family": "传统方法",
+      "description": "LOF on subsequences",
+      "color": "#929a70"
+    },
+    {
+      "id": "SubOCSVM",
+      "name": "SubOCSVM",
+      "family": "传统方法",
+      "description": "One-class SVM on subsequences",
+      "color": "#7d9391"
+    }
+  ],
+  "datasets": [
+    {
+      "id": "AIOPS",
+      "task": "uts",
+      "domain": "运维监控"
+    },
+    {
+      "id": "NAB",
+      "task": "uts",
+      "domain": "流式监控"
+    },
+    {
+      "id": "TODS",
+      "task": "uts",
+      "domain": "综合时序"
+    },
+    {
+      "id": "UCR",
+      "task": "uts",
+      "domain": "综合时序"
+    },
+    {
+      "id": "WSD",
+      "task": "uts",
+      "domain": "网络服务"
+    },
+    {
+      "id": "Yahoo",
+      "task": "uts",
+      "domain": "服务流量"
+    }
+  ],
+  "results": [
+    {
+      "method": "AE",
+      "dataset": "AIOPS",
+      "schema": "naive",
+      "metrics": {
+        "event_f1": 0.732758,
+        "point_f1": 0.890767,
+        "auprc": 0.253204
+      }
+    },
+    {
+      "method": "AE",
+      "dataset": "NAB",
+      "schema": "naive",
+      "metrics": {
+        "event_f1": 0.863941,
+        "point_f1": 0.989881,
+        "auprc": 0.116734
+      }
+    },
+    {
+      "method": "AE",
+      "dataset": "TODS",
+      "schema": "naive",
+      "metrics": {
+        "event_f1": 0.670866,
+        "point_f1": 0.838595,
+        "auprc": 0.445215
+      }
+    },
+    {
+      "method": "AE",
+      "dataset": "UCR",
+      "schema": "naive",
+      "metrics": {
+        "event_f1": 0.394672,
+        "point_f1": 0.705865,
+        "auprc": 0.055118
+      }
+    },
+    {
+      "method": "AE",
+      "dataset": "WSD",
+      "schema": "naive",
+      "metrics": {
+        "event_f1": 0.918159,
+        "point_f1": 0.975691,
+        "auprc": 0.290492
+      }
+    },
+    {
+      "method": "AE",
+      "dataset": "Yahoo",
+      "schema": "naive",
+      "metrics": {
+        "event_f1": 0.600393,
+        "point_f1": 0.662765,
+        "auprc": 0.204305
+      }
+    },
+    {
+      "method": "AR",
+      "dataset": "AIOPS",
+      "schema": "naive",
+      "metrics": {
+        "event_f1": 0.760096,
+        "point_f1": 0.89279,
+        "auprc": 0.230662
+      }
+    },
+    {
+      "method": "AR",
+      "dataset": "NAB",
+      "schema": "naive",
+      "metrics": {
+        "event_f1": 0.874171,
+        "point_f1": 0.997336,
+        "auprc": 0.122746
+      }
+    },
+    {
+      "method": "AR",
+      "dataset": "TODS",
+      "schema": "naive",
+      "metrics": {
+        "event_f1": 0.784336,
+        "point_f1": 0.863006,
+        "auprc": 0.437928
+      }
+    },
+    {
+      "method": "AR",
+      "dataset": "UCR",
+      "schema": "naive",
+      "metrics": {
+        "event_f1": 0.474589,
+        "point_f1": 0.809685,
+        "auprc": 0.056251
+      }
+    },
+    {
+      "method": "AR",
+      "dataset": "WSD",
+      "schema": "naive",
+      "metrics": {
+        "event_f1": 0.882015,
+        "point_f1": 0.968369,
+        "auprc": 0.287244
+      }
+    },
+    {
+      "method": "AR",
+      "dataset": "Yahoo",
+      "schema": "naive",
+      "metrics": {
+        "event_f1": 0.924088,
+        "point_f1": 0.947359,
+        "auprc": 0.395066
+      }
+    },
+    {
+      "method": "Donut",
+      "dataset": "AIOPS",
+      "schema": "naive",
+      "metrics": {
+        "event_f1": 0.687672,
+        "point_f1": 0.849184,
+        "auprc": 0.15641
+      }
+    },
+    {
+      "method": "Donut",
+      "dataset": "NAB",
+      "schema": "naive",
+      "metrics": {
+        "event_f1": 0.843636,
+        "point_f1": 0.983872,
+        "auprc": 0.149029
+      }
+    },
+    {
+      "method": "Donut",
+      "dataset": "TODS",
+      "schema": "naive",
+      "metrics": {
+        "event_f1": 0.684271,
+        "point_f1": 0.838621,
+        "auprc": 0.460236
+      }
+    },
+    {
+      "method": "Donut",
+      "dataset": "UCR",
+      "schema": "naive",
+      "metrics": {
+        "event_f1": 0.473442,
+        "point_f1": 0.759863,
+        "auprc": 0.091016
+      }
+    },
+    {
+      "method": "Donut",
+      "dataset": "WSD",
+      "schema": "naive",
+      "metrics": {
+        "event_f1": 0.874074,
+        "point_f1": 0.961126,
+        "auprc": 0.260111
+      }
+    },
+    {
+      "method": "Donut",
+      "dataset": "Yahoo",
+      "schema": "naive",
+      "metrics": {
+        "event_f1": 0.680138,
+        "point_f1": 0.730096,
+        "auprc": 0.224987
+      }
+    },
+    {
+      "method": "LSTMADalpha",
+      "dataset": "AIOPS",
+      "schema": "naive",
+      "metrics": {
+        "event_f1": 0.813246,
+        "point_f1": 0.934393,
+        "auprc": 0.292729
+      }
+    },
+    {
+      "method": "LSTMADalpha",
+      "dataset": "NAB",
+      "schema": "naive",
+      "metrics": {
+        "event_f1": 0.903114,
+        "point_f1": 0.989153,
+        "auprc": 0.116899
+      }
+    },
+    {
+      "method": "LSTMADalpha",
+      "dataset": "TODS",
+      "schema": "naive",
+      "metrics": {
+        "event_f1": 0.688469,
+        "point_f1": 0.800538,
+        "auprc": 0.46915
+      }
+    },
+    {
+      "method": "LSTMADalpha",
+      "dataset": "UCR",
+      "schema": "naive",
+      "metrics": {
+        "event_f1": 0.447762,
+        "point_f1": 0.766724,
+        "auprc": 0.05764
+      }
+    },
+    {
+      "method": "LSTMADalpha",
+      "dataset": "WSD",
+      "schema": "naive",
+      "metrics": {
+        "event_f1": 0.936827,
+        "point_f1": 0.986497,
+        "auprc": 0.394159
+      }
+    },
+    {
+      "method": "LSTMADalpha",
+      "dataset": "Yahoo",
+      "schema": "naive",
+      "metrics": {
+        "event_f1": 0.550172,
+        "point_f1": 0.614844,
+        "auprc": 0.184241
+      }
+    },
+    {
+      "method": "SubLOF",
+      "dataset": "AIOPS",
+      "schema": "naive",
+      "metrics": {
+        "event_f1": 0.37644,
+        "point_f1": 0.727339,
+        "auprc": 0.260822
+      }
+    },
+    {
+      "method": "SubLOF",
+      "dataset": "NAB",
+      "schema": "naive",
+      "metrics": {
+        "event_f1": 0.698153,
+        "point_f1": 0.978712,
+        "auprc": 0.11883
+      }
+    },
+    {
+      "method": "SubLOF",
+      "dataset": "TODS",
+      "schema": "naive",
+      "metrics": {
+        "event_f1": 0.579103,
+        "point_f1": 0.799714,
+        "auprc": 0.582433
+      }
+    },
+    {
+      "method": "SubLOF",
+      "dataset": "UCR",
+      "schema": "naive",
+      "metrics": {
+        "event_f1": 0.580638,
+        "point_f1": 0.881126,
+        "auprc": 0.121052
+      }
+    },
+    {
+      "method": "SubLOF",
+      "dataset": "WSD",
+      "schema": "naive",
+      "metrics": {
+        "event_f1": 0.719383,
+        "point_f1": 0.868256,
+        "auprc": 0.425509
+      }
+    },
+    {
+      "method": "SubLOF",
+      "dataset": "Yahoo",
+      "schema": "naive",
+      "metrics": {
+        "event_f1": 0.48746,
+        "point_f1": 0.571952,
+        "auprc": 0.417696
+      }
+    },
+    {
+      "method": "SubOCSVM",
+      "dataset": "AIOPS",
+      "schema": "naive",
+      "metrics": {
+        "event_f1": 0.126827,
+        "point_f1": 0.482202,
+        "auprc": 0.21918
+      }
+    },
+    {
+      "method": "SubOCSVM",
+      "dataset": "NAB",
+      "schema": "naive",
+      "metrics": {
+        "event_f1": 0.710404,
+        "point_f1": 0.965027,
+        "auprc": 0.275728
+      }
+    },
+    {
+      "method": "SubOCSVM",
+      "dataset": "TODS",
+      "schema": "naive",
+      "metrics": {
+        "event_f1": 0.207402,
+        "point_f1": 0.470083,
+        "auprc": 0.296113
+      }
+    },
+    {
+      "method": "SubOCSVM",
+      "dataset": "UCR",
+      "schema": "naive",
+      "metrics": {
+        "event_f1": 0.302014,
+        "point_f1": 0.49764,
+        "auprc": 0.153622
+      }
+    },
+    {
+      "method": "SubOCSVM",
+      "dataset": "WSD",
+      "schema": "naive",
+      "metrics": {
+        "event_f1": 0.225665,
+        "point_f1": 0.435075,
+        "auprc": 0.170468
+      }
+    },
+    {
+      "method": "SubOCSVM",
+      "dataset": "Yahoo",
+      "schema": "naive",
+      "metrics": {
+        "event_f1": 0.158523,
+        "point_f1": 0.230088,
+        "auprc": 0.126301
+      }
+    }
+  ]
+}

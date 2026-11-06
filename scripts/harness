@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+# Entry point for the TSAD paper-reproduction harness (EasyTSAD/Harness).
+#
+# Runs inside the `harness` uv environment (envs/harness); all uv artifacts stay
+# in the repository exactly as for scripts/tsad.
+#
+# Usage: scripts/harness <command> [...]    (run `scripts/harness --help`)
+set -euo pipefail
+
+ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+export TSAD_ROOT="$ROOT"
+export UV_PYTHON_INSTALL_DIR="$ROOT/runtime/python"
+export UV_CACHE_DIR="$ROOT/runtime/uv-cache"
+export UV_PYTHON_BIN_DIR="$ROOT/runtime/python/bin"
+export UV_MANAGED_PYTHON=1
+
+PY="$ROOT/envs/harness/venv/bin/python"
+if [ ! -x "$PY" ]; then
+    "$ROOT/scripts/tsad" sync harness
+fi
+export PYTHONPATH="$ROOT/EasyTSAD/Harness${PYTHONPATH:+:$PYTHONPATH}"
+exec "$PY" -m tsad_harness "$@"

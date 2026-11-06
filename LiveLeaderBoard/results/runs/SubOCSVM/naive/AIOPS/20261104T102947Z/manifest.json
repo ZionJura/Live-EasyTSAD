@@ -1,0 +1,89 @@
+{
+  "schema_version": 1,
+  "run_id": "20261104T102947Z",
+  "experiment": "uts_naive_slow",
+  "method": "SubOCSVM",
+  "schema": "naive",
+  "dataset_type": "UTS",
+  "dataset": "AIOPS",
+  "status": "success",
+  "started_at": "2026-11-04T10:31:14Z",
+  "finished_at": "2026-11-05T02:04:26Z",
+  "duration_s": 55985.5,
+  "config_hash": "06330ba7c197db2f",
+  "config": {
+    "method": "SubOCSVM",
+    "schema": "naive",
+    "dataset_type": "UTS",
+    "dataset": "AIOPS",
+    "curves": null,
+    "data_params": {
+      "preprocess": "z-score",
+      "diff_order": 0
+    },
+    "hparams": {
+      "kernel": "rbf",
+      "degree": 3,
+      "gamma": "auto",
+      "coef0": 0.0,
+      "tol": 0.001,
+      "nu": 0.5,
+      "shrinking": true,
+      "cache_size": 200,
+      "verbose": false,
+      "max_iter": -1,
+      "seq_len": 64
+    },
+    "evals": [
+      "point_f1",
+      "event_f1",
+      "event_f1_squeeze",
+      "auprc",
+      "auroc"
+    ],
+    "margins": [
+      0,
+      5
+    ],
+    "seed": 2026,
+    "train_proportion": 1,
+    "valid_proportion": 0.2,
+    "transfer": null
+  },
+  "git": {
+    "commit": "68dea7bd11f5857ad807af0e428db24646444ad3",
+    "branch": "main",
+    "dirty": true
+  },
+  "env": {
+    "name": "torch2",
+    "python": "3.11.17",
+    "uv_lock_sha256": "43aba9b7c1de1ff1b1ffed9bb68d6e76c9a428fb204e57c6eaa670b02cb04ae4",
+    "packages": {
+      "easytsad": "0.3.0.2",
+      "numpy": "1.26.4",
+      "scipy": "1.17.1",
+      "scikit-learn": "1.9.1",
+      "pandas": "3.0.6",
+      "torch": "2.6.0+cu124",
+      "pytorch-lightning": "2.6.6",
+      "transformers": "5.22.1",
+      "stumpy": "1.14.1"
+    },
+    "host": "sp-1",
+    "cuda_visible_devices": "9",
+    "gpu": "NVIDIA GeForce RTX 3080 Ti"
+  },
+  "command": [
+    "/home/v-zzr25/workplace/Live-EasyTSAD/LiveLeaderBoard/pipeline/run.py",
+    "--spec",
+    "/home/v-zzr25/workplace/Live-EasyTSAD/LiveLeaderBoard/experiments/uts_naive_slow.toml",
+    "--method",
+    "SubOCSVM",
+    "--run-id",
+    "20261104T102947Z",
+    "--datasets",
+    "AIOPS"
+  ],
+  "error": null
+}
