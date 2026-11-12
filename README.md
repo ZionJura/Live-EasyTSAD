@@ -110,7 +110,7 @@ base (int): Default is 3.
 
 # Environment Management (uv)
 
-Built-in and future methods have mutually incompatible dependencies. Some of them even need different Python versions. For example, SAND and MatrixProfile need old Cython-built libraries tied to `numpy<1.24`, while OFA needs a recent `transformers` on PyTorch 2.x. This repository therefore manages dependencies as **several isolated [uv](https://docs.astral.sh/uv/) environments**, one per group of compatible methods, instead of a single environment.
+Built-in and future methods have mutually incompatible dependencies. Some of them even need different Python versions. This repository uses isolated [uv](https://docs.astral.sh/uv/) environments. Shared framework environments live under `envs/`; a single method's environment lives in its directory under `EasyTSAD/Methods/`.
 
 This works because EasyTSAD splits experiments into independent stages that communicate only through files. Training writes anomaly scores to `Results/Scores/**.npy`, and evaluation, CSV summaries and plots only read those files. Each method can therefore be trained in its own environment, and the results can be evaluated together from any environment.
 
@@ -129,6 +129,10 @@ Live-EasyTSAD/
 │   │   ├── uv.lock         # fully pinned, reproducible resolution
 │   │   └── venv/           # the virtual environment (git-ignored)
 │   └── legacy/             # Python 3.9, tslearn 0.5.x, matrixprofile (SAND, MatrixProfile)
+├── EasyTSAD/Methods/ALoRa-T/
+│   ├── pyproject.toml      # method-specific environment definition
+│   ├── uv.lock             # locked dependencies
+│   └── venv/               # method-specific virtual environment (git-ignored)
 ├── runtime/                # git-ignored
 │   ├── python/             # uv-managed Python interpreters (any version, side by side)
 │   └── uv-cache/           # uv package cache
@@ -141,10 +145,11 @@ Live-EasyTSAD/
 
 | Path | In git | Purpose |
 | --- | --- | --- |
-| `envs/*/pyproject.toml`, `envs/*/uv.lock` | yes | Environment definitions and exact locked versions |
+| `envs/*/pyproject.toml`, `envs/*/uv.lock` | yes | Shared environment definitions and exact locked versions |
+| `EasyTSAD/Methods/*/pyproject.toml`, `EasyTSAD/Methods/*/uv.lock` | yes | Method-specific environment definitions and locked versions |
 | `envs/registry.toml`, `envs/ENVIRONMENTS.md` | yes | Method → environment mapping and its generated documentation |
 | `scripts/` | yes | Management tooling |
-| `envs/*/venv/`, `runtime/` | no | Rebuildable from the files above with `scripts/tsad sync` |
+| `envs/*/venv/`, `EasyTSAD/Methods/*/venv/`, `runtime/` | no | Rebuildable from the files above with `scripts/tsad sync` |
 
 `scripts/tsad` sets these environment variables before every uv call. As a result, interpreters, cache and venvs always stay inside the repository:
 
@@ -154,7 +159,7 @@ Live-EasyTSAD/
 | `UV_PYTHON_BIN_DIR` | `runtime/python/bin` |
 | `UV_CACHE_DIR` | `runtime/uv-cache` |
 | `UV_MANAGED_PYTHON` | `1` (never use system Pythons) |
-| `UV_PROJECT_ENVIRONMENT` | `envs/<name>/venv`, set per environment |
+| `UV_PROJECT_ENVIRONMENT` | `<registered project>/venv`, set per environment |
 
 Because the cache and the venvs are on the same filesystem, uv hard-links packages. Large wheels such as torch are stored only once on disk, even when several environments use them.
 
@@ -196,7 +201,7 @@ Commands run with the repository root as the working directory, so relative path
 | `scripts/tsad env ENV -- CMD...` | Run a command in a named env. |
 | `scripts/tsad which METHOD` | Print the env a method belongs to. |
 | `scripts/tsad check [ENV...]` | Import every registered method inside its env and report failures. |
-| `scripts/tsad new NAME --python X.Y [--methods M...]` | Scaffold `envs/NAME/pyproject.toml` and register it. |
+| `scripts/tsad new NAME --python X.Y [--methods M...]` | Scaffold and register an environment; a single-method project is created in that method's directory. |
 | `scripts/tsad remove ENV` | Delete an env's venv (its definition and lock file are kept). |
 | `scripts/tsad doc` | Regenerate `envs/ENVIRONMENTS.md` from the registry. |
 | `scripts/tsad exp SPEC [--gpus ...]` | Run an experiment spec into `LiveLeaderBoard/results`. See [LiveLeaderBoard Experiment Pipeline](#liveleaderboard-experiment-pipeline). |
@@ -227,26 +232,22 @@ See [envs/ENVIRONMENTS.md](envs/ENVIRONMENTS.md) for the current, generated over
 
 ## Adding a new method
 
-1. **Try the default environment first.** Put the method in `EasyTSAD/Methods/<Name>/` and add `<Name>` to `methods` of `[envs.torch2]`. Then add its dependencies:
-   ```bash
-   scripts/tsad add torch2 some-package another-package
-   ```
-2. **If uv reports a resolution conflict,** or the method needs another Python version, give it its own environment:
+1. Put the method in `EasyTSAD/Methods/<Name>/` and create its own environment there:
    ```bash
    scripts/tsad new mymethod --python 3.10 --methods MyMethod --description "Needs foo<2"
    scripts/tsad add mymethod "foo<2"
    ```
    Remove the method from any other environment's `methods` list. A method must belong to exactly one environment.
-3. **Verify and document:**
+2. **Verify and document:**
    ```bash
    scripts/tsad check mymethod
    scripts/tsad doc
    ```
-4. **Commit** `envs/<name>/pyproject.toml`, `envs/<name>/uv.lock`, `envs/registry.toml` and `envs/ENVIRONMENTS.md`.
+3. **Commit** `EasyTSAD/Methods/<Name>/pyproject.toml`, `EasyTSAD/Methods/<Name>/uv.lock`, `envs/registry.toml` and `envs/ENVIRONMENTS.md`.
 
 Guidelines:
 
-- **Prefer extending an existing env.** Every extra environment costs disk space and maintenance, so create a new one only for a real conflict.
+- Keep each method-specific environment with its method. Shared framework environments remain under `envs/`.
 - **Keep the core `pyproject.toml` lightweight.** Method-specific packages always go into an env, never into the core.
 - **Requires Python 3.9 or newer.** The EasyTSAD core uses `type[...]` annotations, so environments cannot use an older Python.
 - **Packages that build from source** may not declare their build requirements (old Cython packages often omit numpy). Declare them in the env's `[tool.uv.extra-build-dependencies]` table; `envs/legacy/pyproject.toml` has an example. Building needs a C compiler (`gcc`).

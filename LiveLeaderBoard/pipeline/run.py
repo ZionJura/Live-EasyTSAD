@@ -101,7 +101,11 @@ def package_versions() -> dict:
 
 def env_info() -> dict:
     env = os.environ.get("TSAD_ENV", "")
-    lock = ROOT / "envs" / env / "uv.lock" if env else None
+    project = os.environ.get("TSAD_ENV_PROJECT")
+    if env and not project:
+        registry = toml.load(ROOT / "envs" / "registry.toml")
+        project = registry.get("envs", {}).get(env, {}).get("path", f"envs/{env}")
+    lock = ROOT / project / "uv.lock" if project else None
     info = {"name": env or None, "python": platform.python_version(),
             "uv_lock_sha256": hashlib.sha256(lock.read_bytes()).hexdigest() if lock and lock.exists() else None,
             "packages": package_versions(), "host": socket.gethostname(),

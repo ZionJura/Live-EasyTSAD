@@ -5,7 +5,7 @@
 # hidden home-directory locations:
 #   runtime/python/      uv-managed Python interpreters (+ bin/ links)
 #   runtime/uv-cache/    uv package cache
-#   envs/<name>/venv/    virtual environment of each env project
+#   <project>/venv/      virtual environment of each registered project
 #
 # Usage: scripts/tsad <command> [...]    (run `scripts/tsad help`)
 set -euo pipefail

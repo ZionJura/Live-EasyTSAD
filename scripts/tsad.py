@@ -18,6 +18,7 @@ ENVS_DIR = ROOT / "envs"
 REGISTRY = ENVS_DIR / "registry.toml"
 DOC = ENVS_DIR / "ENVIRONMENTS.md"
 METHODS_DIR = ROOT / "EasyTSAD" / "Methods"
+ENV_PROJECTS: dict[str, Path] = {}
 
 ENV_TEMPLATE = """\
 # Environment: {name}
@@ -36,7 +37,7 @@ dependencies = [
 package = false
 
 [tool.uv.sources]
-easytsad = {{ path = "../..", editable = true }}
+easytsad = {{ path = "{root_path}", editable = true }}
 """
 
 
@@ -51,9 +52,14 @@ def load_registry() -> dict:
     reg.setdefault("envs", {})
     reg.setdefault("notes", {})
     seen: dict[str, str] = {}
+    ENV_PROJECTS.clear()
     for env, spec in reg["envs"].items():
-        if not (ENVS_DIR / env / "pyproject.toml").exists():
-            die(f"env '{env}' is registered but envs/{env}/pyproject.toml is missing")
+        project = (ROOT / spec.get("path", f"envs/{env}")).resolve()
+        if not project.is_relative_to(ROOT.resolve()):
+            die(f"env '{env}' project path must be inside the repository")
+        if not (project / "pyproject.toml").exists():
+            die(f"env '{env}' is registered but {project / 'pyproject.toml'} is missing")
+        ENV_PROJECTS[env] = project
         for m in spec.get("methods", []):
             if m in seen:
                 die(f"method '{m}' is registered in both '{seen[m]}' and '{env}'")
@@ -64,12 +70,12 @@ def load_registry() -> dict:
 
 def env_vars(env: str) -> dict:
     e = dict(os.environ)
-    e["UV_PROJECT_ENVIRONMENT"] = str(ENVS_DIR / env / "venv")
+    e["UV_PROJECT_ENVIRONMENT"] = str(ENV_PROJECTS[env] / "venv")
     return e
 
 
 def uv(env: str, *args: str, check: bool = True) -> int:
-    cmd = ["uv", *args, "--project", str(ENVS_DIR / env)]
+    cmd = ["uv", *args, "--project", str(ENV_PROJECTS[env])]
     print("+ " + " ".join(cmd), file=sys.stderr)
     rc = subprocess.call(cmd, env=env_vars(env), cwd=ROOT)
     if check and rc != 0:
@@ -81,7 +87,7 @@ def uv_run(env: str, command: list[str]) -> None:
     """Run `command` inside env, with the repository root as cwd."""
     if not command:
         die("missing command after '--'")
-    cmd = ["uv", "run", "--project", str(ENVS_DIR / env), "--", *command]
+    cmd = ["uv", "run", "--project", str(ENV_PROJECTS[env]), "--", *command]
     os.chdir(ROOT)
     os.execvpe(cmd[0], cmd, env_vars(env))
 
@@ -135,7 +141,7 @@ def cmd_which(reg, a):
 
 def cmd_list(reg, a):
     for env, spec in reg["envs"].items():
-        venv = ENVS_DIR / env / "venv"
+        venv = ENV_PROJECTS[env] / "venv"
         state = "synced" if venv.exists() else "not synced"
         print(f"{env:<12} python {spec.get('python', '?'):<6} [{state}]  {spec.get('description', '')}")
         print("    " + ", ".join(spec.get("methods", [])))
@@ -164,7 +170,7 @@ def cmd_check(reg, a):
         )
         print(f"[{env}]")
         out = subprocess.run(
-            ["uv", "run", "--project", str(ENVS_DIR / env), "--", "python", "-c", code],
+            ["uv", "run", "--project", str(ENV_PROJECTS[env]), "--", "python", "-c", code],
             env=env_vars(env), cwd=ROOT, capture_output=True, text=True,
         )
         sys.stdout.write(out.stdout)
@@ -178,26 +184,36 @@ def cmd_check(reg, a):
 
 
 def cmd_new(reg, a):
-    d = ENVS_DIR / a.name
-    if d.exists():
-        die(f"envs/{a.name} already exists")
-    d.mkdir(parents=True)
+    if a.name in reg["envs"]:
+        die(f"env '{a.name}' is already registered")
+    if len(a.methods) == 1:
+        method = a.methods[0]
+        if Path(method).name != method or method in (".", ".."):
+            die("method must be a directory name")
+        d = METHODS_DIR / method
+    else:
+        d = ENVS_DIR / a.name
+    if (d / "pyproject.toml").exists():
+        die(f"{d.relative_to(ROOT)}/pyproject.toml already exists")
+    d.mkdir(parents=True, exist_ok=True)
     desc = a.description or f"Environment for {', '.join(a.methods) or 'new methods'}."
-    (d / "pyproject.toml").write_text(ENV_TEMPLATE.format(name=a.name, python=a.python, description=desc))
+    (d / "pyproject.toml").write_text(ENV_TEMPLATE.format(
+        name=a.name, python=a.python, description=desc, root_path=os.path.relpath(ROOT, d)))
     for m in a.methods:
         if m in reg["method_env"]:
             print(f"warning: '{m}' is still registered in '{reg['method_env'][m]}'; "
                   f"remove it there by hand", file=sys.stderr)
     with open(REGISTRY, "a") as f:
-        f.write(f'\n[envs.{a.name}]\npython = "{a.python}"\ndescription = "{desc}"\n'
+        path_entry = f'path = "{d.relative_to(ROOT).as_posix()}"\n' if len(a.methods) == 1 else ""
+        f.write(f'\n[envs.{a.name}]\npython = "{a.python}"\ndescription = "{desc}"\n{path_entry}'
                 f"methods = [{', '.join(repr(m).replace(chr(39), chr(34)) for m in a.methods)}]\n")
-    print(f"created envs/{a.name}/pyproject.toml and registered it in envs/registry.toml")
+    print(f"created {d.relative_to(ROOT)}/pyproject.toml and registered it in envs/registry.toml")
     print(f"next: scripts/tsad add {a.name} <packages...> && scripts/tsad check {a.name}")
 
 
 def cmd_remove(reg, a):
     select_envs(reg, [a.env])
-    venv = ENVS_DIR / a.env / "venv"
+    venv = ENV_PROJECTS[a.env] / "venv"
     if venv.exists():
         shutil.rmtree(venv)
         print(f"removed {venv.relative_to(ROOT)} (definition and lock file kept)")
@@ -252,6 +268,7 @@ def cmd_exp(reg, a):
             env = reg["method_env"][m]
             e = env_vars(env)
             e["TSAD_ENV"] = env
+            e["TSAD_ENV_PROJECT"] = str(ENV_PROJECTS[env])
             e.setdefault("TQDM_DISABLE", "1")  # progress bars would bloat the logs
             # Share the CPU cores between concurrent jobs instead of oversubscribing them.
             for var in ("OMP_NUM_THREADS", "MKL_NUM_THREADS", "OPENBLAS_NUM_THREADS"):
@@ -259,7 +276,7 @@ def cmd_exp(reg, a):
             if gpu is not None:
                 e["CUDA_VISIBLE_DEVICES"] = gpu
             out = logs / f"{m}_{d}.out"
-            cmd = ["uv", "run", "--project", str(ENVS_DIR / env), "--", "python",
+            cmd = ["uv", "run", "--project", str(ENV_PROJECTS[env]), "--", "python",
                    str(ROOT / "LiveLeaderBoard" / "pipeline" / "run.py"),
                    "--spec", str(spec_path), "--method", m, "--run-id", run_id,
                    "--datasets", d, *(["--force"] if a.force else [])]
@@ -331,11 +348,11 @@ def cmd_doc(reg, a):
         "",
         "<!-- Generated by `scripts/tsad doc` from envs/registry.toml. Do not edit by hand. -->",
         "",
-        "| Environment | Python | Description | Methods |",
-        "| --- | --- | --- | --- |",
+        "| Environment | Project | Python | Description | Methods |",
+        "| --- | --- | --- | --- | --- |",
     ]
     for env, spec in reg["envs"].items():
-        lines.append(f"| `{env}` | {spec.get('python', '?')} | {spec.get('description', '')} | "
+        lines.append(f"| `{env}` | `{ENV_PROJECTS[env].relative_to(ROOT.resolve())}` | {spec.get('python', '?')} | {spec.get('description', '')} | "
                      f"{', '.join(spec.get('methods', []))} |")
     lines += ["", "## Method lookup", "", "| Method | Environment | Notes |", "| --- | --- | --- |"]
     names = sorted(set(reg["method_env"]) | set(reg["notes"]), key=str.lower)
@@ -375,7 +392,7 @@ def main():
     s.set_defaults(fn=cmd_list)
     s = sub.add_parser("check", help="import every registered method inside its env")
     s.add_argument("envs", nargs="*"); s.set_defaults(fn=cmd_check)
-    s = sub.add_parser("new", help="scaffold and register a new env")
+    s = sub.add_parser("new", help="scaffold and register a new env (single-method envs live with the method)")
     s.add_argument("name"); s.add_argument("--python", required=True)
     s.add_argument("--methods", nargs="*", default=[]); s.add_argument("--description")
     s.set_defaults(fn=cmd_new)

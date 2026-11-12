@@ -29,3 +29,9 @@ Spot = "Helper module (SPOT/biSPOT/...), not a BaseMethod; not registered."
 python = "3.11"
 description = "Tooling env for the reproduction harness (DSH runtime, MCP tools, paper ingestion). Runs no methods."
 methods = []
+
+[envs.alora]
+python = "3.11"
+description = "ALoRa-T: PyTorch 2.6 and CUDA 12.4."
+path = "EasyTSAD/Methods/ALoRa-T"
+methods = ["ALoRa-T"]
