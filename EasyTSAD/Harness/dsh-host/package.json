@@ -1,0 +1,24 @@
+{
+  "name": "@tsad/dsh-host",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Version-pinned DeepSeek Harness host and TSAD native bridge plugin",
+  "engines": {
+    "node": ">=24.9"
+  },
+  "scripts": {
+    "start": "node launch.mjs",
+    "test": "node --test test/*.test.mjs",
+    "compose": "node launch.mjs --check"
+  },
+  "dependencies": {
+    "@deepseek-ai/dsh": "0.2.2-rc.1",
+    "@deepseek-ai/cordis": "4.1.0",
+    "@deepseek-ai/dsh-tools": "0.2.2-rc.1",
+    "@deepseek-ai/dsh-session": "0.2.2-rc.1",
+    "@deepseek-ai/dsh-llm": "0.2.2-rc.1",
+    "yaml": "2.8.1",
+    "node": "24.9.0"
+  }
+}

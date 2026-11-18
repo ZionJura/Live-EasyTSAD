@@ -1,0 +1,159 @@
+{
+  "method": "LatentFlow",
+  "environment": "EasyTSAD/Methods/LatentFlow/environment/pyproject.toml",
+  "project": {
+    "name": "tsad-env-latentflow",
+    "version": "0.0.0",
+    "requires_python": "==3.11.*",
+    "venv": "EasyTSAD/Methods/LatentFlow/environment/.venv",
+    "lock": "EasyTSAD/Methods/LatentFlow/environment/uv.lock",
+    "installer": "controller: uv sync --project EasyTSAD/Methods/LatentFlow/environment (UV_PROJECT_ENVIRONMENT=<project>/.venv)",
+    "registered_as": "method_LatentFlow"
+  },
+  "python": {
+    "decision": "==3.11.*",
+    "evidence": [
+      "EasyTSAD/Methods/LatentFlow/upstream/README.md — installation section only documents 'pip install -r requirements.txt'; there is no conda environment file, no python_requires and no setup.py/pyproject.toml in the upstream tree, so the upstream declares no interpreter pin.",
+      "EasyTSAD/Methods/LatentFlow/upstream/requirements.txt:198,109,117,171,172 — the pins this method actually needs (torch==2.2.0, numpy==1.26.4, pandas==2.2.3, scikit-learn==1.5.1, scipy==1.13.1) all publish cp311 wheels, so 3.11 resolves from wheels without a source build.",
+      "envs/registry.toml:7-8 — repository convention: the default environment [envs.torch2] uses python = \"3.11\"."
+    ],
+    "rationale": "Upstream ships no interpreter pin, so the repository default (3.11) is adopted. 3.11 is inside the supported range of every official pin (torch 2.2.0 supports 3.8-3.12; numpy 1.26.4, pandas 2.2.3, scikit-learn 1.5.1 and scipy 1.13.1 all ship cp311 wheels) and reuses the already-managed 3.11 interpreter instead of downloading a second one.",
+    "compatibility_note": "No Python-version incompatibility was found. The LatentFlow modules use only long-stable APIs (argparse, typing-free dataclass-like config namespaces, torch.nn, pandas rolling median, sklearn StandardScaler, scipy.optimize.minimize)."
+  },
+  "dependencies": [
+    {
+      "name": "easytsad",
+      "spec": "editable path source ../../../..",
+      "origin": "repository root pyproject.toml [project] name = EasyTSAD",
+      "evidence": "The method is driven through EasyTSAD.Controller/TSADController, DataFactory, Evaluations and Runtime, so the library must be importable inside the method environment. Declared as [tool.uv.sources] easytsad = { path = \"../../../..\", editable = true } — identical to the prior-art layout EasyTSAD/Methods/HYDRA/environment/pyproject.toml:67 and envs/torch2/pyproject.toml:29, resolved relative to EasyTSAD/Methods/LatentFlow/environment."
+    },
+    {
+      "name": "torch",
+      "spec": "==2.6.0 (official pin is torch==2.2.0+cu121; see compatibility_adjustments[0])",
+      "origin": "upstream/requirements.txt:198",
+      "evidence": "EasyTSAD/Methods/LatentFlow/upstream/models/LatentFlow.py:1-3 (torch, torch.nn, torch.nn.functional: nn.Conv1d, nn.GRUCell, nn.LayerNorm, torch.topk, torch.scatter, torch.bmm, Tensor.unfold, masked_fill_), layers/RevIN.py:1-2, exp/exp.py:7-9 (torch, torch.nn, torch.optim, torch.utils.data.DataLoader), data/dataset.py:1, utils/tools.py:1-2, utils/earlystop.py:2 (torch.save), utils/seed.py:5, main.py:3,55 (torch.cuda.set_device). Served from the repository's CUDA 12.4 index so it matches envs/torch2/pyproject.toml:12-13,30-36."
+    },
+    {
+      "name": "numpy",
+      "spec": ">=1.26,<2",
+      "origin": "upstream/requirements.txt:109",
+      "evidence": "EasyTSAD/Methods/LatentFlow/upstream/data/preprocess.py:1 (np.load of *_train_data.npy / *_test_data.npy / *_test_label.npy, np.zeros), exp/exp.py:6, utils/spot.py:5, utils/earlystop.py:1 (np.inf), utils/seed.py:4, utils/vus_evaluate.py:5. The official pin is numpy==1.26.4; the NumPy 1.x upper bound is kept because vus 0.0.6 (requirements.txt:218) and the official pins predate NumPy 2. EasyTSAD core only requires numpy>=1.21 (root pyproject.toml:18)."
+    },
+    {
+      "name": "pandas",
+      "spec": ">=2.2",
+      "origin": "upstream/requirements.txt:117",
+      "evidence": "EasyTSAD/Methods/LatentFlow/upstream/data/preprocess.py:2,7 'pd.DataFrame(data).rolling(w, center=True).median()' — the trend/stable decomposition is a pandas rolling-window operation and is on the critical path; utils/spot.py:6 also imports pandas. Official pin pandas==2.2.3. EasyTSAD core requires pandas>=1.3 (root pyproject.toml:22)."
+    },
+    {
+      "name": "scikit-learn",
+      "spec": ">=1.5",
+      "origin": "upstream/requirements.txt:171",
+      "evidence": "EasyTSAD/Methods/LatentFlow/upstream/data/preprocess.py:3,17-20 — StandardScaler.fit/transform normalises train and test data before the SPOT threshold and the VUS metrics; the official pin is scikit-learn==1.5.1. EasyTSAD core also declares scikit-learn>=0.23 (root pyproject.toml:21)."
+    },
+    {
+      "name": "scipy",
+      "spec": ">=1.13",
+      "origin": "upstream/requirements.txt:172",
+      "evidence": "EasyTSAD/Methods/LatentFlow/upstream/utils/spot.py:7 'from scipy.optimize import minimize' — SPOT fits the extreme-value threshold by minimising the negative log-likelihood, and utils/vus_evaluate.py:22-29 getThreshold() is the only threshold implementation used by exp/exp.py:16. Official pin scipy==1.13.1. EasyTSAD/Evaluations/Protocols/VUS.py:6 also needs scipy.signal."
+    },
+    {
+      "name": "matplotlib",
+      "spec": ">=3.9",
+      "origin": "upstream/requirements.txt:92",
+      "evidence": "EasyTSAD/Methods/LatentFlow/upstream/utils/spot.py:4 'import matplotlib.pyplot as plt' (imported at SPOT module load, so it is a hard requirement of the anomaly-score path). Official pin matplotlib==3.9.2. EasyTSAD plotting/evaluation modules also import pyplot (root pyproject.toml:19 requires matplotlib>=3.5)."
+    },
+    {
+      "name": "tqdm",
+      "spec": ">=4.66",
+      "origin": "upstream/requirements.txt:206",
+      "evidence": "EasyTSAD/Methods/LatentFlow/upstream/exp/exp.py:10 'from tqdm import tqdm' (epoch and score loops) and utils/spot.py:8. Official pin tqdm==4.66.5. EasyTSAD core declares tqdm>=4.60 (root pyproject.toml:20)."
+    },
+    {
+      "name": "vus",
+      "spec": "==0.0.6",
+      "origin": "upstream/requirements.txt:218",
+      "evidence": "EasyTSAD/Methods/LatentFlow/upstream/utils/vus_evaluate.py:6-8 imports 'from vus.metrics import get_metrics', 'from vus.affiliation.generics import convert_vector_to_events' and 'from vus.affiliation.metrics import pr_from_events'; exp/exp.py:16 imports that module at load time, so the official evaluation backend (Affiliation_F1, VUS_ROC, VUS_PR — upstream/README.md 'Evaluation metrics are computed with the external vus package') is a hard runtime dependency. vus is not part of EasyTSAD/Evaluations (that package ships its own VUS protocol), hence the explicit pin."
+    },
+    {
+      "name": "toml",
+      "spec": ">=0.10.2",
+      "origin": "EasyTSAD core pyproject.toml:17",
+      "evidence": "EasyTSAD/Controller/PathManager.py:1 'import toml', EasyTSAD/TrainingSchema/BaseSchema.py:2, EasyTSAD/Controller/TSADController.py:4 — imported at EasyTSAD import time, so it must be present in the method environment even though the upstream requirements do not list it."
+    }
+  ],
+  "compatibility_adjustments": [
+    {
+      "topic": "torch wheel channel: official pin is torch==2.2.0+cu121, the project uses the repository CUDA 12.4 index",
+      "source": "upstream/requirements.txt:198 'torch==2.2.0', :201 'torchaudio==2.2.0', :204 'torchvision==0.17.0', :209 'triton==2.2.0', :35 'dgl==2.3.0+cu121'",
+      "finding": "The upstream requirements pin a CUDA 12.1 build (dgl 2.3.0+cu121 is the explicit marker). That build is not available from the repository's configured PyTorch index (https://download.pytorch.org/whl/cu124, envs/torch2/pyproject.toml:33-36) and the machine driver must be able to load the wheel. LatentFlow uses no CUDA-12.1-specific API: models/LatentFlow.py uses only nn.Conv1d, nn.GRUCell, nn.Linear, nn.LayerNorm, nn.Dropout, torch.topk/scatter/bmm/softmax/eye/masked_fill_ and Tensor.unfold, all of which are unchanged between torch 2.2 and 2.6; exp/exp.py:97-106 already falls back to torch.device('cpu') when torch.cuda.is_available() is false, and main.py:53-55 guards torch.cuda.set_device the same way.",
+      "resolution": "torch is declared as ==2.6.0 and served from [tool.uv.sources] torch = { index = \"pytorch-cu124\" } / [[tool.uv.index]] name = \"pytorch-cu124\", url = \"https://download.pytorch.org/whl/cu124\", explicit = true — i.e. the exact same wheel channel as the repository default environment envs/torch2/pyproject.toml:12-13,29-36. This keeps a single CUDA runtime in the workspace (no second ~2.5 GB cu121 runtime) and preserves CPU execution as documented.",
+      "impact": "Numerical results may differ at the last-decimal level from a torch 2.2.0+cu121 run; no API, dtype or device semantic used by LatentFlow changed. Recorded instead of silently pinning a wheel that cannot be resolved here."
+    },
+    {
+      "topic": "official requirements.txt is a full workspace dump, not the method's dependency set",
+      "source": "upstream/requirements.txt (225 lines)",
+      "finding": "The file pins 225 distributions covering the authors' whole benchmark workspace. Modules that no LatentFlow file imports: dgl==2.3.0+cu121 (:35), einops==0.8.0 (:38), torch-dct==0.1.6 (:199), torch-geometric==2.6.1 (:200), torchaudio==2.2.0 (:201), torchvision==0.17.0 (:204), triton==2.2.0 (:209), tensorflow==2.20.0, ray==2.46.0, wandb==0.23.1 (:219), clearml, dash==3.0.4 (:31), dash-bootstrap-components, sktime, tsfresh==0.21.1 (:211), tslearn==0.6.4 (:212), ema-pytorch, Cython==3.1.4 (:30), ujson, yarl, docker-pycreds, trimesh, etc. Grepping the full upstream tree for 'dgl', 'torch_geometric', 'einops', 'torch_dct', 'torchvision', 'tensorflow' and 'ray' returns only the requirements.txt lines themselves — no import anywhere in main.py, exp/, models/, layers/, data/ or utils/.",
+      "resolution": "Only the distributions reachable from the LatentFlow import graph are declared: torch, numpy, pandas, scikit-learn, scipy, matplotlib, tqdm, vus, toml (+ easytsad). Everything else is omitted.",
+      "impact": "Smaller, faster and far more reproducible lock (no tensorflow/ray/dgl/torch-geometric resolution, no Cython or dgl source builds). dgl in particular is unbuildable from PyPI for cu121 without the extra DGL wheel index, so including it would make `uv lock` fail for no functional gain."
+    },
+    {
+      "topic": "NumPy held below 2.0",
+      "source": "upstream/requirements.txt:109 'numpy==1.26.4'",
+      "finding": "The official workspace pins NumPy 1.26.4, and the evaluation backend vus 0.0.6 (requirements.txt:218) predates NumPy 2. The LatentFlow code itself uses nothing NumPy-2-specific.",
+      "resolution": "Declared as numpy>=1.26,<2 so the resolver cannot silently upgrade to NumPy 2.x, which would change the behaviour of the official evaluation stack.",
+      "impact": "None on the method; keeps the official numerical behaviour."
+    },
+    {
+      "topic": "matplotlib/scipy/pandas/scikit-learn/tqdm are pinned exactly upstream but declared as lower bounds",
+      "source": "upstream/requirements.txt:92,117,171,172,206",
+      "finding": "Exact pins (matplotlib==3.9.2, pandas==2.2.3, scikit-learn==1.5.1, scipy==1.13.1, tqdm==4.66.5) were captured from one machine and can conflict with EasyTSAD core's own ranges on 3.11.",
+      "resolution": "Declared with compatible lower bounds (matplotlib>=3.9, pandas>=2.2, scikit-learn>=1.5, scipy>=1.13, tqdm>=4.66) and left to uv.lock for the exact resolved version, which is recorded by the controller.",
+      "impact": "The lock, not the manifest, is the reproducibility record; resolved versions remain inside the official pins' minor series."
+    }
+  ],
+  "incompatibilities": [
+    {
+      "id": "acm-pdf-fetch-403",
+      "severity": "info",
+      "detail": "The LatentFlow paper PDF at https://dl.acm.org/doi/pdf/10.1145/3770855.3818034 is served behind an ACM/Cloudflare bot challenge (HTTP 403, 'Just a moment...'). This is an external access limitation only: it does not affect the environment and no code fix is applicable. The official repository (https://github.com/SunboTax/LatentFlow, commit 3695f54317fcc1a3fdbfa0a7037d1cdf4369db27) is the implementation source of record; see reproduction/diagnosis.json (action=report_only).",
+      "mitigation": "None required for the environment. Do not retry the ACM URL; rely on upstream/README.md and upstream/requirements.txt as evidence."
+    },
+    {
+      "id": "torch-2.2.0-cu121-unavailable",
+      "severity": "low",
+      "detail": "The official torch==2.2.0+cu121 / dgl==2.3.0+cu121 combination cannot be resolved from the configured CUDA 12.4 index, and dgl 2.3.0+cu121 additionally requires an external DGL wheel index. Neither package is imported by any LatentFlow module.",
+      "mitigation": "torch is taken from the repository's cu124 index at 2.6.0 (see compatibility_adjustments[0]); dgl, torch-geometric, torch-dct, torchvision, torchaudio and triton are omitted (compatibility_adjustments[1]). The documented CPU fallback in exp/exp.py:97-106 keeps the method runnable without a GPU."
+    },
+    {
+      "id": "vus-not-in-easytsad",
+      "severity": "low",
+      "detail": "The official evaluation metrics (Affiliation_F1 / VUS_ROC / VUS_PR) are computed with the external 'vus' package (upstream/README.md; upstream/utils/vus_evaluate.py:6-8). EasyTSAD/Evaluations ships its own VUS protocol (EasyTSAD/Evaluations/Protocols/VUS.py) but not the 'vus' distribution, so the method environment must install it explicitly.",
+      "mitigation": "vus==0.0.6 is a hard dependency of this project (pinned exactly as in upstream/requirements.txt:218); the controller's import check should confirm 'import vus.metrics' resolves inside environment/.venv."
+    }
+  ],
+  "evidence": [
+    "EasyTSAD/Methods/LatentFlow/upstream/requirements.txt",
+    "EasyTSAD/Methods/LatentFlow/upstream/README.md",
+    "EasyTSAD/Methods/LatentFlow/upstream/main.py",
+    "EasyTSAD/Methods/LatentFlow/upstream/exp/exp.py",
+    "EasyTSAD/Methods/LatentFlow/upstream/models/LatentFlow.py",
+    "EasyTSAD/Methods/LatentFlow/upstream/layers/RevIN.py",
+    "EasyTSAD/Methods/LatentFlow/upstream/data/preprocess.py",
+    "EasyTSAD/Methods/LatentFlow/upstream/data/dataset.py",
+    "EasyTSAD/Methods/LatentFlow/upstream/utils/seed.py",
+    "EasyTSAD/Methods/LatentFlow/upstream/utils/tools.py",
+    "EasyTSAD/Methods/LatentFlow/upstream/utils/earlystop.py",
+    "EasyTSAD/Methods/LatentFlow/upstream/utils/spot.py",
+    "EasyTSAD/Methods/LatentFlow/upstream/utils/vus_evaluate.py",
+    "EasyTSAD/Methods/LatentFlow/reproduction/source.json",
+    "EasyTSAD/Methods/LatentFlow/reproduction/diagnosis.json",
+    "EasyTSAD/Methods/HYDRA/environment/pyproject.toml",
+    "EasyTSAD/Methods/HYDRA/reproduction/environment.json",
+    "pyproject.toml",
+    "envs/registry.toml",
+    "envs/torch2/pyproject.toml"
+  ],
+  "notes": "Scope: this worker only wrote EasyTSAD/Methods/LatentFlow/environment/pyproject.toml and EasyTSAD/Methods/LatentFlow/reproduction/environment.json. No uv/pip command was run and no shared environment file was modified; the controller performs the lock/sync, records environment-install.log and environment-install.json, and validates the import check.",
+  "at": "2026-11-17T08:34:12+00:00"
+}

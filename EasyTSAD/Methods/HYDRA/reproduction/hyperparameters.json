@@ -1,0 +1,279 @@
+{
+  "method": "HYDRA",
+  "paper": {
+    "title": "HYDRA: A Multi-Level Hierarchy-Driven Approach for Robust Anomaly Detection in Time Series",
+    "authors": ["Mingyi Huang", "Qinghua Liu", "Paul Boniol", "John Paparrizos"],
+    "venue": "Proceedings of the ACM on Management of Data (PACMMOD), vol. 4, no. 3, article 197, pp. 1-30",
+    "year": 2026,
+    "doi": "10.1145/3802074",
+    "pdf_url": "https://inria.hal.science/hal-05650530v1/document",
+    "paper_md": "EasyTSAD/Methods/HYDRA/paper/paper.md"
+  },
+  "official_source": {
+    "repository_url": "https://github.com/TheDatumOrg/HYDRA",
+    "commit": "5f76abee37833eed0365c2da69f1afc2d22ef0ab",
+    "entrypoint": "EasyTSAD/Methods/HYDRA/upstream/HYDRA/main.py",
+    "protocol_reference": "EasyTSAD/Methods/HYDRA/upstream/TSB-AD (paper Sec. 5.1.2 states all baselines follow the official TSB-AD protocol)"
+  },
+  "training": {
+    "training_free": true,
+    "evidence": "EasyTSAD/Methods/HYDRA/paper/paper.md:838-841 — 'Algorithm 3: HYDRA; (training-free, parameter-light)'; also paper.md:230 ('HYDRA is training-free, parameter-light, and robust under anomaly contamination') and paper.md:1461 ('multi-level and unsupervised approach ... hyperparameter-light').",
+    "consequence": "No optimizer, learning rate, batch size, epoch count, scheduler or early-stopping patience exists in the official method; these are recorded as null rather than invented.",
+    "official_inference_call": "EasyTSAD/Methods/HYDRA/upstream/HYDRA/main.py:53-58 — model = loader.HYDRA(winsize, mode='approx'); model.compress_and_score_multi(data); model.ensemble_maxpool_windows()"
+  },
+  "parameters": [
+    {
+      "name": "win_size",
+      "config_key": "win_size",
+      "config_table": "[Model_Params.Default]",
+      "value": 64,
+      "origin": "source",
+      "evidence": "EasyTSAD/Methods/HYDRA/upstream/HYDRA/main.py:58 — 'output = run_HYDRA(data, 64)' (the actual invocation; the function default winsize=30 at main.py:52 is never used). The multivariate branch also fixes 64 at main.py:47. Cross-checked with the TSB-AD protocol default for multivariate HYDRA: EasyTSAD/Methods/HYDRA/upstream/TSB-AD/TSB_AD/HP_list.py:96 — 'HYDRA': {'winsize': 64, 'periodicity': None}.",
+      "paper_support": "EasyTSAD/Methods/HYDRA/paper/paper.md:1296 (Sec. 5.5.1) contrasts fixed window sizes with an ACF-adaptive window; paper.md:1368 labels the runtime experiment 'with fixed window size = 64'.",
+      "uncertainty": "The paper's preferred setting for univariate series is the ACF-adaptive window (paper.md:1296), and the TSB-AD protocol implements it (HP_list.py:248 — 'HYDRA': {'periodicity': 1, 'winsize': None} -> upstream/TSB-AD/TSB_AD/model_wrapper.py:43-46 calls find_length_rank(data, rank=periodicity)). The standalone repository entry point instead hardcodes 64 for every dataset. 64 is recorded here because it is the value the official entry point actually executes and the only dataset-independent constant; see discrepancies[0]."
+    },
+    {
+      "name": "stride",
+      "config_key": "stride",
+      "config_table": "[Model_Params.Default]",
+      "value": 1,
+      "origin": "paper",
+      "evidence": "EasyTSAD/Methods/HYDRA/upstream/HYDRA/HYDRA_loader.py:5 and upstream/HYDRA/models/HYDRA_approx.py:20 default 'stride=1'; upstream/TSB-AD/TSB_AD/model_wrapper.py:47 passes 'stride=1' explicitly. Paper: EasyTSAD/Methods/HYDRA/paper/paper.md:249 defines t_i = 1 + (i-1)s and N = floor((T-m)/s)+1, and paper.md:261 uses 'stride 1' windows.",
+      "uncertainty": "None; s=1 (fully overlapping windows) is the only setting used in the paper and in every official entry point."
+    },
+    {
+      "name": "K",
+      "config_key": "K",
+      "config_table": "[Model_Params.Default]",
+      "value": 2,
+      "origin": "source",
+      "evidence": "EasyTSAD/Methods/HYDRA/upstream/HYDRA/HYDRA_loader.py:5 default 'K=2'; upstream/HYDRA/models/HYDRA_approx.py:20 default 'K=2'; upstream/TSB-AD/TSB_AD/model_wrapper.py:41 'def run_HYDRA(data, periodicity=None, winsize=None, K=2)'. Paper: EasyTSAD/Methods/HYDRA/paper/paper.md:841 Algorithm 3 input 'target K' and paper.md:860 'while |I_l| > K'.",
+      "uncertainty": "The paper names K as an input of Algorithm 3 (paper.md:841) but never states a numeric value; 2 comes only from the source defaults. Compression stops while the representative count exceeds K, so the deepest level keeps K=2 representatives."
+    },
+    {
+      "name": "include_all_windows",
+      "config_key": "include_all_windows",
+      "config_table": "[Model_Params.Default]",
+      "value": true,
+      "origin": "paper",
+      "evidence": "EasyTSAD/Methods/HYDRA/paper/paper.md:841 Algorithm 3 input 'flag includeL0' and paper.md:848-856 'if includeL0 then compute q^(0)[i] <- 1-NN distance in W ... append q^(0) to Q'. Source: upstream/HYDRA/models/HYDRA_approx.py:20 default 'include_all_windows=True' (level-0 1-NN scores recorded at lines 223-225); upstream/TSB-AD/TSB_AD/model_wrapper.py:47 passes 'include_all_windows=True'.",
+      "uncertainty": "None; level 0 (all-windows 1-NN distance) is always included in the official configurations."
+    },
+    {
+      "name": "mode",
+      "config_key": "mode",
+      "config_table": "[Model_Params.Default]",
+      "value": "approx",
+      "origin": "paper",
+      "evidence": "EasyTSAD/Methods/HYDRA/paper/paper.md:903 (Sec. 4.6) — 'In this paper, we primarily use HYDRA_approx, as it achieves scalability on long time series while maintaining comparable accuracy. Unless otherwise specified, all instances of HYDRA in our experiments refer to HYDRA_approx.' Footnote 2, paper.md:962 — 'all accuracy results report HYDRA_approx; HYDRA_exact is used only in the exact-vs-approx comparison (Fig. 12)'. Source: upstream/HYDRA/main.py:53 calls loader.HYDRA(winsize, mode='approx'), and upstream/HYDRA/HYDRA_loader.py:9 declares the default mode='approx'.",
+      "uncertainty": "None; HYDRA_exact is a comparison baseline, not the reported method."
+    },
+    {
+      "name": "metric",
+      "config_key": "metric",
+      "config_table": "[Model_Params.Default]",
+      "value": "euclidean",
+      "origin": "paper",
+      "evidence": "EasyTSAD/Methods/HYDRA/paper/paper.md:251 — 'We use the unnormalized Euclidean distance on raw windows: d(x,z) = ||x - z||_2. We deliberately avoid per-window normalization so as to preserve absolute magnitude'. Source: upstream/HYDRA/models/HYDRA_approx.py:44 sets metric='euclidean' in ann_params; upstream/HYDRA/models/HNSW_index.py:17,27 map metric 'euclidean' to hnsw space 'l2'.",
+      "uncertainty": "None for univariate. For multivariate input the distance is the C x m Euclidean norm over globally z-scored channels (paper.md:908-922, Eq. 17); the per-channel z-scoring is applied inside the official code (upstream/HYDRA/models/HYDRA_approx.py:250-252) and must not be re-applied by the harness."
+    },
+    {
+      "name": "ann_backend",
+      "config_key": "ann_backend",
+      "config_table": "[Model_Params.Default]",
+      "value": "auto",
+      "origin": "source",
+      "evidence": "EasyTSAD/Methods/HYDRA/upstream/HYDRA/HYDRA_loader.py:7 default 'ann_backend=auto'; upstream/HYDRA/models/HYDRA_approx.py:22 default 'ann_backend=auto'. Resolution order at upstream/HYDRA/models/HNSW_index.py:34-38: hnswlib -> pynndescent -> sklearn (raises RuntimeError only if none is importable). Paper: paper.md:903 names HNSW as the ANN structure and paper.md:1344 (Sec. 5.5.6) states HYDRA_approx 'builds indices based on HNSW with default hyperparameters'.",
+      "uncertainty": "The effective backend depends on the installed environment; 'auto' silently degrades to sklearn exact KNN (asymptotically HYDRA_exact) when hnswlib/pynndescent are absent. The environment branch must install hnswlib for the reported configuration."
+    },
+    {
+      "name": "hnsw_M",
+      "config_key": "hnsw_M",
+      "config_table": "[Model_Params.Default]",
+      "value": 16,
+      "origin": "source",
+      "evidence": "EasyTSAD/Methods/HYDRA/upstream/HYDRA/HYDRA_loader.py:8 sets hnsw_M=16; upstream/HYDRA/models/HYDRA_approx.py:23 sets hnsw_M=16; passed through at HYDRA_approx.py:46 and used at upstream/HYDRA/models/HNSW_index.py:80 'init_index(max_elements=n, ef_construction=..., M=self.hnsw_M)'.",
+      "uncertainty": "The paper only says 'default hyperparameters' (paper.md:1344); the concrete value is source-only."
+    },
+    {
+      "name": "hnsw_ef_construction",
+      "config_key": "hnsw_ef_construction",
+      "config_table": "[Model_Params.Default]",
+      "value": 100,
+      "origin": "source",
+      "evidence": "EasyTSAD/Methods/HYDRA/upstream/HYDRA/HYDRA_loader.py:8 sets hnsw_ef_construction=100; upstream/HYDRA/models/HYDRA_approx.py:23 sets hnsw_ef_construction=100; applied at upstream/HYDRA/models/HNSW_index.py:80.",
+      "uncertainty": "upstream/HYDRA/models/HNSW_index.py:18 declares its own default hnsw_ef_construction=200; the HYDRA wrapper always passes 100 explicitly, so 100 is effective. See discrepancies[1]."
+    },
+    {
+      "name": "hnsw_ef",
+      "config_key": "hnsw_ef",
+      "config_table": "[Model_Params.Default]",
+      "value": 40,
+      "origin": "source",
+      "evidence": "EasyTSAD/Methods/HYDRA/upstream/HYDRA/HYDRA_loader.py:9 sets hnsw_ef=40; upstream/HYDRA/models/HYDRA_approx.py:23 sets hnsw_ef=40; applied at upstream/HYDRA/models/HNSW_index.py:82 'p.set_ef(self.hnsw_ef)'.",
+      "uncertainty": "upstream/HYDRA/models/HNSW_index.py:18 declares hnsw_ef=200; the wrapper's explicit 40 wins. See discrepancies[1]."
+    },
+    {
+      "name": "ann_threads",
+      "config_key": "ann_threads",
+      "config_table": "[Model_Params.Default]",
+      "value": 1,
+      "origin": "source",
+      "evidence": "EasyTSAD/Methods/HYDRA/upstream/HYDRA/HYDRA_loader.py:9 sets ann_threads=1; upstream/HYDRA/models/HYDRA_approx.py:24 sets ann_threads=1; forwarded as n_threads at HYDRA_approx.py:49 and used for index insertion at upstream/HYDRA/models/HNSW_index.py:81 'add_items(..., num_threads=1)'.",
+      "uncertainty": "Affects runtime only, not the score values; keep 1 for determinism."
+    },
+    {
+      "name": "random_state",
+      "config_key": "random_state",
+      "config_table": "[Model_Params.Default]",
+      "value": 42,
+      "origin": "source",
+      "evidence": "EasyTSAD/Methods/HYDRA/upstream/HYDRA/HYDRA_loader.py:9 sets random_state=42; upstream/HYDRA/models/HYDRA_approx.py:24 sets random_state=42, consumed at HYDRA_approx.py:30 'self.rng = np.random.default_rng(random_state)' for tie-breaking in compress_once_dir (upstream/HYDRA/models/HYDRA_approx.py:95-98).",
+      "uncertainty": "Controls only the random tie-break between equally popular nearest-neighbour pairs; distinct from the process seed 2024 (see discrepancies[2])."
+    },
+    {
+      "name": "seed",
+      "config_key": "seed",
+      "config_table": "[Model_Params.Default]",
+      "value": 2024,
+      "origin": "source",
+      "evidence": "EasyTSAD/Methods/HYDRA/upstream/HYDRA/main.py:18-25 — 'seed = 2024; torch.manual_seed(seed); torch.cuda.manual_seed(seed); torch.cuda.manual_seed_all(seed); np.random.seed(seed); random.seed(seed); torch.backends.cudnn.benchmark = False; torch.backends.cudnn.deterministic = True'. The same seed is set by the TSB-AD protocol at upstream/TSB-AD/TSB_AD/main.py:16-23.",
+      "uncertainty": "The paper does not state the seed; the value is source-only."
+    },
+    {
+      "name": "debug",
+      "config_key": "debug",
+      "config_table": "[Model_Params.Default]",
+      "value": false,
+      "origin": "source",
+      "evidence": "EasyTSAD/Methods/HYDRA/upstream/HYDRA/HYDRA_loader.py:5 default 'debug=False' (the standalone entry point at upstream/HYDRA/main.py:53 does not override it, so False is effective there; the TSB-AD wrapper enables it only to print per-level diagnostics at upstream/TSB-AD/TSB_AD/model_wrapper.py:47).",
+      "uncertainty": "debug only gates printouts (upstream/HYDRA/models/HYDRA_approx.py:295-297) and cannot change scores."
+    },
+    {
+      "name": "n_jobs",
+      "config_key": "n_jobs",
+      "config_table": "[Model_Params.Default]",
+      "value": 1,
+      "origin": "fallback",
+      "evidence": "HYDRA exposes no n_jobs parameter; ANN parallelism is ann_threads=1 (upstream/HYDRA/models/HNSW_index.py:81). n_jobs=1 is recorded as the explicit EasyTSAD execution fallback, consistent with the single-threaded official runtime.",
+      "uncertainty": "Fallback value, not a hyper-parameter of the official method."
+    },
+    {
+      "name": "learning_rate",
+      "config_key": null,
+      "value": null,
+      "origin": "paper",
+      "evidence": "Not applicable: the method is training-free (paper.md:838-841, 230, 1461); no gradient step or optimizer exists anywhere in upstream/HYDRA.",
+      "uncertainty": "None."
+    },
+    {
+      "name": "batch_size",
+      "config_key": null,
+      "value": null,
+      "origin": "paper",
+      "evidence": "Not applicable: no mini-batch training; scoring is a single ANN self-query pass over all windows (upstream/HYDRA/models/HYDRA_approx.py:201-203, 261).",
+      "uncertainty": "None."
+    },
+    {
+      "name": "epochs",
+      "config_key": null,
+      "value": null,
+      "iterative": false,
+      "origin": "paper",
+      "evidence": "Not applicable: HYDRA is training-free (paper.md:838-841). Series-to-score is a single deterministic hierarchy construction (Algorithm 3, paper.md:843-889).",
+      "uncertainty": "None. Epochs must not be invented."
+    },
+    {
+      "name": "optimizer",
+      "config_key": null,
+      "value": null,
+      "origin": "paper",
+      "evidence": "Not applicable: no parameters are learned (paper.md:838-841).",
+      "uncertainty": "None."
+    },
+    {
+      "name": "earlystop_patience",
+      "config_key": null,
+      "value": null,
+      "origin": "paper",
+      "evidence": "Not applicable: no validation-driven training loop (paper.md:838-841).",
+      "uncertainty": "None."
+    }
+  ],
+  "structure": {
+    "summary": "Hierarchical, multi-level subsequence anomaly detector. Level 0 scores every window by its 1-NN distance among all windows; each subsequent level builds an ANN index on the current representatives, groups windows by 1-NN indegree (directed merging toward the more popular neighbour, random tie-break), keeps one representative per group and re-scores all windows against that reference set; the loop stops when |I_l| <= K.",
+    "evidence": "EasyTSAD/Methods/HYDRA/paper/paper.md:838-891 (Algorithm 3) and paper.md:744-764 (Sec. 4.4, q^(l)_i = min over r in R^(l) of d(x_i, x_r)); source EasyTSAD/Methods/HYDRA/upstream/HYDRA/models/HYDRA_approx.py:182-227 (tree_compress_collect_levels) and 230-309 (compress_and_score_multi).",
+    "hierarchy_depth": "Emergent, not configured: L grows approximately log-linearly with n = T - m + 1 (paper.md:1342, Sec. 5.5.5)."
+  },
+  "ensemble": {
+    "level_normalization": "Per-level z-score over windows: q~ = (q - mu_l) / (sigma_l + delta); levels with zero variance are set to 0. Paper.md:775-799 (Sec. 4.5) and Algorithm 3 lines 871-882; source upstream/HYDRA/models/HYDRA_approx.py:315-320 (nanmean/nanstd with a strict sd > 0 mask, Z = 0 elsewhere).",
+    "aggregation": "Element-wise maximum across levels (max-pool), not a sum or weighted average. Paper.md:884-886 's*_i <- max_{l=1..L} Q_li'; source upstream/HYDRA/models/HYDRA_approx.py:322 'win_score_final = np.max(Z, axis=0)'.",
+    "evidence_note": "The implementation uses np.nanmean/np.nanstd with a strict 'sd > 0' test rather than the paper's 'sigma_l + delta' smoothing; both zero out degenerate levels."
+  },
+  "scoring": {
+    "direction": "higher_is_more_anomalous",
+    "detail": "The window score is a non-negative 1-NN Euclidean distance (paper.md:251, 749-756); the ensemble z-scores and max-pool preserve the sign, so no negation is required. The official entry point converts the final curve with MinMaxScaler(feature_range=(0,1)) before thresholding (upstream/HYDRA/main.py:61), which is monotone and does not change the ranking or direction.",
+    "evidence": "EasyTSAD/Methods/HYDRA/upstream/HYDRA/main.py:61-62; EasyTSAD/Methods/HYDRA/upstream/HYDRA/models/HYDRA_approx.py:322-324."
+  },
+  "alignment": {
+    "method": "reverse_windowing_min — each window score is broadcast over its m positions and averaged by overlap count (uniform averaging; paper's AvgOverlapMap).",
+    "center_index": "c_i = t_i + floor((m-1)/2)",
+    "evidence": "EasyTSAD/Methods/HYDRA/paper/paper.md:251 ('When a per-window score must be aligned back to the timeline, we map x_i to its center index c_i = t_i + floor((m-1)/2)'), paper.md:261 (averaging rule S(t)), paper.md:888 'z <- AvgOverlapMap(s*)'; source EasyTSAD/Methods/HYDRA/upstream/HYDRA/models/HYDRA_approx.py:144-166 (stride-1 branch uses convolve-based averaging; general branch divides by np.maximum(cnt, 1.0)), invoked at HYDRA_approx.py:323.",
+    "output_length": "stride * (num_win - 1) + m = T, so the returned curve is index-aligned with the raw series and needs no trimming."
+  },
+  "preprocessing": {
+    "selected": "raw",
+    "config": "[Data_Params] preprocess = raw, diff_order = 0",
+    "evidence": "EasyTSAD/Methods/HYDRA/paper/paper.md:958 (Sec. 5.1.3) — 'we do not apply normalization to any subsequence-based method for fairness, except Series2Graph'; paper.md:251 and paper.md:764 — distances are computed on unnormalized windows to preserve amplitude; paper.md:836 — HYDRA 'achieves normalization-free robustness'. The allowed EasyTSAD values are defined at EasyTSAD/DataFactory/LoadData.py:46-55 (min-max, z-score, raw).",
+    "multivariate_note": "For C>1 channels the official code standardizes each channel globally (z-score) before windowing (paper.md:908, Eq. 17; source upstream/HYDRA/models/HYDRA_approx.py:250-252). This internal global standardization is part of the method; the harness must not additionally z-score, or the score scale would be changed twice.",
+    "uncertainty": "EasyTSAD's univariate loaders normally z-score for deep methods; here raw is the paper-faithful choice. Min-max is a monotone transform and therefore equivalent up to a global scale for a distance-based detector, but the selected official behavior is raw (paper.md:958)."
+  },
+  "evaluation_protocol": {
+    "note": "Recorded for provenance only; EasyTSAD owns the final metric, so this is not implemented inside the method.",
+    "official_f1_rule": "pred = output > (mean(output) + 3*std(output)) after MinMax scaling to (0,1) — EasyTSAD/Methods/HYDRA/upstream/HYDRA/main.py:61-62 (identical at upstream/TSB-AD/TSB_AD/main.py:59-60).",
+    "official_metric_window": "get_metrics(..., slidingWindow=slidingWindow, ...) where slidingWindow = find_length_rank(data, rank=1) for univariate and 64 for multivariate (upstream/HYDRA/main.py:44-47) — i.e. the ACF window is used for the VUS range while the detector itself runs with 64 (main.py:58)."
+  },
+  "discrepancies": [
+    {
+      "id": "univariate_window_acf_vs_fixed_64",
+      "issue": "For univariate series the paper prefers an ACF-adaptive window and the TSB-AD protocol selects it, but the standalone official entry point hardcodes 64.",
+      "paper": "EasyTSAD/Methods/HYDRA/paper/paper.md:1296 (Sec. 5.5.1) — 'the ACF strategy (i.e., Auto-Correlation Function) automatically determines the window length according to the temporal correlation structure of each dataset, making our method require no manual hyperparameter tuning in this aspect'.",
+      "source": "EasyTSAD/Methods/HYDRA/upstream/HYDRA/main.py:58 runs run_HYDRA(data, 64) for every dataset even though it computes slidingWindow = find_length_rank(data, rank=1) at line 45 and uses it only for the metric. The protocol wrapper honours it: upstream/TSB-AD/TSB_AD/HP_list.py:248 ('periodicity': 1, 'winsize': None) -> upstream/TSB-AD/TSB_AD/model_wrapper.py:43-46 sets slidingWindow = find_length_rank(data, rank=periodicity).",
+      "selected_behavior": "config.toml fixes win_size = 64, matching the official entry point's actual call and the multivariate protocol default. The ACF-adaptive alternative is recorded as unresolved for IMPLEMENT (setting win_size to an ACF rank=1 value would reproduce Sec. 5.5.1 at the cost of a data-dependent window).",
+      "also_noted": "upstream/HYDRA/main.py:52 declares 'def run_HYDRA(data, winsize=30)' but the only call site passes 64, so 30 is dead code and must not be used. The standalone HYDRA_approx.py __main__ demo (line 330) also uses win_size=30 for a synthetic sine."
+    },
+    {
+      "id": "hnsw_ef_defaults_wrapper_vs_index",
+      "issue": "Two different HNSW default sets exist in the repository.",
+      "source": "EasyTSAD/Methods/HYDRA/upstream/HYDRA/HYDRA_loader.py:8-9 and upstream/HYDRA/models/HYDRA_approx.py:23 use hnsw_ef_construction=100, hnsw_ef=40; upstream/HYDRA/models/HNSW_index.py:18 declares hnsw_M=16, hnsw_ef_construction=200, hnsw_ef=200 as its own defaults.",
+      "selected_behavior": "The HYDRA wrapper always passes its explicit values into ANNIndex (upstream/HYDRA/models/HYDRA_approx.py:43-50), so 100/40 are effective and are the recorded values; the ANNIndex 200/200 defaults are never reached through the official path."
+    },
+    {
+      "id": "seed_2024_vs_random_state_42",
+      "issue": "Two different integer seeds appear in the official code.",
+      "source": "Process-level seed = 2024 (upstream/HYDRA/main.py:18-25; identical at upstream/TSB-AD/TSB_AD/main.py:16-23) versus the model's random_state = 42 default (upstream/HYDRA/HYDRA_loader.py:9; upstream/HYDRA/models/HYDRA_approx.py:24).",
+      "selected_behavior": "Both are recorded: seed = 2024 for numpy/random global state and random_state = 42 for the hierarchy's tie-breaking RNG (upstream/HYDRA/models/HYDRA_approx.py:30). They are different knobs and must not be collapsed."
+    },
+    {
+      "id": "paper_K_symbol_vs_source_value",
+      "issue": "The paper parameterizes the hierarchy by a target K (paper.md:841, 860) but never gives its numeric value; K=2 is source-only.",
+      "selected_behavior": "K = 2, from the loader and protocol defaults (upstream/HYDRA/HYDRA_loader.py:5, upstream/TSB-AD/TSB_AD/model_wrapper.py:41)."
+    },
+    {
+      "id": "exact_vs_approx_naming",
+      "issue": "The repository ships two classes (HYDRA_approx, HYDRA_exact) with identical constructor defaults, while the paper's accuracy tables report only HYDRA_approx.",
+      "selected_behavior": "mode = 'approx' (paper.md:903, 962). HYDRA_exact exists only for the Fig. 12 comparison and would be O(n^2 m)."
+    },
+    {
+      "id": "zero_variance_level_handling",
+      "issue": "Paper Eq. (Sec. 4.5) divides by (sigma_l + delta); the code uses a strict sd > 0 mask with NaN-aware statistics and sets those levels to 0.",
+      "selected_behavior": "Implementation behavior (upstream/HYDRA/models/HYDRA_approx.py:316-320) is authoritative: z-scores for levels with sigma > 0, exactly 0 otherwise (paper.md:878-882 agrees on the case split). delta is not a configured parameter in the code."
+    }
+  ],
+  "unresolved": [
+    "Univariate window length: win_size = 64 (official entry point) versus the ACF rank=1 adaptive window (paper Sec. 5.5.1 and the TSB-AD protocol). config.toml records 64; switching to ACF requires IMPLEMENT changes and yields a data-dependent value.",
+    "Effective ANN backend depends on the installed environment ('auto' degrades to sklearn exact KNN when hnswlib/pynndescent are missing); the reported configuration needs hnswlib installed by the environment branch.",
+    "The paper reports no numeric value for K (only K=2 from source) and no F1 threshold beyond the mean+3*std rule, which EasyTSAD's own evaluation replaces.",
+    "Multivariate global per-channel z-scoring happens inside the official code; if IMPLEMENT re-applies Data_Params preprocessing for MTS datasets the scale changes, so preprocess must stay raw."
+  ]
+}

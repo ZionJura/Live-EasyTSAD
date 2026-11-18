@@ -1,0 +1,25 @@
+{
+  "paper": {
+    "title": "",
+    "authors": [],
+    "year": "None",
+    "venue": "",
+    "arxiv_id": "",
+    "url": "",
+    "pdf_url": "",
+    "abstract": "",
+    "code_urls": [
+      "https://github.com/SunboTax/LatentFlow"
+    ],
+    "source": "url"
+  },
+  "errors": [
+    "paper record has neither pdf_url nor pdf_path",
+    "HTTP 403 for https://dl.acm.org/doi/pdf/10.1145/3770855.3818034: <!DOCTYPE html><html lang=\"en-US\"><head><title>Just a moment...</title><meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\"><meta http-equiv=\"X-UA-Compatible\" content=\"IE=Edge\"><meta name=\"robots\" content=\"noindex,nofollow\"><meta name=\"viewport\" content=\"width=device-width,initial-scale=1\"><meta http-equiv=\"content-security-policy\" content=\"default-src &#39;none&#39;; script-src &#39;nonce-tUhcqHjxlitsV139dkkv3D&#39; &#39;unsafe-eval&#39; https://challenges.cloudflare.com; script-s"
+  ],
+  "code": {
+    "url": "https://github.com/SunboTax/LatentFlow"
+  },
+  "discovery_pending": true,
+  "paper_download_attempted": "https://dl.acm.org/doi/pdf/10.1145/3770855.3818034"
+}

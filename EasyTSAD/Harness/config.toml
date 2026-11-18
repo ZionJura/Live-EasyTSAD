@@ -4,63 +4,69 @@
 
 [llm]
 # One OpenAI-compatible route, rendered into the DSH `llm-pi-ai` provider config.
-provider = "yyt"                      # DSH route key (lowercase, hyphenated)
-display_name = "YYT API"
-base_url = "https://yyt.s-flag.com/v1"
+provider = "lan-proxy"                # DSH route key (lowercase, hyphenated)
+display_name = "LAN Model Proxy"
+base_url = "http://192.168.125.151:18765/v1"
 wire_api = "responses"                # "responses" (OpenAI Responses) | "chat" (Chat Completions)
-model = "gpt-6.1-sol"
-api_key_env = "yyt_api"               # env var the user exports (source of the key)
+model = "deepseek-v4.1-flash"
+api_key_env = "TERRA_PROXY_API_KEY"   # optional override for the local proxy key
 # Name the key gets inside dsh. Must match DSH's scrub regex /KEY|PASSWORD|SECRET|TOKEN/i so
 # bash/MCP children never inherit it; the source var above is removed from every child env.
-dsh_key_env = "YYT_API_KEY"
-# Fallback when the env var is unset: JSON file + key (Codex CLI layout).
-api_key_file = "~/.codex/auth.json"
-api_key_file_field = "OPENAI_API_KEY"
-context_window = 400000
-max_output_tokens = 64000
-reasoning_effort = "high"             # "" to leave the provider default
+dsh_key_env = "TSAD_LLM_API_KEY"
+# The proxy stores its client key in this user-private plain-text file.
+api_key_file = "~/.config/terra-proxy/api-key"
+api_key_file_format = "text"
+context_window = 128000
+max_output_tokens = 8192
+max_recovery_output_tokens = 32768
+reasoning_effort = ""                 # leave the provider default
 max_retries = 6                       # DSH per-request retries (incl. PI_AI_ERROR from dropped proxy streams)
-bypass_proxy = true                   # the local HTTP proxy cannot reach this host
+bypass_proxy = true                   # connect directly to the LAN proxy
 
 [network]
 # Hosts reached directly (added to NO_PROXY for every harness subprocess).
 # Everything else (e.g. github.com) goes through the ambient http(s)_proxy.
-direct_hosts = ["yyt.s-flag.com", "arxiv.org", "export.arxiv.org"]
+direct_hosts = ["192.168.125.151", "arxiv.org", "export.arxiv.org"]
 drop_socks_proxy = true               # DSH cannot use all_proxy=socks5://...
 
 [paths]
 tasks_dir = "EasyTSAD/Harness/tasks"
-dsh_home = "runtime/dsh-home"         # DSH profiles/storage (sessions go to each task dir)
+dsh_home = "runtime/harness-workbench/dsh" # isolated published runtime; legacy home is preserved
 methods_dir = "EasyTSAD/Methods"
+uv_cache_dir = "/tmp/easytsad-uv-cache-v-zzr25"
 
 [dsh]
 profile = "headless"
-permission_mode = "danger-full-access"   # writes are policed by the harness file guard instead
+permission_mode = "danger-full-access"
 trim_patch = "EasyTSAD/Harness/dsh/trim.patch.yml"
-mcp_tool_timeout_ms = 3600000            # smoke runs can take a while
-mcp_startup_timeout_ms = 300000          # cold `import mcp` on the networked /home can exceed 60 s
+mcp_tool_timeout_ms = 3600000
+mcp_startup_timeout_ms = 300000          # wait for the scoped loopback server before the pinned MCP client's 60 s handshake
 
 [budget]
-# Per agent phase. A phase that hits a limit fails and waits for a human.
+# Per agent run. Interrupted runs and execution failures are retried within this budget.
 max_steps_per_run = 120               # model steps in one DSH run (counted from the event stream)
 max_wall_minutes_per_run = 90
-max_repair_rounds = 4                 # re-prompts of the same phase after a failed validation
-max_smoke_runs = 8                    # smoke/eval tool calls per task
+max_repair_rounds = 4                 # automatic retries after worker or evaluation failures
 max_transient_resumes = 3            # resume the session after upstream LLM failures (dropped streams, 5xx)
 
 [human]
-# Phases after which the pipeline stops for `harness approve` / `harness correct`.
-review_after = ["EVIDENCE"]
+# Legacy setting; the automatic pipeline has no review gates.
+review_after = []
 
-[smoke]
-# Small deterministic run used to prove the method executes end-to-end.
-schema = "naive"
-dataset_type = "UTS"
-dataset = "NAB"
-curves = ["Twitter_volume_AAPL", "Twitter_volume_AMZN"]
-evals = ["point_f1", "event_f1", "auprc"]
-max_epochs = 2                        # the only hyper-parameter the smoke tool may override
-timeout_minutes = 30
+[interactive]
+host = "127.0.0.1"
+port = 8767
+bridge_port = 8768
+runtime_dir = "runtime/harness-workbench"
+max_papers = 5
+max_model_requests = 5
+max_environment_installs = 2
+max_active_subagents = 8
+max_subagent_depth = 2
+
+[search]
+provider = "searxng"
+base_url = ""                         # optional SearXNG instance with JSON search enabled
 
 [eval]
 # Full evaluation launched by `harness eval` (deterministic, no LLM).
@@ -69,7 +75,7 @@ dataset_type = "UTS"
 datasets = ["NAB", "TODS", "AIOPS", "WSD", "Yahoo", "UCR"]
 evals = ["point_f1", "event_f1", "auprc"]
 seed = 2026
-gpus = "0"
+gpus = "auto"
 
 [report]
 default_family = "深度学习"           # one of 深度学习 / 传统方法 / 预训练模型
@@ -77,7 +83,7 @@ leaderboard_dir = "leaderboard"
 deploy_script = "leaderboard/scripts/deploy_webhost.sh"
 
 [protect]
-# Repository paths the agent must not modify (checked after every agent run).
+# Paths used by the optional `harness guard` command, outside the automatic pipeline.
 # The method folder, its env and the task dir are always writable.
 paths = [
     "EasyTSAD/Controller", "EasyTSAD/DataFactory", "EasyTSAD/Evaluations",

@@ -3,6 +3,7 @@ import toml
 import numpy as np
 import logging
 import json
+import tempfile
 
 from ..Controller import PathManager
 from ..DataFactory import TSData, LoadData
@@ -104,8 +105,24 @@ class BaseSchema(object):
         Performs the experiment.
         """
         pass
-    
-        
-                
-                
-                
+
+    def _observe(self, event, dataset=None, curve=None, **data):
+        """Optional trusted runner callback; model implementations never receive it."""
+        observer = getattr(self, "observer", None)
+        if observer is not None:
+            observer(event, dataset=dataset, curve=curve, **data)
+
+    def _save_score(self, path, score, dataset, curve):
+        """Publish a complete score array before notifying an observer."""
+        directory = os.path.dirname(os.path.abspath(path))
+        fd, temporary = tempfile.mkstemp(prefix=".score-", suffix=".npy", dir=directory)
+        try:
+            with os.fdopen(fd, "wb") as stream:
+                np.save(stream, score, allow_pickle=False)
+                stream.flush()
+                os.fsync(stream.fileno())
+            os.replace(temporary, path)
+        finally:
+            if os.path.exists(temporary):
+                os.unlink(temporary)
+        self._observe("curve_scored", dataset, curve, score_path=str(path))

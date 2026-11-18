@@ -16,6 +16,8 @@ dependencies = [
     "pymupdf>=1.24",                    # PDF -> text for paper ingestion
     "pyyaml>=6",                        # DSH cordis patch generation
     "tomlkit>=0.13",                    # comment-preserving edits of catalog.toml / registry.toml
+    "fastapi>=0.115,<1",
+    "uvicorn>=0.34,<1",
 ]
 
 [tool.uv]

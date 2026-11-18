@@ -1,0 +1,23 @@
+# Apply to the complete sdk/web profile, not to the TSAD legacy trim patch.
+# Row config is replaced in full. Every configured field is repeated here.
+- id: subagent
+  config:
+    maxDepth: 2
+    maxActiveSubagents: 4
+- id: agent-team
+  config:
+    maxTasks: 256
+    defaultEnabled: true
+- id: goal
+  config:
+    defaultMaxGoalRounds: 32
+- id: web-fetch-http
+  config:
+    maxResponseBytes: 5000000
+    maxBodyChars: 100000
+    timeoutMs: 30000
+    maxRedirects: 5
+- id: session-log-deepseek
+  disabled: true
+- id: plugin-package-inventory-deepseek
+  disabled: true

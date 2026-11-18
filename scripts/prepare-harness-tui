@@ -1,0 +1,122 @@
+#!/usr/bin/env bash
+# Build a source-and-lock keyed, standalone Node TUI on the local disk.
+set -euo pipefail
+umask 077
+
+ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+PROJECT="$ROOT/EasyTSAD/Harness/tui"
+CACHE="${TSAD_TUI_CACHE_DIR:-/tmp/tsad-harness-tui-$UID}"
+MODE="${1:-prepare}"
+
+case "$MODE" in
+    prepare|--print-entry|--print-node) ;;
+    *) echo "Usage: scripts/prepare-harness-tui [--print-entry|--print-node]" >&2; exit 2 ;;
+esac
+fail() { [ "$MODE" != prepare ] || echo "$*" >&2; exit 1; }
+[ -f "$PROJECT/package.json" ] && [ -f "$PROJECT/package-lock.json" ] || fail "Missing locked TUI package: $PROJECT"
+[[ "$CACHE" = /* ]] || fail "TUI cache must use an absolute path: $CACHE"
+if [ "$(uname -s)" = Darwin ]; then CACHE_MODE="$(stat -f %Lp "$CACHE" 2>/dev/null || true)"; else CACHE_MODE="$(stat -c %a "$CACHE" 2>/dev/null || true)"; fi
+if [ -L "$CACHE" ] || { [ -e "$CACHE" ] && { [ ! -d "$CACHE" ] || [ ! -O "$CACHE" ] || [ "$CACHE_MODE" != 700 ]; }; }; then
+    fail "TUI cache must be a private directory owned by the current user: $CACHE"
+fi
+# macOS does not ship the GNU flock used below. Validate the cache before
+# creating anything in it, then retain a stdlib lock for the child process.
+if [ "$(uname -s)" = Darwin ] && [ "$MODE" = prepare ] && [ "${TSAD_TUI_LOCKED:-}" != 1 ]; then
+    mkdir -p "$CACHE"
+    chmod 700 "$CACHE"
+    exec python3 -c 'import fcntl, os, subprocess, sys
+fd = os.open(sys.argv[1], os.O_CREAT | os.O_RDWR, 0o600)
+fcntl.flock(fd, fcntl.LOCK_EX)
+env = dict(os.environ, TSAD_TUI_LOCKED="1")
+raise SystemExit(subprocess.call(sys.argv[2:], env=env))' "$CACHE/prepare.lock" "$0" "$@"
+fi
+source_hash() (
+    cd "$1"
+    if [ "$(uname -s)" = Darwin ]; then
+        python3 -c 'import hashlib, os
+h = hashlib.sha256()
+for root, dirs, files in os.walk("."):
+    dirs[:] = sorted(d for d in dirs if d not in {"node_modules", "dist", ".git", "test", "vendor"})
+    for name in sorted(files):
+        p = os.path.join(root, name); h.update(os.fsencode(p) + b"\0"); h.update(open(p, "rb").read())
+for p in ("./vendor/PROVENANCE.md", "./vendor/deepseek-harness/LICENSE"):
+    if os.path.isfile(p): h.update(os.fsencode(p) + b"\0"); h.update(open(p, "rb").read())
+for root, dirs, files in os.walk("./vendor/licenses"):
+    dirs.sort()
+    for name in sorted(files):
+        p = os.path.join(root, name); h.update(os.fsencode(p) + b"\0"); h.update(open(p, "rb").read())
+print(h.hexdigest())'
+        exit
+    fi
+    {
+        find . -type d \( -name node_modules -o -name dist -o -name .git -o -name test -o -name vendor \) -prune -o -type f -print0
+        # Archived upstream source is not compiled. These notices are build inputs.
+        for notice in ./vendor/PROVENANCE.md ./vendor/deepseek-harness/LICENSE; do
+            [ ! -f "$notice" ] || printf '%s\0' "$notice"
+        done
+        if [ -d ./vendor/licenses ]; then
+            find ./vendor/licenses -type f -print0
+        fi
+    } | LC_ALL=C sort -z | xargs -0 sha256sum | sha256sum | cut -d ' ' -f 1
+)
+SOURCE_HASH="$(source_hash "$PROJECT")"
+ARTIFACT="$CACHE/builds/$SOURCE_HASH"
+ready() {
+    [ -f "$ARTIFACT/dist/tui.mjs" ] && [ -x "$ARTIFACT/node" ] &&
+        [ -f "$ARTIFACT/.ready" ] && [ "$(cat "$ARTIFACT/.ready")" = "$SOURCE_HASH" ]
+}
+if [ "$MODE" != prepare ]; then
+    ready || exit 1
+    if [ "$MODE" = --print-entry ]; then printf '%s\n' "$ARTIFACT/dist/tui.mjs";
+    else printf '%s\n' "$ARTIFACT/node"; fi
+    exit 0
+fi
+mkdir -p "$CACHE"
+chmod 700 "$CACHE"
+if [ "$(uname -s)" != Darwin ]; then
+    exec 9>"$CACHE/prepare.lock"
+    flock 9
+fi
+if ready; then
+    printf 'TUI ready: %s\n' "$ARTIFACT/dist/tui.mjs"
+    exit 0
+fi
+NODE="${TSAD_TUI_NODE:-$ROOT/EasyTSAD/Harness/dsh-host/node_modules/node/bin/node}"
+if [ ! -x "$NODE" ]; then NODE="$(command -v node || true)"; fi
+[ -n "$NODE" ] && [ -x "$NODE" ] || fail "Node 24 is required; install the locked dsh-host dependencies first"
+NODE_VERSION="$("$NODE" -p 'process.versions.node')"
+[[ "$NODE_VERSION" = 24.* ]] || fail "Node 24 is required (found $NODE_VERSION); set TSAD_TUI_NODE to its binary"
+command -v npm >/dev/null || fail "npm is required to prepare the TUI"
+WORK="$(mktemp -d "$CACHE/build-XXXXXXXX")"
+trap 'rm -rf -- "$WORK"' EXIT
+mkdir -p "$WORK/source"
+if [ "$(uname -s)" = Darwin ]; then
+    python3 -c 'import shutil, sys
+shutil.copytree(sys.argv[1], sys.argv[2], dirs_exist_ok=True, symlinks=True,
+                ignore=shutil.ignore_patterns("node_modules", "dist", ".git", "test"))' "$PROJECT" "$WORK/source"
+else
+    (
+        cd "$PROJECT"
+        find . -type d \( -name node_modules -o -name dist -o -name .git -o -name test \) -prune -o -type f -print0 |
+            tar --null -T - -cf -
+    ) | tar -xf - -C "$WORK/source"
+fi
+[ "$(source_hash "$WORK/source")" = "$SOURCE_HASH" ] || fail "TUI sources changed while copying; retry preparation"
+cp -- "$NODE" "$WORK/node"
+chmod 700 "$WORK/node"
+export PATH="$WORK:$PATH"
+(
+    cd "$WORK/source"
+    npm ci --cache "$CACHE/npm-cache" --no-audit --no-fund
+    npm run build
+)
+[ -f "$WORK/source/dist/tui.mjs" ] || fail "TUI build did not produce dist/tui.mjs"
+mv "$WORK/source/dist" "$WORK/dist"
+# Only the standalone runtime and its build assets survive preparation.
+rm -rf -- "$WORK/source"
+printf '%s\n' "$SOURCE_HASH" > "$WORK/.ready"
+mkdir -p "$CACHE/builds"
+if [ -e "$ARTIFACT" ]; then rm -rf -- "$ARTIFACT"; fi
+mv "$WORK" "$ARTIFACT"
+trap - EXIT
+printf 'TUI ready: %s\n' "$ARTIFACT/dist/tui.mjs"

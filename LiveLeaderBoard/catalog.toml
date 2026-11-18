@@ -154,6 +154,18 @@ venue = "arXiv"
 year = 2022
 code_url = "https://github.com/xuhongzuo/deep-iForest"
 reproduced_by = "tsad-harness"
+
+[methods.CrossAD]
+name = "CrossAD"
+family = "深度学习"
+description = "CrossAD reconstructs finer time-series resolutions from coarser average-pooled resoluti..."
+color = "#a15e62"
+paper_title = "CrossAD: Time Series Anomaly Detection with Cross-scale Associations and Cross-window Modeling"
+paper_url = "https://arxiv.org/abs/2510.12489"
+venue = "arXiv"
+year = 2025
+code_url = "https://github.com/decisionintelligence/CrossAD"
+reproduced_by = "tsad-harness"
 [datasets]
 AIOPS = { task = "uts", domain = "运维监控" }
 NAB   = { task = "uts", domain = "流式监控" }

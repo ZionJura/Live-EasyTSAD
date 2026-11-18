@@ -1,5 +1,4 @@
-PHASE: {phase} — RESUME.
-
-Your previous turn was interrupted by an upstream model/API error (not by anything
-you did). Check the current state of your files (they are as you left them), then
-continue the {phase} phase from where you stopped and finish it. End with a short summary.
+Continue integrating `{method}` from the current files in `{method_dir}/`.
+Use the supplied source and execution errors to finish the remaining work.
+Resolve environment and runtime issues, then finish your turn so the main
+process can run full evaluation automatically. Do not run training or smoke runs.

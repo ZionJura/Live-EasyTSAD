@@ -1,0 +1,101 @@
+# CANDI — Curated test-time AdaNomaly Detection / "Curated test-time adaptation for
+# multivariate time-series anomaly detection under distribution shift"
+# (AAAI 2026, vol. 40, no. 17, pp. 15018-15026; arXiv 2604.01845;
+#  code: https://github.com/kimanki/CANDI @ 28c9679e503832f59e351208cde63657fcb51cad)
+#
+# Values below are the *effective* defaults of the official implementation:
+#   upstream/config.py          (yacs CfgNode defaults)
+#   upstream/utils/parser.py    (per-dataset overrides)
+#   upstream/scripts/SWaT/SWaT_alpha_5.0.sh (paper-protocol overrides)
+#   upstream/results/SWaT/MLP/5.0/config.txt (fully resolved SWaT alpha=5.0 run)
+#
+# SWaT is the official default DATA.NAME (config.py:25) and the only fully resolved
+# config artifact in the repository, so its effective values are the Default block.
+# SMD sub-sets (SMD_1-7, SMD_1-8, SMD_2-1, SMD_2-4, SMD_3-2) change only
+#   n_vars 51 -> 38, downsample_rate 5 -> 1
+#   (utils/parser.py:45-58) plus the per-script TTA overrides tta_lr / tta_steps /
+#   gating_init / anomaly_ratio (see reproduction/hyperparameters.json).
+# Alpha is a reported *protocol* parameter, not a free hyperparameter: alpha in {0.5, 1.0, 5.0}.
+
+[Data_Params]
+# Official preprocessing: sklearn StandardScaler (zero mean / unit variance) fit on the
+# training split only, then applied to val/test (upstream/datasets/build.py, TSDataset).
+preprocess = "z-score"
+
+[Model_Params.Default]
+# ------------------------------------------------------------------ data / windows
+dataset = "SWaT"
+n_vars = 51
+window_size = 10
+train_stride = 1
+test_stride = 1
+train_ratio = 0.8
+downsample_rate = 5
+sampling_rates = 1.0
+
+# ------------------------------------------------------------------ frozen backbone
+model_name = "MLP"
+z_size = 128
+
+# ------------------------------------------------------------------ SANA (adapted part)
+sana_type = "TCN_iTrans"
+sana_d_model = 512
+sana_n_heads = 8
+sana_e_layers = 1
+sana_d_ff = 512
+sana_dropout = 0.0
+sana_activation = "gelu"
+sana_output_attention = true
+sana_tcn_num_layers = 1
+sana_tcn_kernel_size = 3
+sana_gating_activation = "tanh"
+
+# ------------------------------------------------------------------ pre-training
+epochs = 30
+batch_size = 256
+val_batch_size = 256
+test_batch_size = 256
+optimizer = "adam"
+lr = 0.0001
+weight_decay = 0.0001
+lr_policy = "cosine"
+cosine_end_lr = 0.0
+cosine_after_warmup = true
+warmup_epochs = 5
+warmup_start_lr = 0.0001
+start_epoch = 0
+eval_period = 5
+gradient_clip = true
+gradient_clip_norm = 0.5
+num_workers = 2
+pin_memory = true
+seed = 0
+num_gpus = 4
+visible_devices = 0
+wandb_enable = false
+
+# ------------------------------------------------------------------ test-time adaptation
+tta_enable = true
+tta_method = "CANDI"
+tta_optimizer = "sgd"
+tta_lr = 0.03
+tta_steps = 5
+tta_momentum = 0.9
+tta_nesterov = true
+tta_weight_decay = 0.0001
+tta_dampening = 0.0
+tta_gradient_clip = true
+tta_gradient_clip_norm = 0.5
+candi_use_fpm = true
+candi_use_sana = true
+candi_use_hard = true
+candi_use_moderate = true
+candi_gating_init = 0.5
+candi_min_samples = 16
+fpm_chi2_quantile = 0.05
+m2n2_gamma = 0.99999
+
+# ------------------------------------------------------------------ scoring / threshold
+score_direction = "higher_is_more_anomalous"
+threshold_type = "ratio"
+anomaly_ratio = 5.0

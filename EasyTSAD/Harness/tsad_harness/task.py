@@ -1,20 +1,23 @@
 """Task directory layout, phase state machine and the task journal.
 
-A task reproduces one paper as one EasyTSAD method. Everything the harness
-knows about it lives in `<tasks_dir>/<task_id>/`:
+A task reproduces one paper as one EasyTSAD method. Controller state lives in
+`<tasks_dir>/<task_id>/`; paper, source, environments and worker artifacts live
+under the method directory:
 
     task.toml           inputs (method name, paper ids, code url, env hint)
     state.json          current phase, phase history, counters, DSH session id
     journal.jsonl       append-only log of every harness action (for analysis)
-    paper/              paper.pdf, paper.md (text), meta.json
-    code/               official repository clone (read-only reference)
-    contract.json       reproduction contract written in EVIDENCE
-    notes.jsonl         deviations/assumptions recorded by the agent
+    paper/              compatibility symlink to method/paper
+    code/               temporary repository staging, moved to method/upstream
+    handoff.json        source location, environment, errors and user corrections
     corrections.jsonl   human corrections with context snapshots
-    dsh/                rendered DSH patch, per-run event streams, sessions/
-    runs/               smoke/eval specs and their outcomes
+    runs/               implementation snapshots, full evaluation specs and outcomes
     guard/              file-guard baseline
-    report.md           fidelity + results report
+
+    method/paper/       canonical paper.pdf, paper.md and meta.json
+    method/upstream/    official repository, preserved by scoped write tools
+    method/reproduction/ structured research, diagnostics, agents and run metadata
+    method/environment/ pyproject.toml, uv.lock and .venv
 """
 from __future__ import annotations
 
@@ -24,33 +27,42 @@ import fcntl
 import json
 import os
 import re
+import shutil
 import tempfile
 import tomllib
 from dataclasses import dataclass, field
 from enum import Enum
 from pathlib import Path
 
-from .config import HarnessError, load
+from .config import ROOT, HarnessError, load
 
 ID_RE = re.compile(r"^[A-Za-z][A-Za-z0-9_]{0,63}$")   # must be a valid EasyTSAD class name
 
 
 class Phase(str, Enum):
-    FETCH = "FETCH"            # deterministic: download paper + code
-    EVIDENCE = "EVIDENCE"      # agent: read paper/code -> reproduction contract
-    IMPLEMENT = "IMPLEMENT"    # agent: method folder + uv env + import check
-    SMOKE = "SMOKE"            # agent: run small pipeline case, repair until it passes
-    EVALUATE = "EVALUATE"      # deterministic: full `scripts/tsad exp`
-    REPORT = "REPORT"          # deterministic: catalog entry, export, report.md
+    FETCH = "FETCH"
+    RESEARCH = "RESEARCH"
+    IMPLEMENT = "IMPLEMENT"
+    EVALUATE = "EVALUATE"
+    DIAGNOSE = "DIAGNOSE"      # entered only for execution failures or abnormal output
+    REPORT = "REPORT"
     DONE = "DONE"
+    EVIDENCE = "EVIDENCE"      # legacy state migration only
+    SMOKE = "SMOKE"            # legacy state migration only
 
     @property
     def next(self) -> "Phase":
-        order = list(Phase)
+        if self is Phase.EVIDENCE:
+            return Phase.RESEARCH
+        if self is Phase.SMOKE:
+            return Phase.EVALUATE
+        if self is Phase.DIAGNOSE:
+            return Phase.IMPLEMENT
+        order = [Phase.FETCH, Phase.RESEARCH, Phase.IMPLEMENT, Phase.EVALUATE, Phase.REPORT, Phase.DONE]
         return order[min(order.index(self) + 1, len(order) - 1)]
 
 
-AGENT_PHASES = (Phase.EVIDENCE, Phase.IMPLEMENT, Phase.SMOKE)
+AGENT_PHASES = (Phase.FETCH, Phase.RESEARCH, Phase.IMPLEMENT, Phase.DIAGNOSE)
 
 
 class Status(str, Enum):
@@ -104,6 +116,14 @@ class Task:
             raise HarnessError(f"task {method} already exists at {d}")
         for sub in ("paper", "code", "dsh", "runs", "guard"):
             (d / sub).mkdir(parents=True, exist_ok=True)
+        paper = dict(paper)
+        if paper.get("pdf_path") and Path(paper["pdf_path"]).is_absolute():
+            source = Path(paper["pdf_path"])
+            if not source.resolve().is_relative_to(ROOT.resolve()):
+                staged = d / "paper/input.pdf"
+                shutil.copyfile(source, staged)
+                source = staged
+            paper["pdf_path"] = str(source.resolve().relative_to(ROOT.resolve()))
         spec = {"method": method, "created_at": now(), "paper": paper,
                 "code_url": code_url or "", "env_hint": env_hint or "",
                 "family": family or cfg["report"]["default_family"]}
@@ -167,6 +187,8 @@ class Task:
         self.state.update(extra)
         new = (self.state["phase"], self.state["status"])
         if new != old:
+            if "reason" not in extra:
+                self.state.pop("reason", None)
             self.state["history"].append({"at": now(), "phase": new[0], "status": new[1],
                                           **({"reason": extra["reason"]} if "reason" in extra else {})})
             self.log("state/change", old=list(old), new=list(new), **extra)

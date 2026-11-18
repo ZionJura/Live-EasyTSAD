@@ -1,0 +1,392 @@
+{
+  "method": "CANDI",
+  "environment_project": "EasyTSAD/Methods/CANDI/environment/pyproject.toml",
+  "project": {
+    "name": "tsad-env-candi",
+    "version": "0.0.0",
+    "requires-python": "==3.11.*",
+    "python": "3.11",
+    "package": false,
+    "link-mode": "copy",
+    "cache-dir": "/tmp/easytsad-uv-cache-candi",
+    "dependencies": [
+      "easytsad",
+      "torch==2.3.0",
+      "numpy>=1.24.3,<2.0",
+      "pandas>=2.0.3",
+      "scikit-learn>=1.3.2",
+      "scipy",
+      "matplotlib>=3.7.5",
+      "tqdm",
+      "einops",
+      "wandb",
+      "yacs",
+      "reformer-pytorch",
+      "toml>=0.10.2"
+    ],
+    "sources": {
+      "easytsad": {
+        "path": "../../../..",
+        "editable": true,
+        "resolved_from": "EasyTSAD/Methods/CANDI/environment/",
+        "resolves_to": "pyproject.toml"
+      }
+    },
+    "indexes": []
+  },
+  "upstream": {
+    "repository_url": "https://github.com/kimanki/CANDI",
+    "commit": "28c9679e503832f59e351208cde63657fcb51cad",
+    "branch": "main",
+    "upstream_dir": "EasyTSAD/Methods/CANDI/upstream",
+    "file_count": 350,
+    "official_requirement_files": [
+      {
+        "path": "EasyTSAD/Methods/CANDI/upstream/TSB-AD/requirements.txt",
+        "role": "primary",
+        "note": "Only pinned requirement file in the repository. Belongs to the vendored TSB-AD benchmark harness that CANDI's TTA code is copied from; the CANDI root itself ships no requirements.txt/environment.yml."
+      },
+      {
+        "path": "EasyTSAD/Methods/CANDI/upstream/TSB-AD/setup.py",
+        "role": "secondary",
+        "note": "install_requires at lines 24-41 mirrors requirements.txt except torch (>=1.8.0 instead of ==2.3.0); python_requires='>=3.8'; classifiers list 3.9/3.10/3.11."
+      }
+    ],
+    "no_other_packaging_files": "No *.yml, *.yaml, setup.cfg, environment.yaml, pyproject.toml or additional requirements*.txt exist anywhere under upstream/ (verified by recursive listing + filename search)."
+  },
+  "python_resolution": {
+    "chosen": "3.11",
+    "requires_python": "==3.11.*",
+    "rationale": [
+      "upstream/TSB-AD/setup.py:20-22 declares support for Python 3.9, 3.10 and 3.11; 3.11 is the newest officially supported interpreter.",
+      "pyproject.toml:15 (EasyTSAD core) requires-python '>=3.9', so 3.11 satisfies the harness.",
+      "envs/registry.toml:8 ([envs.torch2] python = \"3.11\") is the repository convention for CUDA/torch methods; envs/torch2/pyproject.toml:8 pins '==3.11.*'.",
+      "torch==2.3.0 publishes cp311 manylinux wheels (CUDA 12.1 build bundled), so the official pin resolves without a source build.",
+      "Python 3.12 is rejected: torch 2.3.0 has no cp312 wheels.",
+      "Confirmed empirically: the controller's `uv sync` resolved 87 packages against CPython 3.11.17 and prepared 41 wheels, so the pin is satisfiable."
+    ]
+  },
+  "dependency_evidence": [
+    {
+      "dependency": "torch==2.3.0",
+      "source": "EasyTSAD/Methods/CANDI/upstream/TSB-AD/requirements.txt:16",
+      "supporting": [
+        "EasyTSAD/Methods/CANDI/upstream/TSB-AD/setup.py:40 ('torch>=1.8.0' — the looser setup.py pin)",
+        "EasyTSAD/Methods/CANDI/upstream/trainer.py:7-10 (torch, torch.nn, torch.optim)",
+        "EasyTSAD/Methods/CANDI/upstream/main.py:1-5"
+      ],
+      "reason": "Exact official pin in requirements.txt; setup.py's '>=1.8.0' is the older, looser declaration. Keeping torch==2.3.0 reproduces the authors' environment."
+    },
+    {
+      "dependency": "numpy>=1.24.3,<2.0",
+      "source": "EasyTSAD/Methods/CANDI/upstream/TSB-AD/requirements.txt:5",
+      "supporting": [
+        "EasyTSAD/Methods/CANDI/upstream/trainer.py:6",
+        "EasyTSAD/Methods/CANDI/upstream/threshold.py:4",
+        "EasyTSAD/Methods/CANDI/upstream/utils/misc.py:6",
+        "EasyTSAD/Methods/CANDI/upstream/tta/candi/adapter_candi.py:3"
+      ],
+      "reason": "Official upper bound <2.0 is required: torch 2.3.0 was compiled against the NumPy 1.x C API and several vendored TSB-AD modules use removed NumPy 2 aliases."
+    },
+    {
+      "dependency": "pandas>=2.0.3",
+      "source": "EasyTSAD/Methods/CANDI/upstream/TSB-AD/requirements.txt:7",
+      "supporting": [
+        "EasyTSAD/Methods/CANDI/upstream/datasets/loader.py (pandas CSV/pickle loading)"
+      ]
+    },
+    {
+      "dependency": "scikit-learn>=1.3.2",
+      "source": "EasyTSAD/Methods/CANDI/upstream/TSB-AD/requirements.txt:12",
+      "supporting": [
+        "EasyTSAD/Methods/CANDI/upstream/datasets/util.py (StandardScaler / MinMaxScaler)",
+        "EasyTSAD/Methods/CANDI/upstream/threshold.py:5 (`import sklearn.metrics as metrics`)",
+        "EasyTSAD/Methods/CANDI/upstream/predictor.py (roc_auc_score, precision_recall_curve, auc)"
+      ],
+      "reason": "Lower bound raised above the EasyTSAD core floor (>=0.23) to match the official TSB-AD pin."
+    },
+    {
+      "dependency": "scipy",
+      "source": "EasyTSAD/Methods/CANDI/upstream/tta/candi/adapter_candi.py:12",
+      "supporting": [
+        "from scipy.stats import chi2 — used by the SANA gating/CUSUM statistic in the CANDI adapter",
+        "EasyTSAD/Evaluations/Protocols/VUS.py (EasyTSAD runtime dependency)"
+      ],
+      "reason": "Unpinned upstream, so the float-free latest compatible with NumPy <2 is used."
+    },
+    {
+      "dependency": "matplotlib>=3.7.5",
+      "source": "EasyTSAD/Methods/CANDI/upstream/TSB-AD/requirements.txt:6",
+      "supporting": [
+        "pyproject.toml:19 (EasyTSAD core matplotlib>=3.5)",
+        "EasyTSAD/Controller/TSADController.py:10 -> EasyTSAD/Plots/__init__.py:1 -> EasyTSAD/Plots/plot.py:3 (`from matplotlib import pyplot as plt`) — imported by the controller's own smoke test, so the package must be materialized even for methods that never plot"
+      ]
+    },
+    {
+      "dependency": "tqdm",
+      "source": "EasyTSAD/Methods/CANDI/upstream/TSB-AD/requirements.txt:1",
+      "supporting": [
+        "EasyTSAD/Methods/CANDI/upstream/trainer.py:11 (`from tqdm import tqdm`)",
+        "EasyTSAD/Methods/CANDI/upstream/predictor.py (tqdm loops)",
+        "pyproject.toml:20 (EasyTSAD core tqdm>=4.60)"
+      ]
+    },
+    {
+      "dependency": "einops",
+      "source": "EasyTSAD/Methods/CANDI/upstream/TSB-AD/requirements.txt:4",
+      "reason": "Transitive requirement of reformer-pytorch; declared explicitly to keep resolution deterministic."
+    },
+    {
+      "dependency": "wandb",
+      "source": "EasyTSAD/Methods/CANDI/upstream/trainer.py:9",
+      "supporting": [
+        "EasyTSAD/Methods/CANDI/upstream/utils/misc.py:7 (`import wandb`)",
+        "EasyTSAD/Methods/CANDI/upstream/utils/misc.py:46-54 (set_wandb)",
+        "EasyTSAD/Methods/CANDI/upstream/predictor.py:6"
+      ],
+      "reason": "Hard module-level import on every execution path (trainer, predictor, utils.misc). Not optional at import time. It is however never contacted at runtime because upstream/config.py defaults WANDB.ENABLE=False and WANDB.DIR is local, so no API key or network access is needed by the controller."
+    },
+    {
+      "dependency": "yacs",
+      "source": "EasyTSAD/Methods/CANDI/upstream/config.py:1",
+      "supporting": [
+        "from yacs.config import CfgNode as CN",
+        "EasyTSAD/Methods/CANDI/upstream/utils/parser.py:9 (`from config import get_cfg_defaults`)"
+      ],
+      "reason": "CANDI's whole configuration system is a yacs CfgNode tree; the adapter also drives it directly (`get_cfg_defaults()` + CfgNode overrides)."
+    },
+    {
+      "dependency": "reformer-pytorch",
+      "source": "EasyTSAD/Methods/CANDI/upstream/layers/SelfAttention_Family.py:6",
+      "supporting": [
+        "from reformer_pytorch import LSHSelfAttention",
+        "EasyTSAD/Methods/CANDI/upstream/layers/SelfAttention_Family.py:215-220 (class ReformerLayer instantiates LSHSelfAttention)"
+      ],
+      "reason": "Import-time hard dependency of layers/SelfAttention_Family.py, which is imported by upstream/tta/candi/adapter_candi.py:9 (via `from layers.SelfAttention_Family import FullAttention, AttentionLayer`). The ReformerLayer class itself is dead code for CANDI's SANA path (SANA.TYPE='TCN_iTrans' uses FullAttention), but the module-level import cannot be avoided without patching upstream, so the package must be installed."
+    },
+    {
+      "dependency": "toml>=0.10.2",
+      "source": "pyproject.toml:17",
+      "reason": "EasyTSAD core runtime dependency (config/leaderboard plumbing); inherited through the editable easytsad source."
+    }
+  ],
+  "excluded_upstream_requirements": {
+    "note": "upstream/TSB-AD/requirements.txt lists packages for the other 30+ TSB-AD detectors, none of which CANDI's root execution path imports. They are deliberately excluded to keep resolution fast and conflict-free; the CANDI adapter is self-contained under upstream/tta/candi + upstream/layers + upstream/models.",
+    "packages": {
+      "h5py": "upstream/TSB-AD/TSB_AD/models/*.py only (data loaders for TSB-AD datasets)",
+      "torchinfo": "upstream/TSB-AD/TSB_AD/models/Donut.py:8 only",
+      "arch>=5.3.1": "upstream/TSB-AD/TSB_AD/models/*.py (statistical detectors)",
+      "hurst>=0.0.5": "upstream/TSB-AD/TSB_AD/models/*.py",
+      "tslearn>=0.6.3": "upstream/TSB-AD/TSB_AD/models/*.py",
+      "stumpy>=1.12.0": "upstream/TSB-AD/TSB_AD/models/MatrixProfile.py only",
+      "networkx>=3.1": "upstream/TSB-AD/TSB_AD/models/Series2Graph* / utility graph code only",
+      "transformers>=4.38.0": "upstream/TSB-AD/TSB_AD/models/{OFA,MOMENT,TimesFM,Lag_Llama}.py only",
+      "cython>=3.0.10": "build-time only; no Cython extension is needed on the CANDI path"
+    },
+    "verification": "Recursive import scan over upstream/**/*.py outside TSB-AD/TSB_AD/models returned no reference to any excluded package; CANDI's own files import only torch, numpy, scipy, sklearn, pandas, yacs, wandb, tqdm, einops (transitively) and reformer_pytorch."
+  },
+  "compatibility_adjustments": [
+    {
+      "item": "uv cache must live outside the quota-limited repository `runtime/uv-cache` tree",
+      "issue": "The controller's `uv sync` aborted with `Failed to install: yacs-0.1.8-py3-none-any.whl` / `failed to hardlink file ... Disk quota exceeded (os error 122)` after `Resolved 87 packages` / `Prepared 41 packages`. Unpacking the ~3 GiB CUDA 12.1 wheel set into the repository-local uv cache exhausted the user disk quota (ENOSPC-class, not a package conflict).",
+      "resolution": "`[tool.uv] cache-dir = \"/tmp/easytsad-uv-cache-candi\"` in the environment project so uv extracts wheels onto scratch storage outside the repository quota, plus `[tool.uv] link-mode = \"copy\"` so materialisation never hardlinks from the cache. uv precedence is CLI > environment > project config, so a controller-provided UV_CACHE_DIR still overrides this. No package version changed.",
+      "evidence": [
+        "EasyTSAD/Harness/tasks/CANDI/journal.jsonl:39",
+        "EasyTSAD/Methods/CANDI/reproduction/diagnosis.json (diag_fd14000d00604dce)",
+        "EasyTSAD/Methods/CANDI/environment/uv.lock:561 (nvidia_cudnn_cu12-8.9.2.26, 731725872 bytes)",
+        "EasyTSAD/Methods/CANDI/environment/pyproject.toml ([tool.uv] cache-dir + link-mode)"
+      ],
+      "controller_action_required": true
+    },
+    {
+      "item": "uv link-mode must be `copy` (hardlink fails across filesystems / on quota)",
+      "issue": "uv defaults to hardlinking from its cache into the venv, which requires cache and .venv to share a filesystem and a writable link budget. Here the cache lives under runtime/uv-cache (normally redirected to /tmp per EasyTSAD/Harness/config.toml:35) while the .venv lives inside the repository, so the hardlink either crosses devices (EXDEV) or is charged against an exhausted quota. The failure was environmental, not a dependency conflict: resolution had already succeeded.",
+      "resolution": "`[tool.uv] link-mode = \"copy\"` so uv copies rather than hardlinks. No package version changed.",
+      "evidence": [
+        "EasyTSAD/Harness/tasks/CANDI/journal.jsonl:39",
+        "EasyTSAD/Harness/config.toml:35",
+        "EasyTSAD/Methods/CANDI/environment/pyproject.toml ([tool.uv] link-mode = \"copy\")"
+      ],
+      "controller_action_required": true
+    },
+    {
+      "item": "Truncated .venv must be rebuilt (delete .venv or `--reinstall`); comments/cache settings alone are not a repair",
+      "issue": "Two consecutive post-IMPLEMENT import smoke tests failed identically with `ModuleNotFoundError: No module named 'matplotlib'` (EasyTSAD/Harness/tasks/CANDI/journal.jsonl:66 under diag_01475130d96c49c7, then journal.jsonl:75 under diag_7e57c1d8c4e34c8b / `FAIL   CANDI`), raised from EasyTSAD/Controller/TSADController.py:10 -> EasyTSAD/Plots/__init__.py:1 -> EasyTSAD/Plots/plot.py:3, so no CANDI code ever runs. `matplotlib>=3.7.5` IS declared, yet site-packages contains only `matplotlib-3.11.2.dist-info/{LICENSE,METADATA,WHEEL,RECORD}` with no `matplotlib/` directory; `yacs/` likewise holds only config.py and tests.py with no `__init__.py` — the exact file the aborted sync failed to hardlink. The first repair changed only comments, so uv saw the dependency set as already satisfied and never re-materialised the missing files; that is why the second run inherited the same broken venv.",
+      "resolution": "Rebuild the environment rather than re-syncing it: `rm -rf EasyTSAD/Methods/CANDI/environment/.venv` (or `uv sync --project EasyTSAD/Methods/CANDI/environment --reinstall` if the venv must stay in place) to completion with UV_PROJECT_ENVIRONMENT pointed at the method-local .venv, the dedicated [tool.uv] cache-dir, `link-mode = \"copy\"` and `>= 6 GiB` free quota (or `uv cache clean` first); then assert `python -c 'import matplotlib, yacs, torch, scipy, sklearn, pandas'` and re-run `python -c 'import EasyTSAD.Controller'`. No dependency version, [tool.uv] setting or CANDI implementation file changed by this repair.",
+      "evidence": [
+        "EasyTSAD/Harness/tasks/CANDI/journal.jsonl:75 (diag_7e57c1d8c4e34c8b: ModuleNotFoundError: No module named 'matplotlib', FAIL   CANDI)",
+        "EasyTSAD/Harness/tasks/CANDI/journal.jsonl:66 (diag_01475130d96c49c7: same traceback)",
+        "EasyTSAD/Harness/tasks/CANDI/journal.jsonl:39 (aborted uv sync: yacs hardlink Disk quota exceeded, os error 122)",
+        "EasyTSAD/Methods/CANDI/environment/pyproject.toml (matplotlib>=3.7.5 declared; [tool.uv] cache-dir + link-mode; repair notes)",
+        "EasyTSAD/Methods/CANDI/environment/.venv/lib/python3.11/site-packages/yacs/config.py (truncated yacs package)"
+      ],
+      "controller_action_required": true
+    },
+    {
+      "item": "~3 GiB disk footprint (torch 2.3.0 + bundled CUDA 12.1 runtime)",
+      "issue": "The environment is large by necessity: torch 743 MiB, nvidia-cudnn-cu12 697 MiB, nvidia-cublas-cu12 392 MiB, nvidia-cusparse-cu12 187 MiB, nvidia-nccl-cu12 168 MiB, triton 160 MiB, nvidia-cusolver-cu12 118 MiB, nvidia-cufft-cu12 116 MiB, plus wandb 19 MiB. The CUDA stack cannot be dropped: upstream/trainer.py:309-315 calls `inputs.cuda()` unconditionally, so a CPU-only torch build would fail at the first batch.",
+      "resolution": "No dependency change. The controller must provision roughly 3 GiB for the .venv and 3 GiB for the uv cache (separate copies under link-mode=copy) — i.e. >= 6 GiB of free quota — and may run `uv cache clean` between methods to reclaim space. A CPU-only wheel is not an acceptable substitute.",
+      "evidence": [
+        "EasyTSAD/Harness/tasks/CANDI/journal.jsonl:39 (per-wheel download sizes)",
+        "EasyTSAD/Methods/CANDI/upstream/TSB-AD/requirements.txt:16",
+        "EasyTSAD/Methods/CANDI/upstream/trainer.py:309-315"
+      ],
+      "controller_action_required": true
+    },
+    {
+      "item": "reformer_pytorch import-time requirement",
+      "issue": "upstream/layers/SelfAttention_Family.py:6 imports reformer_pytorch unconditionally, so `import layers.SelfAttention_Family` fails without the package even though CANDI never instantiates ReformerLayer (SANA.TYPE='TCN_iTrans' → FullAttention).",
+      "resolution": "Install reformer-pytorch rather than patching upstream. It is a pure-Python package with a light dependency set (einops, torch), so it does not perturb the NumPy<2 / torch 2.3.0 resolution.",
+      "evidence": [
+        "EasyTSAD/Methods/CANDI/upstream/layers/SelfAttention_Family.py:6",
+        "EasyTSAD/Methods/CANDI/upstream/layers/SelfAttention_Family.py:215-220",
+        "EasyTSAD/Methods/CANDI/upstream/tta/candi/adapter_candi.py:9",
+        "EasyTSAD/Methods/CANDI/upstream/config.py (SANA.TYPE default 'TCN_iTrans')"
+      ]
+    },
+    {
+      "item": "torch pin: requirements.txt vs setup.py",
+      "issue": "requirements.txt pins torch==2.3.0 while setup.py:40 declares 'torch>=1.8.0'. A floating torch would break reproducibility and could pull a version whose torch.load default changed (weights_only=True from 2.6), which would break upstream/trainer.py:279 (`torch.load(model_path, map_location=\"cpu\")` on a checkpoint containing a yacs cfg dict).",
+      "resolution": "Pin torch==2.3.0 exactly. This also keeps torch.load's legacy default, matching the official code.",
+      "evidence": [
+        "EasyTSAD/Methods/CANDI/upstream/TSB-AD/requirements.txt:16",
+        "EasyTSAD/Methods/CANDI/upstream/TSB-AD/setup.py:40",
+        "EasyTSAD/Methods/CANDI/upstream/trainer.py:279"
+      ]
+    },
+    {
+      "item": "NumPy 2 exclusion",
+      "issue": "EasyTSAD core only demands numpy>=1.21, so an unpinned resolution would select NumPy 2.x.",
+      "resolution": "Keep the official 'numpy>=1.24.3,<2.0' range (requirements.txt:5). torch 2.3.0 predates NumPy 2 ABI support.",
+      "evidence": [
+        "EasyTSAD/Methods/CANDI/upstream/TSB-AD/requirements.txt:5",
+        "pyproject.toml:18"
+      ]
+    },
+    {
+      "item": "No custom PyTorch wheel index",
+      "issue": "envs/torch2/pyproject.toml:33-36 pins a download.pytorch.org/whl/cu124 index for torch 2.6. CANDI's official pin is torch 2.3.0, whose PyPI manylinux wheel already bundles CUDA 12.1.",
+      "resolution": "Do not add a download.pytorch.org index. Adding one for 2.3.0 would require cu121 (cu124 does not carry 2.3.0) and would mix index sources. The PyPI wheel is the same build the official requirements.txt installs, so device behaviour is unchanged; the controller must only ensure an NVIDIA driver >= 525 for the CUDA 12.1 runtime.",
+      "evidence": [
+        "EasyTSAD/Methods/CANDI/upstream/TSB-AD/requirements.txt:16",
+        "envs/torch2/pyproject.toml:30-36"
+      ],
+      "controller_action_required": true
+    },
+    {
+      "item": "GPU/CUDA is mandatory, not optional",
+      "issue": "upstream/trainer.py:309-315 (`prepare_inputs`) unconditionally returns `inputs.cuda()`, and upstream/utils/misc.py:18-20 seeds CUDA. There is no CPU fallback in the official code.",
+      "resolution": "Recorded as a hard hardware requirement. This is an execution-planning constraint, not a dependency change: no CPU-only package variant can satisfy it. EasyTSAD's source.json already declares compute_device='cuda'; the adapter resolves CUDA-or-CPU defensively without changing the algorithm.",
+      "evidence": [
+        "EasyTSAD/Methods/CANDI/upstream/trainer.py:309-315",
+        "EasyTSAD/Methods/CANDI/upstream/utils/misc.py:18-20",
+        "EasyTSAD/Methods/CANDI/reproduction/source.json (compatibility.compute_device = 'cuda')"
+      ],
+      "controller_action_required": true
+    },
+    {
+      "item": "wandb without network/login",
+      "issue": "wandb is imported at module scope in three files, which raises the question of whether the controller needs credentials or egress.",
+      "resolution": "No. WANDB.ENABLE defaults to False and set_wandb is only called when enabled; import alone performs no network I/O. No WANDB_API_KEY is required. If the controller's network policy still blocks wandb's import-time metadata check, set WANDB_MODE=offline.",
+      "evidence": [
+        "EasyTSAD/Methods/CANDI/upstream/utils/misc.py:7,46-54",
+        "EasyTSAD/Methods/CANDI/upstream/config.py (WANDB.ENABLE default False)"
+      ]
+    },
+    {
+      "item": "editable easytsad source path",
+      "issue": "The uv project lives at EasyTSAD/Methods/CANDI/environment/, four levels below the repository root that owns the EasyTSAD package pyproject.toml, unlike envs/* which is two levels down.",
+      "resolution": "[tool.uv.sources] uses `path = \"../../../..\"` with editable = true, plus `[tool.uv] package = false` so the environment project itself is not built as a distribution. This mirrors envs/torch2/pyproject.toml:25-29 with the corrected relative depth.",
+      "evidence": [
+        "EasyTSAD/Methods/CANDI/environment/pyproject.toml",
+        "pyproject.toml:8-30",
+        "envs/torch2/pyproject.toml:25-29"
+      ]
+    }
+  ],
+  "installation_attempts": [
+    {
+      "at": "2026-11-17T10:16:08+00:00",
+      "phase": "RESEARCH",
+      "status": "failed",
+      "interpreter": "CPython 3.11.17",
+      "venv": "EasyTSAD/Methods/CANDI/environment/.venv",
+      "resolution": "success",
+      "resolved_package_count": 87,
+      "prepared_wheels": 41,
+      "failed_package": "yacs==0.1.8",
+      "failure_class": "host filesystem / disk quota (os error 122), NOT dependency resolution",
+      "cause": "failed to hardlink file from .../environment/.venv/lib/python3.11/site-packages/yacs/__init__.py to .../runtime/uv-cache/archive-v0/sh-scRetmY3Bubn1/yacs/__init__.py: Disk quota exceeded",
+      "mitigation": "[tool.uv] cache-dir = \"/tmp/easytsad-uv-cache-candi\" + link-mode = \"copy\"; free >= 6 GiB quota; re-run uv sync",
+      "evidence": [
+        "EasyTSAD/Harness/tasks/CANDI/journal.jsonl:39",
+        "EasyTSAD/Harness/tasks/CANDI/journal.jsonl:40",
+        "EasyTSAD/Methods/CANDI/reproduction/diagnosis.json (diag_fd14000d00604dce)"
+      ]
+    },
+    {
+      "at": "2026-11-18T02:09:40+00:00",
+      "phase": "IMPLEMENT (post-implement verification)",
+      "status": "failed",
+      "interpreter": "CPython 3.11.17",
+      "venv": "EasyTSAD/Methods/CANDI/environment/.venv",
+      "verification_command": "python -c 'import EasyTSAD.Controller'",
+      "failure_class": "truncated virtual environment left behind by the aborted 2026-11-17T10:16:08 sync (IncompleteInstall), NOT a dependency or code defect",
+      "cause": "ModuleNotFoundError: No module named 'matplotlib' from EasyTSAD/Plots/plot.py:3. site-packages holds matplotlib-3.11.2.dist-info but no matplotlib/ package directory; yacs/ likewise holds only config.py and tests.py",
+      "diagnosis_id": "diag_01475130d96c49c7",
+      "mitigation": "documented `uv sync --reinstall` / `rm -rf .venv` in the environment pyproject header; no dependency state changed, so the venv was NOT repaired",
+      "evidence": [
+        "EasyTSAD/Harness/tasks/CANDI/journal.jsonl:66",
+        "EasyTSAD/Harness/tasks/CANDI/journal.jsonl:39",
+        "EasyTSAD/Methods/CANDI/reproduction/diagnosis.json (diag_01475130d96c49c7)"
+      ]
+    },
+    {
+      "at": "2026-11-18T02:33:36+00:00",
+      "phase": "IMPLEMENT (post-implement verification, retry)",
+      "status": "failed",
+      "interpreter": "CPython 3.11.17",
+      "venv": "EasyTSAD/Methods/CANDI/environment/.venv",
+      "verification_command": "python -c 'import EasyTSAD.Controller'",
+      "failure_class": "same truncated virtual environment, still unrepaired: the previous fix was comment-only, so uv considered the dependency set satisfied and left the missing package files absent",
+      "cause": "ModuleNotFoundError: No module named 'matplotlib' (journal.jsonl:75, `FAIL   CANDI`); matplotlib-3.11.2.dist-info present without matplotlib/; yacs/ without __init__.py",
+      "diagnosis_id": "diag_7e57c1d8c4e34c8b",
+      "mitigation": "REBUILD, do not re-sync: `rm -rf EasyTSAD/Methods/CANDI/environment/.venv` (or `uv sync --project EasyTSAD/Methods/CANDI/environment --reinstall`) with UV_PROJECT_ENVIRONMENT on the method-local .venv, [tool.uv] cache-dir + link-mode = \"copy\", >= 6 GiB free; then `python -c 'import matplotlib, yacs, torch, scipy, sklearn, pandas'` and re-run the EasyTSAD.Controller smoke test",
+      "evidence": [
+        "EasyTSAD/Harness/tasks/CANDI/journal.jsonl:75",
+        "EasyTSAD/Harness/tasks/CANDI/journal.jsonl:66",
+        "EasyTSAD/Harness/tasks/CANDI/journal.jsonl:39",
+        "EasyTSAD/Methods/CANDI/reproduction/diagnosis.json (diag_7e57c1d8c4e34c8b)",
+        "EasyTSAD/Methods/CANDI/environment/pyproject.toml (repair note for diag_7e57c1d8c4e34c8b)"
+      ]
+    }
+  ],
+  "runtime_imports_verified_from_source": [
+    "torch (upstream/trainer.py:7, upstream/main.py, upstream/models/**)",
+    "numpy (upstream/trainer.py:6, upstream/threshold.py:4, upstream/utils/misc.py:6, upstream/tta/candi/adapter_candi.py:3)",
+    "scipy (upstream/tta/candi/adapter_candi.py:12)",
+    "sklearn (upstream/threshold.py:5, upstream/datasets/util.py, upstream/predictor.py)",
+    "pandas (upstream/datasets/loader.py, upstream/datasets/util.py)",
+    "yacs (upstream/config.py:1)",
+    "wandb (upstream/trainer.py:9, upstream/utils/misc.py:7, upstream/predictor.py:6)",
+    "tqdm (upstream/trainer.py:11, upstream/predictor.py)",
+    "reformer_pytorch (upstream/layers/SelfAttention_Family.py:6)",
+    "einops (transitive via reformer-pytorch; also listed in upstream/TSB-AD/requirements.txt:4)",
+    "matplotlib (EasyTSAD core: EasyTSAD/Plots/plot.py:3, reached from EasyTSAD/Controller/TSADController.py:10)"
+  ],
+  "controller_responsibilities": [
+    "DELETE EasyTSAD/Methods/CANDI/environment/.venv (or pass `--reinstall`) before syncing: the current venv is truncated and uv treats the missing packages as already installed, so a plain `uv sync` is a no-op. This is the difference between the two failed attempts and the remaining unverified step.",
+    "Free >= 6 GiB of quota (or run `uv cache clean`) and re-run `uv sync --project EasyTSAD/Methods/CANDI/environment` with UV_PROJECT_ENVIRONMENT set to the method-local .venv and the declared [tool.uv] cache-dir / link-mode=copy, producing/refreshing environment/uv.lock.",
+    "Capture install command, exit code and log into the environment installation evidence.",
+    "Assert `python -c 'import matplotlib, yacs, torch, scipy, sklearn, pandas'` prints nothing, then re-run `python -c 'import EasyTSAD.Controller'`; only then is the environment considered usable.",
+    "Verify an NVIDIA driver >= 525 is present (torch 2.3.0 → CUDA 12.1 runtime) before any CANDI execution."
+  ],
+  "unresolved": [
+    "No uv installation has completed for this method. Attempt 1 (2026-11-17) failed on disk quota while linking yacs; attempts 2 (diag_01475130d96c49c7) and 3 (diag_7e57c1d8c4e34c8b) both failed the post-IMPLEMENT smoke test on the truncated venv left by attempt 1. environment/uv.lock exists (87 resolved packages) but no usable .venv has been produced, so installation must be treated as not-yet-done until the controller rebuilds the venv and re-verifies.",
+    "Attempt 2's repair was comment-only and therefore did not change the environment; that is the recorded reason attempt 3 failed identically. The fix is now explicit (delete .venv or --reinstall), but the rebuild itself remains a controller action.",
+    "The `cache-dir` repair relocates the uv cache to /tmp/easytsad-uv-cache-candi. If the controller's scratch filesystem is also quota-limited, it must override the cache directory (UV_CACHE_DIR or `uv sync --cache-dir <path>`) with a filesystem holding >= 4 GiB free; this is an execution-environment constraint that no method-local file can fully resolve.",
+    "Re-materialization is a controller action: this role may publish the environment spec but must not run `uv sync`, so the final state of .venv remains unverified here.",
+    "The official repository ships no CANDI-specific requirements file; the TSB-AD requirements.txt is the only pin source and its torch pin is used as the authoritative version. If the controller prefers a newer torch, torch.load in upstream/trainer.py:279 would need weights_only=False.",
+    "EasyTSAD/Methods/CANDI/reproduction/hyperparameters.json and reproduction/adapter.yaml belong to the other research branches and were intentionally not read or modified."
+  ]
+}

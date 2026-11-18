@@ -1,0 +1,83 @@
+# Environment: method_LatentFlow
+#
+# Dedicated UV project for the LatentFlow reproduction
+# (https://github.com/SunboTax/LatentFlow, commit
+# 3695f54317fcc1a3fdbfa0a7037d1cdf4369db27, MIT — see reproduction/source.json).
+#
+# Python 3.11: upstream ships no interpreter pin (upstream/README.md only says
+# "pip install -r requirements.txt"), so the repository convention is used:
+# envs/registry.toml [envs.torch2] python = "3.11". Every official pin in
+# upstream/requirements.txt that this method actually needs (torch 2.2.0,
+# numpy 1.26.4, pandas 2.2.3, scipy 1.13.1, scikit-learn 1.5.1) publishes
+# cp311 wheels, so 3.11 needs no source builds.
+#
+# Dependency evidence — the whole LatentFlow import surface is
+#   upstream/main.py, exp/exp.py, models/LatentFlow.py, layers/RevIN.py,
+#   data/{dataset,preprocess}.py, utils/{seed,tools,earlystop,spot,vus_evaluate}.py
+# and each third-party import maps to a line of upstream/requirements.txt:
+#   torch            -> requirements.txt:198 torch==2.2.0
+#                       (models/LatentFlow.py:1, layers/RevIN.py:1, exp/exp.py:7-9)
+#   numpy            -> requirements.txt:109 numpy==1.26.4
+#                       (exp/exp.py:6, data/preprocess.py:1, utils/spot.py:5)
+#   pandas           -> requirements.txt:117 pandas==2.2.3
+#                       (data/preprocess.py:2 rolling median, utils/spot.py:6)
+#   scikit-learn     -> requirements.txt:171 scikit-learn==1.5.1
+#                       (data/preprocess.py:3 StandardScaler)
+#   scipy            -> requirements.txt:172 scipy==1.13.1
+#                       (utils/spot.py:7 scipy.optimize.minimize — SPOT threshold)
+#   matplotlib       -> requirements.txt:92 matplotlib==3.9.2
+#                       (utils/spot.py:4; EasyTSAD plotting also needs it)
+#   tqdm             -> requirements.txt:206 tqdm==4.66.5
+#                       (exp/exp.py:10, utils/spot.py:8)
+#   vus              -> requirements.txt:218 vus==0.0.6
+#                       (utils/vus_evaluate.py:6-8 — official Affiliation_F1 /
+#                        VUS_ROC / VUS_PR evaluation backend)
+#   toml             -> EasyTSAD core dependency (root pyproject.toml:17; imported
+#                       by Controller/PathManager.py and TrainingSchema/BaseSchema.py)
+#
+# Compatibility adjustment (recorded in reproduction/environment.json):
+#   torch is pinned to the repository's CUDA 12.4 wheel index instead of the
+#   published torch==2.2.0+cu121 pin (requirements.txt:198, triton==2.2.0 at
+#   line 209), so the environment reuses the same CUDA runtime as
+#   envs/torch2/pyproject.toml:12-13,30-36. Every torch API LatentFlow uses
+#   (nn.GRUCell, nn.Conv1d, torch.topk, torch.scatter, Tensor.unfold, bmm,
+#   masked_fill_, torch.load(map_location=...)) is stable across 2.2 -> 2.6, and
+#   exp/exp.py:97-106 already falls back to CPU when CUDA is unavailable.
+#
+# Deliberate omissions — present in upstream/requirements.txt but imported by no
+# LatentFlow module (each is recorded in reproduction/environment.json):
+#   dgl==2.3.0+cu121 (line 35), torch-geometric==2.6.1 (line 200),
+#   torch-dct==0.1.6 (line 199), einops==0.8.0 (line 38),
+#   torchvision==0.17.0 (line 204), torchaudio==2.2.0 (line 201), and the rest of
+#   the 225-line environment dump (tensorflow, ray, wandb, clearml, dash,
+#   sktime, tsfresh, tslearn, ...), which belong to the authors' broader
+#   benchmark workspace. The method code path needs none of them.
+
+[project]
+name = "tsad-env-latentflow"
+version = "0.0.0"
+requires-python = "==3.11.*"
+dependencies = [
+    "easytsad",
+    "torch==2.6.0",            # upstream/requirements.txt:198 (torch==2.2.0) — see compatibility adjustment
+    "numpy>=1.26,<2",          # upstream/requirements.txt:109 (numpy==1.26.4); NumPy 2 is not supported upstream
+    "pandas>=2.2",             # upstream/requirements.txt:117 (pandas==2.2.3)
+    "scikit-learn>=1.5",       # upstream/requirements.txt:171 (scikit-learn==1.5.1)
+    "scipy>=1.13",             # upstream/requirements.txt:172 (scipy==1.13.1)
+    "matplotlib>=3.9",         # upstream/requirements.txt:92 (matplotlib==3.9.2)
+    "tqdm>=4.66",              # upstream/requirements.txt:206 (tqdm==4.66.5)
+    "vus==0.0.6",              # upstream/requirements.txt:218 — official evaluation metrics
+    "toml>=0.10.2",            # EasyTSAD core (root pyproject.toml:17)
+]
+
+[tool.uv]
+package = false
+
+[tool.uv.sources]
+easytsad = { path = "../../../..", editable = true }
+torch = { index = "pytorch-cu124" }
+
+[[tool.uv.index]]
+name = "pytorch-cu124"
+url = "https://download.pytorch.org/whl/cu124"
+explicit = true

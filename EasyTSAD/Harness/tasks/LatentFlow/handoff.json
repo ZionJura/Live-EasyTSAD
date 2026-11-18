@@ -1,0 +1,31 @@
+{
+  "source": "EasyTSAD/Methods/LatentFlow/upstream",
+  "artifacts": {
+    "source": "EasyTSAD/Methods/LatentFlow/reproduction/source.json",
+    "hyperparameters": "EasyTSAD/Methods/LatentFlow/reproduction/hyperparameters.json",
+    "interface": "EasyTSAD/Methods/LatentFlow/reproduction/adapter.yaml",
+    "environment": "EasyTSAD/Methods/LatentFlow/environment/pyproject.toml",
+    "environment_evidence": "EasyTSAD/Methods/LatentFlow/reproduction/environment.json",
+    "diagnosis": "EasyTSAD/Methods/LatentFlow/reproduction/diagnosis.json"
+  },
+  "environment": "EasyTSAD/Methods/LatentFlow/environment",
+  "environment_name": "method_LatentFlow",
+  "legacy_integration": false,
+  "human_corrections": [
+    {
+      "id": "diag_73320fd0aaeb442f",
+      "at": "2026-11-17T08:22:21+00:00",
+      "note": "Harness treated optional ACM PDF HTTP403 as a model failure. Controller now records an unavailable paper PDF and continues from the identified official repository; reuse existing source.json and resume FETCH, without another algorithm diagnosis. Model provider account-capacity errors now wait automatically, independent from download retries.",
+      "target_phase": "IMPLEMENT",
+      "author": "user"
+    },
+    {
+      "id": "diag_5c78ea9b581f4493",
+      "at": "2026-11-17T11:24:37+00:00",
+      "note": "Resume dependency installation after verified home inode quota exhaustion (EDQUOT extracting tensorflow via vus), not algorithm incompatibility. The package cache was copied successfully to local /tmp, legacy runtime/uv-cache now links there, and storage retry handling has been loaded. Reuse completed research artifacts and official implementation; continue the full applicable reproduction and evaluation.",
+      "target_phase": "IMPLEMENT",
+      "author": "user"
+    }
+  ],
+  "errors": []
+}

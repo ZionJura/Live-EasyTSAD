@@ -1,0 +1,58 @@
+{
+  "method": "HYDRA",
+  "repository_url": "https://github.com/TheDatumOrg/HYDRA",
+  "supported": true,
+  "commit": "5f76abee37833eed0365c2da69f1afc2d22ef0ab",
+  "branch": "main",
+  "evidence": [
+    "https://raw.githubusercontent.com/TheDatumOrg/HYDRA/main/README.md — README title reads 'HYDRA: A Multi-Level Hierarchy-Driven Approach for Robust Anomaly Detection in Time Series' and its abstract paragraph is verbatim identical to the paper abstract (multi-level hierarchical unsupervised detector, ANN + graph-based representative selection, multi-resolution scoring, hierarchical ensemble), matching the paper title exactly.",
+    "https://raw.githubusercontent.com/TheDatumOrg/HYDRA/main/README.md — README 'Citation' section gives the BibTeX '@article{Huang2026HYDRA, author = {Huang, Mingyi and Liu, Qinghua and Boniol, Paul and Paparrizos, John}, journal = {Proceedings of the ACM on Management of Data}, volume = {4}, number = {3}, year = {2026}, articleno = {197}, pages = {1--30}, doi = {10.1145/3802074}}', and the paper link https://dl.acm.org/doi/10.1145/3802074; author list matches the paper exactly, so the repository is the authors' own implementation.",
+    "https://api.crossref.org/works/10.1145/3802074 — Crossref metadata for DOI 10.1145/3802074 confirms title 'HYDRA: A Multi-Level Hierarchy-Driven Approach for Robust Anomaly Detection in Time Series', authors Mingyi Huang, Qinghua Liu, Paul Boniol, John Paparrizos, journal 'Proceedings of the ACM on Management of Data', vol. 4, issue 3, pp. 1-30, published 2026-05-18, ISSN 2836-6573.",
+    "https://api.semanticscholar.org/graph/v1/paper/DOI:10.1145/3802074 — Semantic Scholar record (CorpusId 288500110, DBLP journals/pacmmod/HuangLBP26) returns the same title/authors and the abstract ending 'We open-source our code at https://github.com/thedatumorg/HYDRA to facilitate reproducibility.', i.e. the paper itself designates this repository as the official source.",
+    "https://api.unpaywall.org/v2/10.1145/3802074 — Unpaywall reports the article is open access (CC-BY, hybrid) with an open repository copy at https://inria.hal.science/hal-05650530v1/document, which is the PDF URL used by the controller; the ACM DL PDF endpoint (https://dl.acm.org/doi/pdf/10.1145/3802074) is not directly fetchable from this worker.",
+    "https://github.com/TheDatumOrg/HYDRA/commits/main.atom — commit history shows the repository was created by 'qhliu26' (initial commit f1364f7, 2026-03-13) with subsequent commits by 'hmy02'; the latest commit on main is 5f76abee37833eed0365c2da69f1afc2d22ef0ab ('fix HYDRA_approx', 2026-10-30), selected as the source revision.",
+    "https://raw.githubusercontent.com/TheDatumOrg/HYDRA/main/HYDRA/models/HYDRA_approx.py — implements class HYDRA ('HiAD: Hierarchical Anomaly Detection with window-based compression (with ANN)') with tree_compress_collect_levels (hierarchical nearest-neighbor compression), compress_and_score_multi (per-level window/timepoint scores) and ensemble_maxpool_windows (z-normalized max-pooled level-wise ensemble), i.e. exactly the paper's three components.",
+    "https://raw.githubusercontent.com/TheDatumOrg/HYDRA/main/HYDRA/main.py — official entrypoint 'python -m HYDRA.main' runs run_HYDRA(data, 64) -> loader.HYDRA(winsize, mode='approx'), calls compress_and_score_multi and ensemble_maxpool_windows, then MinMax-scales the score and evaluates with TSB_AD.evaluation.metrics.get_metrics against the dataset 'Label' column (TSB-AD benchmark), confirming point-wise time-series anomaly detection with anomaly scores."
+  ],
+  "paper": {
+    "title": "HYDRA: A Multi-Level Hierarchy-Driven Approach for Robust Anomaly Detection in Time Series",
+    "url": "https://dl.acm.org/doi/10.1145/3802074",
+    "pdf_url": "https://inria.hal.science/hal-05650530v1/document",
+    "arxiv_id": "",
+    "authors": [
+      "Mingyi Huang",
+      "Qinghua Liu",
+      "Paul Boniol",
+      "John Paparrizos"
+    ],
+    "year": "2026",
+    "venue": "Proceedings of the ACM on Management of Data (PACMMOD), vol. 4, no. 3, article 197, pp. 1-30",
+    "doi": "10.1145/3802074",
+    "abstract": "Time-series anomaly detection is critical across various domains. Despite advances in neural networks and foundation models, recent studies show that traditional data mining methods remain highly competitive due to their effectiveness and scalability. However, these approaches suffer from distinct limitations: discord-based methods fail in the presence of repeated anomalies, whereas clustering-based techniques, though mitigating this issue, struggle to capture fine-grained deviations. Moreover, both approaches rely on distance computation, whose effectiveness fundamentally depends on data normalization, with z-score serving as the de facto standard. However, we observe that while normalization reduces scale bias and can enhance anomaly detectability, it may also suppress amplitude-driven anomalies, making the choice of an appropriate normalization scheme both critical and non-trivial. To address these challenges, we propose HYDRA, a multi-level hierarchical and unsupervised approach that integrates the strengths of distance-based methods while reducing reliance on explicit normalization. HYDRA (i) employs a lightweight approximate nearest-neighbor detector with graph-based selection to identify representative subsequences; (ii) constructs multi-resolution representations of the time series and aggregates anomaly evidence from fine to coarse scales; and (iii) introduces a hierarchical ensemble mechanism that fuses level-wise scores to improve robustness against contamination and scale imbalance. This design allows HYDRA to detect diverse anomaly types, from short, isolated discords to long, persistent deviations, allowing it to detect patterns overlooked by single-scale methods. Extensive evaluation on 40 univariate and multivariate time-series anomaly detection datasets from the TSB-AD benchmark demonstrates that HYDRA achieves state-of-the-art performance, ranking first among 40 competing algorithms, while maintaining scalability to ultra-long sequences."
+  },
+  "compatibility": {
+    "task_type": "time_series_anomaly_detection",
+    "supported": true,
+    "dataset_types": [
+      "UTS",
+      "MTS"
+    ],
+    "schemas": [
+      "naive"
+    ],
+    "reason": "HYDRA is an unsupervised, training-free subsequence-based anomaly detector: it scores every sliding window by hierarchical nearest-neighbor compression and fuses level-wise scores into a point-wise anomaly score, evaluated on the TSB-AD benchmark (AUROC/AUPRC-style metrics via TSB_AD.evaluation.metrics.get_metrics). Both univariate and multivariate inputs are supported: HYDRA_approx.compress_and_score_multi accepts a 1-D array (reshaped to a single channel) or a 2-D array (each channel z-scored column-wise before windowing), and HYDRA/main.py branches on data.shape[1] == 1 for window selection. Because there is no learned/trainable parameter set, the only applicable training schema is 'naive' (fit-free scoring of the test series); there is no pretrained checkpoint so zero-shot / zero-shot-cross-dataset schemas do not apply, and no joint multi-dataset 'all_in_one' training exists in the official code.",
+    "compute_device": "cpu",
+    "compute_device_evidence": "The enabled algorithm (mode='approx', used by HYDRA/main.py::run_HYDRA) is implemented in HYDRA/models/HYDRA_approx.py and HYDRA/models/HNSW_index.py using only numpy, hnswlib (optional) or sklearn.neighbors.NearestNeighbors — no torch tensors or .cuda() calls anywhere in the model path. HYDRA/models/HYDRA_exact.py likewise uses only numpy/sklearn. HYDRA/main.py imports torch solely to seed RNGs (torch.manual_seed / torch.cuda.manual_seed / torch.cuda.manual_seed_all) and prints torch.cuda.is_available(); these calls are no-ops on a CPU-only machine and no computation is dispatched to the GPU, so the reproduction runs on CPU. Uncertainty: hnswlib is listed in requirements.txt but is optional (HNSW_index.py falls back to sklearn), so a CPU-only install is sufficient.",
+    "interface_notes": "Official output is a 1-D point-wise anomaly score array aligned to the input series: ensemble_maxpool_windows returns ts_score_final produced by reverse_windowing_min, which maps window scores back to length-T timepoint scores (averaging over overlapping windows). Higher score = more anomalous. HYDRA/main.py additionally MinMax-scales the score to [0,1] and derives a binary prediction via mean+3*std threshold, but only the continuous score is needed by EasyTSAD."
+  },
+  "uncertainty": [
+    "No arXiv identifier was found for this paper (arXiv title/author searches by 'HYDRA multi-level hierarchy-driven anomaly detection', 'Multi-Level Hierarchy-Driven' and the author listing returned no matching record); the paper is published directly in PACMMOD 2026 with DOI 10.1145/3802074, so arxiv_id is left empty.",
+    "The ACM DL PDF endpoint (https://dl.acm.org/doi/pdf/10.1145/3802074) could not be fetched from this worker (HTTP error), so the open-access HAL mirror https://inria.hal.science/hal-05650530v1/document is recorded as pdf_url. Unpaywall reports that HAL copy as the 'submittedVersion' while the ACM version is the published CC-BY version; content should be equivalent but the controller should verify the downloaded PDF begins with %PDF and matches the title.",
+    "The repository README still contains a literal 'git clone #place holder' placeholder and the installation also requires the external TSB-AD benchmark repository (imported as TSB_AD.* in HYDRA/main.py); the HYDRA-specific algorithm code under HYDRA/models is self-contained, but the official main.py benchmark entrypoint cannot run without TSB-AD being present.",
+    "HNNSW backend is optional: HYDRA/models/HNSW_index.py tries hnswlib, then sklearn NearestNeighbors, and raises only if neither is installed. The environment research branch should pin scikit-learn (and optionally hnswlib) accordingly; results may differ slightly between the two ANN backends."
+  ],
+  "notes": "Official repository verified from the paper's own open-source statement (Semantic Scholar abstract), the authors' BibTeX in the repository README, and Crossref metadata for DOI 10.1145/3802074. The controller may clone https://github.com/TheDatumOrg/HYDRA at commit 5f76abee37833eed0365c2da69f1afc2d22ef0ab (main) and download the paper PDF from https://inria.hal.science/hal-05650530v1/document. No cloning, dependency installation or training was performed by this worker.",
+  "at": "2026-11-17T08:10:57+00:00",
+  "upstream": "EasyTSAD/Methods/HYDRA/upstream",
+  "file_count": 119
+}

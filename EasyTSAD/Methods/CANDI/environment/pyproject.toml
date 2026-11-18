@@ -1,0 +1,147 @@
+# Environment: method_CANDI
+#
+# Dedicated UV project for the CANDI reproduction (kimanki/CANDI, commit
+# 28c9679e503832f59e351208cde63657fcb51cad). CANDI is a test-time
+# adaptation wrapper: a fixed pretrained detector backbone (MLP or TimesNet)
+# plus a SANA "TCN_iTrans" gated residual adapter trained on the test stream
+# with a false-positive-mining (FPM) objective.
+#
+# Python 3.11:
+#   - upstream/TSB-AD/setup.py:20-22 declares classifiers 3.9 / 3.10 / 3.11
+#     (the vendored TSB-AD benchmark CANDI is built on top of).
+#   - EasyTSAD root pyproject.toml:15 `requires-python = ">=3.9"`.
+#   - Repository convention for CUDA/torch methods is 3.11
+#     (envs/registry.toml:8 [envs.torch2] python = "3.11").
+#   - torch==2.3.0 ships cp311 manylinux wheels.
+#
+# CANDI root has no requirements file of its own; the only official pin file in
+# the repository is upstream/TSB-AD/requirements.txt (mirrored by
+# upstream/TSB-AD/setup.py:24-41 install_requires). The root CANDI execution
+# path (upstream/main.py -> upstream/trainer.py -> upstream/predictor.py ->
+# upstream/tta/candi/adapter_candi.py -> upstream/models/**) needs the subset
+# below; the rest of requirements.txt belongs to the other TSB-AD detectors and
+# is deliberately omitted (see reproduction/environment.json).
+#
+# Dependency evidence (repository-relative):
+#   torch==2.3.0                  -> upstream/TSB-AD/requirements.txt:16
+#                                    (upstream/TSB-AD/setup.py:40 only says
+#                                    torch>=1.8.0; the pin is the reproducible one)
+#   numpy>=1.24.3,<2.0            -> upstream/TSB-AD/requirements.txt:5
+#   pandas>=2.0.3                 -> upstream/TSB-AD/requirements.txt:7
+#   scikit-learn>=1.3.2           -> upstream/TSB-AD/requirements.txt:12
+#   matplotlib>=3.7.5             -> upstream/TSB-AD/requirements.txt:6
+#   tqdm                          -> upstream/TSB-AD/requirements.txt:1
+#   einops                        -> upstream/TSB-AD/requirements.txt:4
+#   scipy                         -> upstream/tta/candi/adapter_candi.py:12
+#                                    (`from scipy.stats import chi2`) and
+#                                    EasyTSAD/Evaluations/Protocols/VUS.py:6
+#   wandb                         -> upstream/trainer.py:9, upstream/predictor.py:6,
+#                                    upstream/utils/misc.py:7 (hard import;
+#                                    WANDB.ENABLE defaults to False in
+#                                    upstream/config.py, so no login/network)
+#   yacs                          -> upstream/config.py:1 (`from yacs.config import CfgNode`)
+#   reformer-pytorch              -> upstream/layers/SelfAttention_Family.py:6
+#                                    (`from reformer_pytorch import LSHSelfAttention`,
+#                                    module-import-time hard dependency)
+#   toml>=0.10.2                  -> EasyTSAD root pyproject.toml:17
+#                                    (Controller/PathManager.py, TrainingSchema/BaseSchema.py)
+#
+# No extra package index is configured: torch==2.3.0 resolves from PyPI to the
+# CUDA 12.1 bundled manylinux wheel, which is the same build the official
+# requirements.txt installs. Pinning a download.pytorch.org index is avoided on
+# purpose (see reproduction/environment.json "compatibility_adjustments").
+#
+# Disk footprint: this environment is ~3.0 GiB on disk, driven entirely by
+# torch==2.3.0 and its bundled CUDA 12.1 runtime (torch 743 MiB,
+# nvidia-cudnn-cu12 697 MiB, nvidia-cublas-cu12 392 MiB, nvidia-cusparse-cu12
+# 187 MiB, nvidia-nccl-cu12 168 MiB, triton 160 MiB, ...). The CUDA stack is
+# NOT optional: upstream/trainer.py:309-315 calls `inputs.cuda()`
+# unconditionally. The controller must therefore provision >= 4 GiB of free
+# quota for the uv cache plus the .venv before running `uv sync`.
+#
+# Repair note (diag_fd14000d00604dce): the first `uv sync` resolved all 87
+# packages and then aborted while linking yacs with
+# "Disk quota exceeded (os error 122)" against
+# `<repo>/runtime/uv-cache/archive-v0/...`. The uv cache must therefore not
+# live under the repository's quota-limited `runtime/` tree, and the venv link
+# step must not hardlink. Both are addressed below in [tool.uv]; no package
+# version was changed.
+#
+# Repair note (diag_01475130d96c49c7): the aborted sync above left
+# `EasyTSAD/Methods/CANDI/environment/.venv` only partially materialized, which
+# fails the post-IMPLEMENT import smoke test
+# (`python -c 'import EasyTSAD.Controller'`) with
+# `ModuleNotFoundError: No module named 'matplotlib'` raised from the EasyTSAD
+# core import chain (EasyTSAD/Controller/TSADController.py:10 ->
+# EasyTSAD/Plots/__init__.py:1 -> EasyTSAD/Plots/plot.py:3). matplotlib IS
+# declared in [project].dependencies below, so this is a truncation defect, not
+# a missing dependency: site-packages holds `matplotlib-3.11.2.dist-info` but no
+# importable `matplotlib/` package directory, and the same truncation is
+# visible for yacs (`site-packages/yacs/` contains only config.py and
+# tests.py, no `__init__.py`). The cache-dir / link-mode settings below only
+# prevent the quota failure; they cannot repair a partially written .venv, and
+# uv treats a present `.dist-info` as "installed", so a plain `uv sync` is a
+# no-op for the missing files.
+#
+# Repair note (diag_7e57c1d8c4e34c8b): the smoke test failed again
+# (EasyTSAD/Harness/tasks/CANDI/journal.jsonl:75, `FAIL   CANDI`) with the same
+# `ModuleNotFoundError: No module named 'matplotlib'`, because the previous
+# mitigation did not change any dependency state, so uv had no reason to touch
+# the existing (truncated) environment and the broken venv was inherited by the
+# next run. The environment therefore has to be *rebuilt*, not merely re-synced:
+#   1. `rm -rf EasyTSAD/Methods/CANDI/environment/.venv`
+#      (deleting the partial venv is what forces re-materialisation; `uv sync`
+#      alone will keep treating the truncated packages as installed), OR
+#      `uv sync --project EasyTSAD/Methods/CANDI/environment --reinstall`
+#      if the venv must be kept in place.
+#   2. Re-sync to completion with UV_PROJECT_ENVIRONMENT pointed at
+#      `EasyTSAD/Methods/CANDI/environment/.venv`, the dedicated `[tool.uv]`
+#      cache-dir below on scratch storage (override with UV_CACHE_DIR /
+#      `--cache-dir` if /tmp is also constrained),
+#      `link-mode = "copy"`, and >= 6 GiB free quota (or `uv cache clean`
+#      first), so the full 87-package set lands on disk.
+#   3. Verify the packages the EasyTSAD import chain and CANDI need:
+#      `python -c 'import matplotlib, yacs, torch, scipy, sklearn, pandas'`
+#      — this must print nothing rather than raise.
+#   4. Re-run the `python -c 'import EasyTSAD.Controller'` smoke test.
+# No dependency version, no [tool.uv] setting and no CANDI implementation file
+# was changed by this repair.
+
+[project]
+name = "tsad-env-candi"
+version = "0.0.0"
+requires-python = "==3.11.*"
+dependencies = [
+    "easytsad",
+    "torch==2.3.0",             # upstream/TSB-AD/requirements.txt:16
+    "numpy>=1.24.3,<2.0",       # upstream/TSB-AD/requirements.txt:5
+    "pandas>=2.0.3",            # upstream/TSB-AD/requirements.txt:7
+    "scikit-learn>=1.3.2",      # upstream/TSB-AD/requirements.txt:12
+    "scipy",                    # upstream/tta/candi/adapter_candi.py:12
+    "matplotlib>=3.7.5",        # upstream/TSB-AD/requirements.txt:6
+    "tqdm",                     # upstream/TSB-AD/requirements.txt:1
+    "einops",                   # upstream/TSB-AD/requirements.txt:4 (reformer-pytorch dep)
+    "wandb",                    # upstream/trainer.py:9, predictor.py:6, utils/misc.py:7
+    "yacs",                     # upstream/config.py:1
+    "reformer-pytorch",         # upstream/layers/SelfAttention_Family.py:6
+    "toml>=0.10.2",             # EasyTSAD core dependency
+]
+
+[tool.uv]
+package = false
+# The harness locates the uv cache outside the repository
+# (EasyTSAD/Harness/config.toml:35 `uv_cache_dir = "/tmp/easytsad-uv-cache-..."`),
+# so the cache and this project's .venv normally sit on different filesystems
+# and uv's default hardlink mode cannot link between them. `copy` makes the
+# install independent of the cache/venv filesystem pairing.
+link-mode = "copy"
+# Repair for diag_fd14000d00604dce: the failing install was charged against
+# `<repo>/runtime/uv-cache` (os error 122, Disk quota exceeded). Pin the cache
+# to a scratch filesystem outside the repository quota so the ~3 GiB CUDA wheel
+# set can be extracted. uv precedence is CLI > environment > project config, so
+# a controller-provided `UV_CACHE_DIR` still wins over this value; point it at
+# any filesystem with >= 4 GiB free if /tmp is also constrained.
+cache-dir = "/tmp/easytsad-uv-cache-candi"
+
+[tool.uv.sources]
+easytsad = { path = "../../../..", editable = true }

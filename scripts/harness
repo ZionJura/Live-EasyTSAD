@@ -1,14 +1,23 @@
 #!/usr/bin/env bash
-# Entry point for the TSAD paper-reproduction harness (EasyTSAD/Harness).
-#
-# Runs inside the `harness` uv environment (envs/harness); all uv artifacts stay
-# in the repository exactly as for scripts/tsad.
-#
-# Usage: scripts/harness <command> [...]    (run `scripts/harness --help`)
+# Terminal chat starts directly in Node; backend commands use the full Python env.
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 export TSAD_ROOT="$ROOT"
+if [ "${1:-}" = "prepare-tui" ]; then
+    shift
+    exec "$ROOT/scripts/prepare-harness-tui" "$@"
+fi
+if [ "${1:-}" = "tui" ]; then
+    shift
+    if ! TUI_ENTRY="$("$ROOT/scripts/prepare-harness-tui" --print-entry)"; then
+        "$ROOT/scripts/prepare-harness-tui" >&2
+        TUI_ENTRY="$("$ROOT/scripts/prepare-harness-tui" --print-entry)"
+    fi
+    export TSAD_HARNESS_PYTHON="${TSAD_HARNESS_PYTHON:-$ROOT/envs/harness/venv/bin/python}"
+    export PYTHONPATH="$ROOT/EasyTSAD/Harness${PYTHONPATH:+:$PYTHONPATH}"
+    exec "${TUI_ENTRY%/dist/tui.mjs}/node" "$TUI_ENTRY" "$@"
+fi
 export UV_PYTHON_INSTALL_DIR="$ROOT/runtime/python"
 export UV_CACHE_DIR="$ROOT/runtime/uv-cache"
 export UV_PYTHON_BIN_DIR="$ROOT/runtime/python/bin"

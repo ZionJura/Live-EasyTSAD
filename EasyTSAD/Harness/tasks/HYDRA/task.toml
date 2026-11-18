@@ -1,0 +1,17 @@
+method = "HYDRA"
+created_at = "2026-11-17T07:35:07+00:00"
+code_url = "https://github.com/TheDatumOrg/HYDRA"
+env_hint = "tsad_hydra_ec96f4cf"
+family = "深度学习"
+
+[paper]
+title = ""
+authors = []
+year = "None"
+venue = ""
+arxiv_id = ""
+url = ""
+pdf_url = ""
+abstract = ""
+code_urls = ["https://github.com/TheDatumOrg/HYDRA"]
+source = "url"

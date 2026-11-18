@@ -1,7 +1,7 @@
 {
   "version": 1,
   "demo": false,
-  "updatedAt": "2026-11-05",
+  "updatedAt": "2026-11-18",
   "methods": [
     {
       "id": "AE",
@@ -18,6 +18,55 @@
       "color": "#8c7a5b"
     },
     {
+      "id": "AutoTSAD",
+      "name": "AutoTSAD",
+      "family": "深度学习",
+      "description": "",
+      "color": "#8a8a8a"
+    },
+    {
+      "id": "CrossAD",
+      "name": "CrossAD",
+      "family": "深度学习",
+      "description": "CrossAD reconstructs finer time-series resolutions from coarser average-pooled resoluti...",
+      "color": "#a15e62",
+      "paper": {
+        "paper_title": "CrossAD: Time Series Anomaly Detection with Cross-scale Associations and Cross-window Modeling",
+        "paper_url": "https://arxiv.org/abs/2510.12489",
+        "venue": "arXiv",
+        "year": 2025,
+        "code_url": "https://github.com/decisionintelligence/CrossAD"
+      }
+    },
+    {
+      "id": "DCdetector",
+      "name": "DCdetector",
+      "family": "深度学习",
+      "description": "Dual attention contrastive learning",
+      "color": "#678c73"
+    },
+    {
+      "id": "DIFR",
+      "name": "DIFR",
+      "family": "深度学习",
+      "description": "DIF maps time-series windows into an ensemble of randomly initialized, optimization-fre...",
+      "color": "#5ea659",
+      "paper": {
+        "paper_title": "Deep Isolation Forest for Anomaly Detection",
+        "paper_url": "https://arxiv.org/abs/2206.06602",
+        "venue": "arXiv",
+        "year": 2022,
+        "code_url": "https://github.com/xuhongzuo/deep-iForest"
+      }
+    },
+    {
+      "id": "Diff",
+      "name": "Diff",
+      "family": "传统方法",
+      "description": "First-order difference magnitude",
+      "color": "#8f8f8f"
+    },
+    {
       "id": "Donut",
       "name": "Donut",
       "family": "深度学习",
@@ -25,11 +74,81 @@
       "color": "#6f8fae"
     },
     {
+      "id": "EncDecAD",
+      "name": "EncDecAD",
+      "family": "深度学习",
+      "description": "LSTM encoder-decoder",
+      "color": "#a77f8a"
+    },
+    {
+      "id": "FCVAE",
+      "name": "FCVAE",
+      "family": "深度学习",
+      "description": "Frequency-enhanced conditional VAE",
+      "color": "#9b8a5e"
+    },
+    {
+      "id": "FITS",
+      "name": "FITS",
+      "family": "深度学习",
+      "description": "Frequency interpolation, ~10K parameters",
+      "color": "#9a83ae"
+    },
+    {
+      "id": "HYDRA",
+      "name": "HYDRA",
+      "family": "深度学习",
+      "description": "",
+      "color": "#8a8a8a"
+    },
+    {
+      "id": "LOF",
+      "name": "LOF",
+      "family": "传统方法",
+      "description": "Local outlier factor",
+      "color": "#a0a070"
+    },
+    {
       "id": "LSTMADalpha",
       "name": "LSTMAD-α",
       "family": "深度学习",
       "description": "LSTM anomaly detection, seq2seq",
       "color": "#8e7fa8"
+    },
+    {
+      "id": "LSTMADbeta",
+      "name": "LSTMAD-β",
+      "family": "深度学习",
+      "description": "LSTM anomaly detection, multi-step prediction",
+      "color": "#7f6f98"
+    },
+    {
+      "id": "MatrixProfile",
+      "name": "Matrix Profile",
+      "family": "传统方法",
+      "description": "SCRIMP++ matrix profile discords",
+      "color": "#9a8f74"
+    },
+    {
+      "id": "OCSVM",
+      "name": "OCSVM",
+      "family": "传统方法",
+      "description": "One-class SVM",
+      "color": "#7d9a91"
+    },
+    {
+      "id": "SAND",
+      "name": "SAND",
+      "family": "传统方法",
+      "description": "Streaming subsequence anomaly detection",
+      "color": "#8a9a7a"
+    },
+    {
+      "id": "SRCNN",
+      "name": "SR-CNN",
+      "family": "深度学习",
+      "description": "Spectral residual + CNN",
+      "color": "#b2876c"
     },
     {
       "id": "SubLOF",
@@ -44,6 +163,13 @@
       "family": "传统方法",
       "description": "One-class SVM on subsequences",
       "color": "#7d9391"
+    },
+    {
+      "id": "TranAD",
+      "name": "TranAD",
+      "family": "深度学习",
+      "description": "Transformer anomaly detection",
+      "color": "#b28a66"
     }
   ],
   "datasets": [
@@ -53,9 +179,19 @@
       "domain": "运维监控"
     },
     {
+      "id": "MSL",
+      "task": "mts",
+      "domain": "航天器遥测"
+    },
+    {
       "id": "NAB",
       "task": "uts",
       "domain": "流式监控"
+    },
+    {
+      "id": "PSM",
+      "task": "mts",
+      "domain": "服务器监控"
     },
     {
       "id": "TODS",
@@ -79,6 +215,86 @@
     }
   ],
   "results": [
+    {
+      "method": "HYDRA",
+      "dataset": "MSL",
+      "schema": "mts",
+      "metrics": {
+        "event_f1": 0.109705,
+        "point_f1": 0.439641,
+        "auprc": 0.176297
+      }
+    },
+    {
+      "method": "HYDRA",
+      "dataset": "PSM",
+      "schema": "mts",
+      "metrics": {
+        "event_f1": 0.215652,
+        "point_f1": 0.913085,
+        "auprc": 0.610239
+      }
+    },
+    {
+      "method": "HYDRA",
+      "dataset": "AIOPS",
+      "schema": "naive",
+      "metrics": {
+        "event_f1": 0.210393,
+        "point_f1": 0.589116,
+        "auprc": 0.37602
+      }
+    },
+    {
+      "method": "HYDRA",
+      "dataset": "NAB",
+      "schema": "naive",
+      "metrics": {
+        "event_f1": 0.692039,
+        "point_f1": 0.969919,
+        "auprc": 0.350126
+      }
+    },
+    {
+      "method": "HYDRA",
+      "dataset": "TODS",
+      "schema": "naive",
+      "metrics": {
+        "event_f1": 0.279206,
+        "point_f1": 0.541141,
+        "auprc": 0.439391
+      }
+    },
+    {
+      "method": "HYDRA",
+      "dataset": "UCR",
+      "schema": "naive",
+      "metrics": {
+        "event_f1": 0.627592,
+        "point_f1": 0.811452,
+        "auprc": 0.37876
+      }
+    },
+    {
+      "method": "HYDRA",
+      "dataset": "WSD",
+      "schema": "naive",
+      "metrics": {
+        "event_f1": 0.528081,
+        "point_f1": 0.724552,
+        "auprc": 0.598528
+      }
+    },
+    {
+      "method": "HYDRA",
+      "dataset": "Yahoo",
+      "schema": "naive",
+      "metrics": {
+        "event_f1": 0.531051,
+        "point_f1": 0.596332,
+        "auprc": 0.412458
+      }
+    },
     {
       "method": "AE",
       "dataset": "AIOPS",
@@ -200,6 +416,256 @@
       }
     },
     {
+      "method": "AutoTSAD",
+      "dataset": "NAB",
+      "schema": "naive",
+      "metrics": {
+        "event_f1": 0.754953,
+        "point_f1": 0.902895,
+        "auprc": 0.609044
+      }
+    },
+    {
+      "method": "CrossAD",
+      "dataset": "AIOPS",
+      "schema": "naive",
+      "metrics": {
+        "event_f1": 0.62162,
+        "point_f1": 0.799056,
+        "auprc": 0.38745
+      }
+    },
+    {
+      "method": "CrossAD",
+      "dataset": "NAB",
+      "schema": "naive",
+      "metrics": {
+        "event_f1": 0.84428,
+        "point_f1": 0.994982,
+        "auprc": 0.194166
+      }
+    },
+    {
+      "method": "CrossAD",
+      "dataset": "TODS",
+      "schema": "naive",
+      "metrics": {
+        "event_f1": 0.424417,
+        "point_f1": 0.569334,
+        "auprc": 0.247755
+      }
+    },
+    {
+      "method": "CrossAD",
+      "dataset": "UCR",
+      "schema": "naive",
+      "metrics": {
+        "event_f1": 0.232334,
+        "point_f1": 0.565065,
+        "auprc": 0.030236
+      }
+    },
+    {
+      "method": "CrossAD",
+      "dataset": "WSD",
+      "schema": "naive",
+      "metrics": {
+        "event_f1": 0.879442,
+        "point_f1": 0.967898,
+        "auprc": 0.626499
+      }
+    },
+    {
+      "method": "CrossAD",
+      "dataset": "Yahoo",
+      "schema": "naive",
+      "metrics": {
+        "event_f1": 0.756021,
+        "point_f1": 0.811186,
+        "auprc": 0.416715
+      }
+    },
+    {
+      "method": "DCdetector",
+      "dataset": "AIOPS",
+      "schema": "naive",
+      "metrics": {
+        "event_f1": 0.09101,
+        "point_f1": 0.531012,
+        "auprc": 0.023836
+      }
+    },
+    {
+      "method": "DCdetector",
+      "dataset": "NAB",
+      "schema": "naive",
+      "metrics": {
+        "event_f1": 0.337274,
+        "point_f1": 0.956059,
+        "auprc": 0.075549
+      }
+    },
+    {
+      "method": "DCdetector",
+      "dataset": "TODS",
+      "schema": "naive",
+      "metrics": {
+        "event_f1": 0.219091,
+        "point_f1": 0.552604,
+        "auprc": 0.14856
+      }
+    },
+    {
+      "method": "DCdetector",
+      "dataset": "UCR",
+      "schema": "naive",
+      "metrics": {
+        "event_f1": 0.064878,
+        "point_f1": 0.61773,
+        "auprc": 0.014686
+      }
+    },
+    {
+      "method": "DCdetector",
+      "dataset": "WSD",
+      "schema": "naive",
+      "metrics": {
+        "event_f1": 0.104929,
+        "point_f1": 0.348072,
+        "auprc": 0.011539
+      }
+    },
+    {
+      "method": "DCdetector",
+      "dataset": "Yahoo",
+      "schema": "naive",
+      "metrics": {
+        "event_f1": 0.113267,
+        "point_f1": 0.212033,
+        "auprc": 0.030002
+      }
+    },
+    {
+      "method": "DIFR",
+      "dataset": "AIOPS",
+      "schema": "naive",
+      "metrics": {
+        "event_f1": 0.201832,
+        "point_f1": 0.558429,
+        "auprc": 0.207992
+      }
+    },
+    {
+      "method": "DIFR",
+      "dataset": "NAB",
+      "schema": "naive",
+      "metrics": {
+        "event_f1": 0.815343,
+        "point_f1": 0.988561,
+        "auprc": 0.207103
+      }
+    },
+    {
+      "method": "DIFR",
+      "dataset": "TODS",
+      "schema": "naive",
+      "metrics": {
+        "event_f1": 0.253304,
+        "point_f1": 0.560618,
+        "auprc": 0.312336
+      }
+    },
+    {
+      "method": "DIFR",
+      "dataset": "UCR",
+      "schema": "naive",
+      "metrics": {
+        "event_f1": 0.428409,
+        "point_f1": 0.714719,
+        "auprc": 0.160816
+      }
+    },
+    {
+      "method": "DIFR",
+      "dataset": "WSD",
+      "schema": "naive",
+      "metrics": {
+        "event_f1": 0.434801,
+        "point_f1": 0.713449,
+        "auprc": 0.250635
+      }
+    },
+    {
+      "method": "DIFR",
+      "dataset": "Yahoo",
+      "schema": "naive",
+      "metrics": {
+        "event_f1": 0.289546,
+        "point_f1": 0.399805,
+        "auprc": 0.173793
+      }
+    },
+    {
+      "method": "Diff",
+      "dataset": "AIOPS",
+      "schema": "naive",
+      "metrics": {
+        "event_f1": 0.821113,
+        "point_f1": 0.907052,
+        "auprc": 0.194097
+      }
+    },
+    {
+      "method": "Diff",
+      "dataset": "NAB",
+      "schema": "naive",
+      "metrics": {
+        "event_f1": 0.895404,
+        "point_f1": 0.997913,
+        "auprc": 0.103915
+      }
+    },
+    {
+      "method": "Diff",
+      "dataset": "TODS",
+      "schema": "naive",
+      "metrics": {
+        "event_f1": 0.896078,
+        "point_f1": 0.922902,
+        "auprc": 0.393765
+      }
+    },
+    {
+      "method": "Diff",
+      "dataset": "UCR",
+      "schema": "naive",
+      "metrics": {
+        "event_f1": 0.435434,
+        "point_f1": 0.773241,
+        "auprc": 0.04309
+      }
+    },
+    {
+      "method": "Diff",
+      "dataset": "WSD",
+      "schema": "naive",
+      "metrics": {
+        "event_f1": 0.907099,
+        "point_f1": 0.974914,
+        "auprc": 0.221319
+      }
+    },
+    {
+      "method": "Diff",
+      "dataset": "Yahoo",
+      "schema": "naive",
+      "metrics": {
+        "event_f1": 0.945809,
+        "point_f1": 0.960712,
+        "auprc": 0.348767
+      }
+    },
+    {
       "method": "Donut",
       "dataset": "AIOPS",
       "schema": "naive",
@@ -260,6 +726,246 @@
       }
     },
     {
+      "method": "EncDecAD",
+      "dataset": "AIOPS",
+      "schema": "naive",
+      "metrics": {
+        "event_f1": 0.774533,
+        "point_f1": 0.902076,
+        "auprc": 0.276217
+      }
+    },
+    {
+      "method": "EncDecAD",
+      "dataset": "NAB",
+      "schema": "naive",
+      "metrics": {
+        "event_f1": 0.894185,
+        "point_f1": 0.990995,
+        "auprc": 0.132895
+      }
+    },
+    {
+      "method": "EncDecAD",
+      "dataset": "TODS",
+      "schema": "naive",
+      "metrics": {
+        "event_f1": 0.635626,
+        "point_f1": 0.734188,
+        "auprc": 0.352477
+      }
+    },
+    {
+      "method": "EncDecAD",
+      "dataset": "UCR",
+      "schema": "naive",
+      "metrics": {
+        "event_f1": 0.326405,
+        "point_f1": 0.665222,
+        "auprc": 0.034275
+      }
+    },
+    {
+      "method": "EncDecAD",
+      "dataset": "WSD",
+      "schema": "naive",
+      "metrics": {
+        "event_f1": 0.928627,
+        "point_f1": 0.981325,
+        "auprc": 0.341079
+      }
+    },
+    {
+      "method": "EncDecAD",
+      "dataset": "Yahoo",
+      "schema": "naive",
+      "metrics": {
+        "event_f1": 0.502664,
+        "point_f1": 0.56722,
+        "auprc": 0.174965
+      }
+    },
+    {
+      "method": "FCVAE",
+      "dataset": "AIOPS",
+      "schema": "naive",
+      "metrics": {
+        "event_f1": 0.782827,
+        "point_f1": 0.933017,
+        "auprc": 0.19623
+      }
+    },
+    {
+      "method": "FCVAE",
+      "dataset": "NAB",
+      "schema": "naive",
+      "metrics": {
+        "event_f1": 0.864181,
+        "point_f1": 0.990036,
+        "auprc": 0.124516
+      }
+    },
+    {
+      "method": "FCVAE",
+      "dataset": "TODS",
+      "schema": "naive",
+      "metrics": {
+        "event_f1": 0.710195,
+        "point_f1": 0.855364,
+        "auprc": 0.481733
+      }
+    },
+    {
+      "method": "FCVAE",
+      "dataset": "UCR",
+      "schema": "naive",
+      "metrics": {
+        "event_f1": 0.561402,
+        "point_f1": 0.826783,
+        "auprc": 0.108519
+      }
+    },
+    {
+      "method": "FCVAE",
+      "dataset": "WSD",
+      "schema": "naive",
+      "metrics": {
+        "event_f1": 0.907802,
+        "point_f1": 0.969514,
+        "auprc": 0.287539
+      }
+    },
+    {
+      "method": "FCVAE",
+      "dataset": "Yahoo",
+      "schema": "naive",
+      "metrics": {
+        "event_f1": 0.685737,
+        "point_f1": 0.732044,
+        "auprc": 0.227675
+      }
+    },
+    {
+      "method": "FITS",
+      "dataset": "AIOPS",
+      "schema": "naive",
+      "metrics": {
+        "event_f1": 0.713924,
+        "point_f1": 0.912705,
+        "auprc": 0.233003
+      }
+    },
+    {
+      "method": "FITS",
+      "dataset": "NAB",
+      "schema": "naive",
+      "metrics": {
+        "event_f1": 0.860504,
+        "point_f1": 0.995053,
+        "auprc": 0.135438
+      }
+    },
+    {
+      "method": "FITS",
+      "dataset": "TODS",
+      "schema": "naive",
+      "metrics": {
+        "event_f1": 0.568664,
+        "point_f1": 0.74597,
+        "auprc": 0.272979
+      }
+    },
+    {
+      "method": "FITS",
+      "dataset": "UCR",
+      "schema": "naive",
+      "metrics": {
+        "event_f1": 0.407244,
+        "point_f1": 0.755426,
+        "auprc": 0.044072
+      }
+    },
+    {
+      "method": "FITS",
+      "dataset": "WSD",
+      "schema": "naive",
+      "metrics": {
+        "event_f1": 0.883587,
+        "point_f1": 0.970823,
+        "auprc": 0.310199
+      }
+    },
+    {
+      "method": "FITS",
+      "dataset": "Yahoo",
+      "schema": "naive",
+      "metrics": {
+        "event_f1": 0.749572,
+        "point_f1": 0.8143,
+        "auprc": 0.285782
+      }
+    },
+    {
+      "method": "LOF",
+      "dataset": "AIOPS",
+      "schema": "naive",
+      "metrics": {
+        "event_f1": 0.216135,
+        "point_f1": 0.606322,
+        "auprc": 0.087026
+      }
+    },
+    {
+      "method": "LOF",
+      "dataset": "NAB",
+      "schema": "naive",
+      "metrics": {
+        "event_f1": 0.679105,
+        "point_f1": 0.992694,
+        "auprc": 0.104582
+      }
+    },
+    {
+      "method": "LOF",
+      "dataset": "TODS",
+      "schema": "naive",
+      "metrics": {
+        "event_f1": 0.280026,
+        "point_f1": 0.632437,
+        "auprc": 0.147743
+      }
+    },
+    {
+      "method": "LOF",
+      "dataset": "UCR",
+      "schema": "naive",
+      "metrics": {
+        "event_f1": 0.282692,
+        "point_f1": 0.758209,
+        "auprc": 0.044627
+      }
+    },
+    {
+      "method": "LOF",
+      "dataset": "WSD",
+      "schema": "naive",
+      "metrics": {
+        "event_f1": 0.302718,
+        "point_f1": 0.49112,
+        "auprc": 0.069037
+      }
+    },
+    {
+      "method": "LOF",
+      "dataset": "Yahoo",
+      "schema": "naive",
+      "metrics": {
+        "event_f1": 0.53026,
+        "point_f1": 0.59811,
+        "auprc": 0.181029
+      }
+    },
+    {
       "method": "LSTMADalpha",
       "dataset": "AIOPS",
       "schema": "naive",
@@ -317,6 +1023,306 @@
         "event_f1": 0.550172,
         "point_f1": 0.614844,
         "auprc": 0.184241
+      }
+    },
+    {
+      "method": "LSTMADbeta",
+      "dataset": "AIOPS",
+      "schema": "naive",
+      "metrics": {
+        "event_f1": 0.805889,
+        "point_f1": 0.922783,
+        "auprc": 0.29376
+      }
+    },
+    {
+      "method": "LSTMADbeta",
+      "dataset": "NAB",
+      "schema": "naive",
+      "metrics": {
+        "event_f1": 0.903114,
+        "point_f1": 0.990304,
+        "auprc": 0.11712
+      }
+    },
+    {
+      "method": "LSTMADbeta",
+      "dataset": "TODS",
+      "schema": "naive",
+      "metrics": {
+        "event_f1": 0.746411,
+        "point_f1": 0.870848,
+        "auprc": 0.464544
+      }
+    },
+    {
+      "method": "LSTMADbeta",
+      "dataset": "UCR",
+      "schema": "naive",
+      "metrics": {
+        "event_f1": 0.453521,
+        "point_f1": 0.769408,
+        "auprc": 0.06783
+      }
+    },
+    {
+      "method": "LSTMADbeta",
+      "dataset": "WSD",
+      "schema": "naive",
+      "metrics": {
+        "event_f1": 0.937486,
+        "point_f1": 0.98555,
+        "auprc": 0.375333
+      }
+    },
+    {
+      "method": "LSTMADbeta",
+      "dataset": "Yahoo",
+      "schema": "naive",
+      "metrics": {
+        "event_f1": 0.525481,
+        "point_f1": 0.590676,
+        "auprc": 0.176629
+      }
+    },
+    {
+      "method": "MatrixProfile",
+      "dataset": "AIOPS",
+      "schema": "naive",
+      "metrics": {
+        "event_f1": 0.028051,
+        "point_f1": 0.191481,
+        "auprc": 0.024841
+      }
+    },
+    {
+      "method": "MatrixProfile",
+      "dataset": "NAB",
+      "schema": "naive",
+      "metrics": {
+        "event_f1": 0.176904,
+        "point_f1": 0.787313,
+        "auprc": 0.067378
+      }
+    },
+    {
+      "method": "MatrixProfile",
+      "dataset": "TODS",
+      "schema": "naive",
+      "metrics": {
+        "event_f1": 0.205825,
+        "point_f1": 0.528385,
+        "auprc": 0.353053
+      }
+    },
+    {
+      "method": "MatrixProfile",
+      "dataset": "UCR",
+      "schema": "naive",
+      "metrics": {
+        "event_f1": 0.506628,
+        "point_f1": 0.799194,
+        "auprc": 0.303502
+      }
+    },
+    {
+      "method": "MatrixProfile",
+      "dataset": "WSD",
+      "schema": "naive",
+      "metrics": {
+        "event_f1": 0.037139,
+        "point_f1": 0.123307,
+        "auprc": 0.018075
+      }
+    },
+    {
+      "method": "MatrixProfile",
+      "dataset": "Yahoo",
+      "schema": "naive",
+      "metrics": {
+        "event_f1": 0.205147,
+        "point_f1": 0.307941,
+        "auprc": 0.130686
+      }
+    },
+    {
+      "method": "OCSVM",
+      "dataset": "AIOPS",
+      "schema": "naive",
+      "metrics": {
+        "event_f1": 0.629492,
+        "point_f1": 0.740441,
+        "auprc": 0.248154
+      }
+    },
+    {
+      "method": "OCSVM",
+      "dataset": "NAB",
+      "schema": "naive",
+      "metrics": {
+        "event_f1": 0.890476,
+        "point_f1": 0.994672,
+        "auprc": 0.162069
+      }
+    },
+    {
+      "method": "OCSVM",
+      "dataset": "TODS",
+      "schema": "naive",
+      "metrics": {
+        "event_f1": 0.319577,
+        "point_f1": 0.5835,
+        "auprc": 0.181684
+      }
+    },
+    {
+      "method": "OCSVM",
+      "dataset": "UCR",
+      "schema": "naive",
+      "metrics": {
+        "event_f1": 0.218372,
+        "point_f1": 0.586456,
+        "auprc": 0.029031
+      }
+    },
+    {
+      "method": "OCSVM",
+      "dataset": "WSD",
+      "schema": "naive",
+      "metrics": {
+        "event_f1": 0.72581,
+        "point_f1": 0.825398,
+        "auprc": 0.210395
+      }
+    },
+    {
+      "method": "OCSVM",
+      "dataset": "Yahoo",
+      "schema": "naive",
+      "metrics": {
+        "event_f1": 0.428659,
+        "point_f1": 0.500217,
+        "auprc": 0.145661
+      }
+    },
+    {
+      "method": "SAND",
+      "dataset": "AIOPS",
+      "schema": "naive",
+      "metrics": {
+        "event_f1": 0.067445,
+        "point_f1": 0.261072,
+        "auprc": 0.049129
+      }
+    },
+    {
+      "method": "SAND",
+      "dataset": "NAB",
+      "schema": "naive",
+      "metrics": {
+        "event_f1": 0.239982,
+        "point_f1": 0.712895,
+        "auprc": 0.070717
+      }
+    },
+    {
+      "method": "SAND",
+      "dataset": "TODS",
+      "schema": "naive",
+      "metrics": {
+        "event_f1": 0.25365,
+        "point_f1": 0.536852,
+        "auprc": 0.485385
+      }
+    },
+    {
+      "method": "SAND",
+      "dataset": "UCR",
+      "schema": "naive",
+      "metrics": {
+        "event_f1": 0.545706,
+        "point_f1": 0.747572,
+        "auprc": 0.424189
+      }
+    },
+    {
+      "method": "SAND",
+      "dataset": "WSD",
+      "schema": "naive",
+      "metrics": {
+        "event_f1": 0.109084,
+        "point_f1": 0.185554,
+        "auprc": 0.070502
+      }
+    },
+    {
+      "method": "SAND",
+      "dataset": "Yahoo",
+      "schema": "naive",
+      "metrics": {
+        "event_f1": 0.456323,
+        "point_f1": 0.558106,
+        "auprc": 0.375625
+      }
+    },
+    {
+      "method": "SRCNN",
+      "dataset": "AIOPS",
+      "schema": "naive",
+      "metrics": {
+        "event_f1": 0.167493,
+        "point_f1": 0.501064,
+        "auprc": 0.061391
+      }
+    },
+    {
+      "method": "SRCNN",
+      "dataset": "NAB",
+      "schema": "naive",
+      "metrics": {
+        "event_f1": 0.765337,
+        "point_f1": 0.960864,
+        "auprc": 0.135837
+      }
+    },
+    {
+      "method": "SRCNN",
+      "dataset": "TODS",
+      "schema": "naive",
+      "metrics": {
+        "event_f1": 0.282391,
+        "point_f1": 0.616936,
+        "auprc": 0.154256
+      }
+    },
+    {
+      "method": "SRCNN",
+      "dataset": "UCR",
+      "schema": "naive",
+      "metrics": {
+        "event_f1": 0.301558,
+        "point_f1": 0.764422,
+        "auprc": 0.024878
+      }
+    },
+    {
+      "method": "SRCNN",
+      "dataset": "WSD",
+      "schema": "naive",
+      "metrics": {
+        "event_f1": 0.254788,
+        "point_f1": 0.541018,
+        "auprc": 0.059379
+      }
+    },
+    {
+      "method": "SRCNN",
+      "dataset": "Yahoo",
+      "schema": "naive",
+      "metrics": {
+        "event_f1": 0.201266,
+        "point_f1": 0.35648,
+        "auprc": 0.049911
       }
     },
     {
@@ -438,6 +1444,67 @@
         "point_f1": 0.230088,
         "auprc": 0.126301
       }
+    },
+    {
+      "method": "TranAD",
+      "dataset": "AIOPS",
+      "schema": "naive",
+      "metrics": {
+        "event_f1": 0.632182,
+        "point_f1": 0.781665,
+        "auprc": 0.273885
+      }
+    },
+    {
+      "method": "TranAD",
+      "dataset": "NAB",
+      "schema": "naive",
+      "metrics": {
+        "event_f1": 0.95,
+        "point_f1": 0.999141,
+        "auprc": 0.17319
+      }
+    },
+    {
+      "method": "TranAD",
+      "dataset": "TODS",
+      "schema": "naive",
+      "metrics": {
+        "event_f1": 0.219508,
+        "point_f1": 0.511768,
+        "auprc": 0.162489
+      }
+    },
+    {
+      "method": "TranAD",
+      "dataset": "UCR",
+      "schema": "naive",
+      "metrics": {
+        "event_f1": 0.249252,
+        "point_f1": 0.611853,
+        "auprc": 0.026387
+      }
+    },
+    {
+      "method": "TranAD",
+      "dataset": "WSD",
+      "schema": "naive",
+      "metrics": {
+        "event_f1": 0.728458,
+        "point_f1": 0.778893,
+        "auprc": 0.184741
+      }
+    },
+    {
+      "method": "TranAD",
+      "dataset": "Yahoo",
+      "schema": "naive",
+      "metrics": {
+        "event_f1": 0.515653,
+        "point_f1": 0.581687,
+        "auprc": 0.169806
+      }
     }
-  ]
+  ],
+  "revision": "cad9ae499e4899f26c020a5782a746e42e36576239c687ad8c65a6631355858b"
 }

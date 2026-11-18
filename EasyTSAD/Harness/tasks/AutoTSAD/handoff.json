@@ -1,0 +1,117 @@
+{
+  "source": "EasyTSAD/Methods/AutoTSAD",
+  "artifacts": {
+    "source": "EasyTSAD/Methods/AutoTSAD/reproduction/source.json",
+    "hyperparameters": "EasyTSAD/Methods/AutoTSAD/reproduction/hyperparameters.json",
+    "interface": "EasyTSAD/Methods/AutoTSAD/reproduction/adapter.yaml",
+    "environment": "EasyTSAD/Methods/AutoTSAD/environment/pyproject.toml",
+    "environment_evidence": "EasyTSAD/Methods/AutoTSAD/reproduction/environment.json",
+    "diagnosis": "EasyTSAD/Methods/AutoTSAD/reproduction/diagnosis.json"
+  },
+  "environment": "EasyTSAD/Methods/AutoTSAD/environment",
+  "environment_name": "autotsad",
+  "legacy_integration": true,
+  "human_corrections": [
+    {
+      "id": "diag_f0ca8a206f2f49bb",
+      "at": "2026-11-17T01:40:54+00:00",
+      "note": "Continue the interrupted AutoTSAD experiments to completion. Preserve the successful NAB run 20261112T114234Z and its published metrics; resume only TODS, AIOPS, WSD, Yahoo and UCR, reusing existing scores/caches where supported. WSD failed inside upstream compute_all_combinations -> timeeval/prts label assertion; diagnose the recorded manifest/log and fix the execution integration without modifying benchmark labels or metrics. This is a legacy integration with official source already directly under EasyTSAD/Methods/AutoTSAD and environment envs/autotsad; reuse it instead of downloading or reimplementing. Run full experiments without smoke and continue automatically through result export.",
+      "target_phase": "IMPLEMENT",
+      "author": null
+    },
+    {
+      "id": "diag_035c0620088a472d",
+      "at": "2026-11-17T02:39:25+00:00",
+      "note": "Harness worker startup blocker, single-line fix only. File: EasyTSAD/Harness/tsad_harness/agent.py, function render_patch, line 115. Change the session root literal from cfg.dsh_home / \"sessions\" to cfg.dsh_home / \"worker-sessions\"; keep compression: \"none\" unchanged and keep line 114 unchanged. Rationale: the worker session backend is configured with compression \"none\", but it shares runtime/harness-workbench/dsh/sessions with the interactive host whose artifact is session.v4.jsonl.zstd, so the worker crashes before the model is called with: 'uses .jsonl.zstd, but this backend is configured for compression \"none\"; use a separate root or select the matching compression mode'. Constraints: do not touch, move, or delete existing sessions under runtime/harness-workbench/dsh/sessions; do not change the AutoTSAD method, adapter, benchmark labels, or evaluation definition; do not rerun NAB.",
+      "target_phase": "IMPLEMENT",
+      "author": "user"
+    },
+    {
+      "id": "diag_6dc7e2867a454160",
+      "at": "2026-11-17T04:06:07+00:00",
+      "note": "继续已有官方实现的完整实验，不做 smoke。NAB 已成功，必须保留 run 20261112T114234Z 的登记，不重复训练。仅续跑 TODS、AIOPS、WSD、Yahoo、UCR；诊断 WSD 的 compute_all_combinations/timeeval/prts 内部指标断言，必要时仅修复方法目录内执行接口，不改变 EasyTSAD 共享指标、标签或算法含义。复用现有平铺方法代码和 envs/autotsad 环境，不迁移目录、不重新搭建框架。诊断完成后自动实现、全量评测和榜单导出。已有曲线缓存能按原实现安全复用时复用。",
+      "target_phase": "IMPLEMENT",
+      "author": null
+    },
+    {
+      "id": "diag_006d637e041e47ca",
+      "at": "2026-11-17T04:16:31+00:00",
+      "note": "Harness 的依赖源码只读权限已修复；继续当前诊断上下文，直接读取 envs/autotsad/venv/lib/python3.9/site-packages/prts/base/time_series_metrics.py 及 timeeval 的相关指标实现，不要再递归搜索整个 envs 或重新调查模型。以实际 WSD 异常为依据提交 diagnosis.json，随后控制器自动交给实现 worker 修复并续跑。",
+      "target_phase": "IMPLEMENT",
+      "author": null
+    },
+    {
+      "id": "diag_061c6f397bb6405b",
+      "at": "2026-11-17T04:37:17+00:00",
+      "note": "继续当前诊断上下文，不重新调查。read_file 已支持 NPY 数组元数据，可直接读取 datasets/UTS/WSD/99/test_label.npy（或该曲线目录中的实际标签文件）得到 shape、dtype、unique_values，以现有 WSD traceback 为边界确认失败调用和方法目录内的修复位置，然后立即提交 reproduction/diagnosis.json。不要继续枚举榜单目录、追查无关旧运行或重复读取已确认的源码；本任务只要求跑通新方法，科学有效性审计不属于诊断交付。NAB 成功记录保持不变。",
+      "target_phase": "IMPLEMENT",
+      "author": null
+    },
+    {
+      "id": "diag_06f9cd23320e4dd2",
+      "at": "2026-11-17T05:43:42+00:00",
+      "note": "诊断已经定位到方法内部 compute_metrics 的 prts 全零预测断言，WSD 标签已确认含0和1。停止再次调查共享 EasyTSAD、默认评测、历史任务和既有标签；不要修改共享指标。请交付方法目录内必要的执行兼容修复，保留官方分数与最终评测定义，然后返回控制器执行剩余正式评测。",
+      "target_phase": "IMPLEMENT",
+      "author": null
+    },
+    {
+      "id": "diag_f3e047e50fef4bc4",
+      "at": "2026-11-17T06:04:57+00:00",
+      "note": "审阅已交付的 remote_func_test_combination.py：_safe_compute_metrics 在 not np.any(y_pred) 时将 METRIC_MAPPING 所有指标置0，这会错误清零仍定义良好的连续分数 AUC，并可能改变 main.py 中组合排序。请缩小修复：保持原 compute_metrics 的逐指标调用/输入语义，只为确实不接受无正例输入的 prts 指标处理已定位的退化情况。不要因二值预测全0而清零连续指标；常量分数由既有 TimeEval 行为处理。不要修改分数、阈值、标签、共享评测。直接修改当前方法内的局部补丁并交还，不重新审查整个仓库或数据集。",
+      "target_phase": "IMPLEMENT",
+      "author": null
+    }
+  ],
+  "errors": [
+    {
+      "method": "AutoTSAD",
+      "task": "EasyTSAD/Harness/tasks/AutoTSAD",
+      "run": "AutoTSAD/naive/WSD/20261112T114234Z",
+      "category": "execution",
+      "action": "repair",
+      "message": "WSD aborts inside the AutoTSAD method-local execution interface while computing the 12 selection/normalization/aggregation metric combinations. Failing call: autotsad/system/execution/remote_func_test_combination.py:54 passes the binarized ensemble `combined_score > 0` as y_pred into autotsad/evaluation.py:compute_metrics, which at evaluation.py:198-205 casts it with `y_pred.astype(np.int_)` and dispatches to timeeval RangePrecision -> prts ts_precision -> prts/base/time_series_metrics.py:_prepare_data. There the assertion `np.allclose(np.unique(values_pred), [0, 1]) or np.allclose(np.unique(values_pred), [1])` fires because for the failing combination `combined_score > 0` is single-valued (all-False, unique == [0]) - the aggregation step (autotsad/system/execution/aggregation.py:56-82, notably the custom SigmaThresholding path that zeroes non-predicted entries before np.nanmax) can produce a combined score whose binarization contains no positive entry, and prts does not accept a degenerate prediction vector. The label side is sound: datasets/UTS/WSD/99/test_label.npy is shape [18236], dtype float64, unique_values [0.0, 1.0] and datasets/UTS/WSD/93/test_label.npy is shape [18227], dtype float64, unique_values [0.0, 1.0], so the firing assertion is the prediction-side one, not the real-label one; an empty-but-valid prediction would otherwise fail later at `predicted_anomalies_[0]`. This is an interface/degenerate-input error in the method-local execution layer, not a low-score or scientific-fidelity concern. Repair: guard the degenerate prediction vector inside the AutoTSAD method directory only - in remote_func_test_combination.py (and/or evaluation.py:compute_metrics) skip/short-circuit metric computation when `combined_score > 0` has no positive entry (and when y_score is constant), mirroring the existing in-repo precedent at autotsad/system/execution/remote_func_execute.py:30-33 (`if np.any(dataset.label): ... else: return -1.`), so the combination yields a defined neutral metric instead of an AssertionError and execute_and_rank can rank/select and export results. Do not modify EasyTSAD shared metrics, benchmark labels under datasets/UTS/WSD/, the evaluation definition, or AutoTSAD algorithm semantics; keep the flat method layout and envs/autotsad. Existing per-curve score caches for run 20261112T114234Z (scores/93.npy ... scores/99.npy) are safe to reuse, so only metric aggregation and ranking need to be re-run for WSD. Resume only TODS, AIOPS, WSD, Yahoo and UCR full (non-smoke) runs to completion and then export results; NAB run 20261112T114234Z is already successful and its published metrics must be preserved and not re-trained.",
+      "evidence": [
+        {
+          "file": "EasyTSAD/Methods/AutoTSAD/autotsad/system/execution/remote_func_test_combination.py",
+          "line": 54,
+          "note": "Failing call site: metrics.update(compute_metrics(dataset.label, combined_score, combined_score > 0)) - binarized ensemble can be all-False for a combination, and prts asserts on the single-valued prediction."
+        },
+        {
+          "file": "EasyTSAD/Methods/AutoTSAD/autotsad/evaluation.py",
+          "line": 198,
+          "note": "compute_metrics casts the prediction with y_pred = y_pred.astype(np.int_) and at line 205 dispatches metric(y_label, y_pred) into timeeval RangePrecision -> prts ts_precision where _prepare_data asserts."
+        },
+        {
+          "file": "EasyTSAD/Methods/AutoTSAD/autotsad/system/execution/aggregation.py",
+          "line": 56,
+          "note": "aggregate_scores max/mean/custom; the custom path zeroes non-predicted entries and applies np.nanmax, which is how a combination can yield a combined score with no positive entry."
+        },
+        {
+          "file": "EasyTSAD/Methods/AutoTSAD/autotsad/system/execution/remote_func_execute.py",
+          "line": 30,
+          "note": "In-repo precedent for the degenerate-input guard that the repair should mirror in the method-local execution layer."
+        },
+        {
+          "file": "datasets/UTS/WSD/99/test_label.npy",
+          "line": 1,
+          "note": "Labels are not degenerate: shape [18236], dtype float64, unique_values [0.0, 1.0] - confirms the firing assertion is prediction-side, and labels must not be modified."
+        },
+        {
+          "file": "LiveLeaderBoard/results/runs/AutoTSAD/naive/WSD/20261112T114234Z/manifest.json",
+          "error": "AssertionError"
+        }
+      ],
+      "notes": [
+        "TODS, AIOPS, Yahoo and UCR are recorded as 'running' (interrupted), not failed; no repair is requested for them, they only need to be resumed to completion after the WSD fix.",
+        "NAB run 20261112T114234Z already succeeded; its published metrics must be preserved and it must not be re-trained.",
+        "During diagnosis the WSD traceback truncates at autotsad/system/main.py; the full call chain (system/main.py:69 autotsad -> system/execution/main.py:218 execute_and_rank -> :187 compute_all_combinations -> _test_single_combination_job:172 -> remote_func_test_combination.py:54) was confirmed from the method source.",
+        "No experiment was launched and no file outside EasyTSAD/Methods/AutoTSAD/reproduction/diagnosis.json was modified by this diagnosis."
+      ],
+      "id": "diag_e7c63f844ee74290",
+      "jobId": "AutoTSAD",
+      "attemptId": null,
+      "createdAt": "2026-11-17T04:53:46+00:00",
+      "updatedAt": "2026-11-17T04:53:46+00:00"
+    }
+  ]
+}

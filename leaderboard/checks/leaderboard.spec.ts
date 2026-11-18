@@ -8,6 +8,12 @@ import {
 } from "../src/data";
 import type { Benchmark } from "../src/data";
 
+test.beforeEach(async ({ page }) => {
+  await page.route("**/benchmark.json", route =>
+    route.fulfill({contentType:"application/json",body:JSON.stringify(demoBenchmark)}),
+  );
+});
+
 const fixture: Benchmark = {
   version: 1,
   demo: false,

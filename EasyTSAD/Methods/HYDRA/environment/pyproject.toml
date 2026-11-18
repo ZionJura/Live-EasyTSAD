@@ -1,0 +1,67 @@
+# Environment: method_HYDRA
+#
+# Dedicated UV project for the HYDRA reproduction (TheDatumOrg/HYDRA, commit
+# 5f76abee37833eed0365c2da69f1afc2d22ef0ab). HYDRA is training-free and
+# CPU-only: the detector path that EasyTSAD drives
+# (upstream/HYDRA/models/HYDRA_approx.py, HYDRA_exact.py, HNSW_index.py) needs
+# only NumPy + scikit-learn (+ an optional approximate-NN backend).
+#
+# Python 3.11: upstream README.md "conda create -n HYDRA python=3.11",
+# "Currently we support python>=3.8, up to 3.12". 3.11 is the officially
+# recommended interpreter and matches the repository convention
+# (envs/registry.toml [envs.torch2] python = "3.11").
+#
+# Dependency evidence (upstream/requirements.txt lines 1-16):
+#   numpy>=1.24.3,<2.0    -> line 5  (NumPy 1.x behaviour; sliding_window_view, np.float32)
+#   scikit-learn>=1.3.2   -> line 12 (NearestNeighbors + StandardScaler; also the
+#                                     ANN fallback in models/HNSW_index.py:33-38)
+#   pandas>=2.0.3         -> line 7  (upstream HYDRA/main.py:1 `import pandas`)
+#   matplotlib>=3.7.5     -> line 6  (EasyTSAD Plots/plot.py and
+#                                     Evaluations/Protocols/*.py import pyplot)
+#   tqdm                  -> line 1  (EasyTSAD core dependency)
+#   toml>=0.10.2          -> EasyTSAD root pyproject.toml dependency
+#                                     (Controller/PathManager.py, TrainingSchema/BaseSchema.py)
+#   scipy                 -> EasyTSAD/Evaluations/Protocols/VUS.py:6 (`from scipy.signal import ...`)
+#
+# Deliberate omissions (recorded in reproduction/environment.json):
+#   torch==2.3.0          -> requirements.txt:16; imported only by
+#                            upstream/HYDRA/main.py:2 for RNG seeding. The HYDRA
+#                            detector has no torch usage, and main.py also needs
+#                            the vendored TSB-AD package, so it is not the
+#                            integration entrypoint.
+#   torchinfo, h5py, einops, arch, hurst, tslearn, cython, stumpy, networkx,
+#   transformers          -> requirements.txt:2-4,8-11,13-15; these belong to
+#                            the TSB-AD benchmark suite (40 detectors +
+#                            evaluation), not to HYDRA's algorithm path.
+#
+# ANN backend: models/HNSW_index.py:33-38 resolves backend "auto" to hnswlib
+# when importable and otherwise to scikit-learn, so the dependency is optional
+# (`uv sync --extra ann` to enable hnswlib). The default sync therefore runs
+# the scikit-learn backend, which is the same behaviour as a plain
+# `pip install -r requirements.txt` (hnswlib is not listed there).
+
+[project]
+name = "tsad-env-hydra"
+version = "0.0.0"
+requires-python = "==3.11.*"
+dependencies = [
+    "easytsad",
+    "numpy>=1.24.3,<2.0",      # upstream/requirements.txt:5
+    "scikit-learn>=1.3.2",     # upstream/requirements.txt:12
+    "pandas>=2.0.3",           # upstream/requirements.txt:7
+    "matplotlib>=3.7.5",       # upstream/requirements.txt:6
+    "scipy",                   # EasyTSAD/Evaluations/Protocols/VUS.py:6
+    "tqdm",                    # upstream/requirements.txt:1 + EasyTSAD core
+    "toml>=0.10.2",            # EasyTSAD core (PathManager, BaseSchema)
+]
+
+[project.optional-dependencies]
+# Optional native ANN backend preferred by HYDRA's default ann_backend="auto".
+# hnswlib is source-only on PyPI and needs a C++ toolchain, hence optional.
+ann = ["hnswlib>=0.8.0"]
+
+[tool.uv]
+package = false
+
+[tool.uv.sources]
+easytsad = { path = "../../../..", editable = true }

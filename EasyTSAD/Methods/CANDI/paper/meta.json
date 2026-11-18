@@ -1,0 +1,43 @@
+{
+  "fetched_at": "2026-11-17T07:39:43+00:00",
+  "paper": {
+    "title": "CANDI: Curated Test-Time Adaptation for Multivariate Time-Series Anomaly Detection Under Distribution Shift",
+    "authors": [
+      "HyunGi Kim",
+      "Jisoo Mok",
+      "Hyungyu Lee",
+      "Juhyeon Shin",
+      "Sungroh Yoon"
+    ],
+    "year": 2026,
+    "venue": "AAAI 2026 (Proceedings of the AAAI Conference on Artificial Intelligence, vol. 40, no. 17, pp. 15018--15026)",
+    "arxiv_id": "2604.01845",
+    "url": "https://arxiv.org/abs/2604.01845",
+    "pdf_url": "https://arxiv.org/pdf/2604.01845v1",
+    "abstract": "",
+    "code_urls": [
+      "https://github.com/kimanki/CANDI"
+    ],
+    "source": "url"
+  },
+  "pdf": {
+    "path": "EasyTSAD/Methods/CANDI/paper/paper.pdf",
+    "bytes": 2501221,
+    "pages": 15
+  },
+  "markdown": {
+    "path": "EasyTSAD/Methods/CANDI/paper/paper.md",
+    "chars": 69609
+  },
+  "code": {
+    "url": "https://github.com/kimanki/CANDI",
+    "source": "task",
+    "dir": null,
+    "commit": null
+  },
+  "code_candidates": [
+    "https://github.com/kimanki/CANDI"
+  ],
+  "errors": [],
+  "code_source": "task"
+}

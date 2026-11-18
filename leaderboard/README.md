@@ -76,7 +76,7 @@ bash leaderboard/scripts/deploy_webhost.sh
 - `metrics.json`：逐序列指标、数据集汇总、跳过的全正常序列等。
 - `manifest.json`：运行状态、随机种子、预处理、超参数、评测 margin、环境与代码版本。
 
-`LiveLeaderBoard/pipeline/export.py` 从最新成功运行生成 `LiveLeaderBoard/results/benchmark.json`；只运行了指定部分序列的实验不进入该网页快照。这个 JSON 已采用前端支持的格式，可通过「导入结果」查看。**当前网站尚未自动加载或同步这个文件**；导入仅影响当前浏览器会话。部署脚本只发布前端静态构建，不会启动训练或发布实验快照。
+`LiveLeaderBoard/pipeline/export.py` 从最新成功运行生成 `LiveLeaderBoard/results/benchmark.json`；只运行了指定部分序列的实验不进入该网页快照。这个 JSON 已采用前端支持的格式，可通过「导入结果」查看。导出器同时更新 `leaderboard/public/benchmark.json`，页面启动时读取发布的 `benchmark.json`；若不存在有效快照则保留演示数据。本地导入仅影响当前浏览器会话。部署脚本只发布前端静态构建，不会启动训练或发布实验快照。
 
 ### 兼容原有 avg.json
 
@@ -152,3 +152,5 @@ scripts/export_results.py  从 Python 评测结果导出快照
 checks/                 数据正确性与端到端验证
 DESIGN.md               中文展示方案及后续接入设计
 ```
+
+排行榜独立于 Harness 终端客户端。Harness 不提供网页聊天或实验控制；交互请在仓库根目录运行 `scripts/harness tui`。

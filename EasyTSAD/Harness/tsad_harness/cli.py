@@ -4,21 +4,36 @@ from __future__ import annotations
 import argparse
 import json
 import subprocess
+import shutil
 import sys
 
-from .config import HarnessError, ROOT, load
+from .config import HARNESS_DIR, HarnessError, ROOT, load
 from .task import Phase, Status, Task
 
 
 def _print_task(t: Task, verbose: bool = False) -> None:
     s = t.state
     print(f"{t.id:<24} {s['phase']:<10} {s['status']:<15} runs={t.counter('agent_runs')} "
-          f"smoke={t.counter('smoke_runs')} session={s.get('session_id') or '-'}")
+          f"session={s.get('session_id') or '-'}")
     if s.get("reason") and t.status is not Status.READY:
         print(f"  reason: {s['reason']}")
     if verbose:
         for h in s["history"][-10:]:
             print(f"  {h['at']}  {h['phase']:<10} {h['status']:<15} {h.get('reason', '')[:120]}")
+
+
+def cmd_tui(a) -> None:
+    import os
+    entry = str(ROOT / "scripts" / "harness")
+    arguments = [entry, "tui"]
+    if getattr(a, "resume", None):
+        arguments.extend(["--resume", a.resume])
+    if a.task:
+        arguments.append(a.task)
+    if a.gpus is not None:
+        arguments.extend(["--gpus", a.gpus])
+    arguments.extend(["--refresh", str(a.refresh)])
+    os.execv(entry, arguments)
 
 
 def cmd_search(a) -> None:
@@ -31,34 +46,49 @@ def cmd_search(a) -> None:
 
 
 def cmd_new(a) -> None:
-    from . import papers, pipeline
-    paper = papers.resolve(arxiv=a.arxiv, title=a.title, pdf=a.pdf, url=a.url)
-    code = a.code or next(iter(paper.get("code_urls") or []), None)
-    t = Task.create(a.name, paper=paper, code_url=code, env_hint=a.env, family=a.family)
-    print(f"created task {t.id} at {t.dir}")
-    if not a.no_run:
-        pipeline.run(t, until=Phase.EVIDENCE)
-        _print_task(t)
+    from .bridge import RemoteClient
+    from .store import identity
+    paper = {k: getattr(a, k) for k in ("arxiv", "title", "pdf", "url", "code", "env", "family") if getattr(a, k)}
+    paper["name"] = a.name
+    options = {}
+    if getattr(a, "evaluation_spec", None):
+        import tomllib
+        with open(a.evaluation_spec, "rb") as source:
+            options["evaluation"] = tomllib.load(source)
+    result = RemoteClient().ensure().call("POST", "/batches", {"papers": [paper], "start": not a.no_run,
+        "afterJobs": getattr(a, "after", None) or [], **options, "requestId": identity("cli")})
+    print(json.dumps(result, indent=2, ensure_ascii=False))
 
 
 def cmd_run(a) -> None:
-    from . import pipeline
-    t = Task.open(a.task)
-    until = Phase(a.until) if a.until else None
-    pipeline.run(t, until=until, wait=a.wait, gpus=a.gpus)
-    _print_task(t, verbose=True)
+    from .bridge import RemoteClient
+    import time
+    client = RemoteClient().ensure()
+    result = client.call("POST", f"/jobs/{a.task}/run", {"until": a.until, "gpus": a.gpus})
+    print(json.dumps(result, ensure_ascii=False))
+    if a.wait:
+        while True:
+            result = client.call("GET", f"/jobs/{a.task}")
+            if result["status"] in ("done", "failed", "paused", "cancelled"):
+                print(json.dumps(result, indent=2, ensure_ascii=False))
+                return
+            time.sleep(2)
 
 
 def cmd_status(a) -> None:
+    from .bridge import RemoteClient
+    import httpx
+    try:
+        path = "/jobs/" + a.task if a.task else "/jobs"
+        print(json.dumps(RemoteClient().call("GET", path), ensure_ascii=False, indent=2))
+        return
+    except (httpx.ConnectError, HarnessError):
+        pass
     tasks = [Task.open(a.task)] if a.task else Task.all()
     if not tasks:
         print(f"no tasks in {load().tasks_dir}")
-    for t in tasks:
-        if t.phase is Phase.EVALUATE and t.status is Status.RUNNING:
-            from . import runner
-            st = runner.eval_status(t)
-            print(f"  eval: {json.dumps(st, ensure_ascii=False)[:300]}")
-        _print_task(t, verbose=bool(a.task))
+    for task in tasks:
+        _print_task(task, verbose=bool(a.task))
 
 
 def cmd_approve(a) -> None:
@@ -71,16 +101,10 @@ def cmd_approve(a) -> None:
 
 
 def cmd_correct(a) -> None:
-    from . import review
-    t = Task.open(a.task)
-    phase = Phase(a.phase) if a.phase else None
-    with t.lock():
-        t.reload()
-        rec = review.correct(t, a.message, phase=phase, author=a.author, kill_eval=a.kill_eval)
-    print(f"recorded correction {rec['id']}; the next agent run will receive it")
-    _print_task(t)
-    if a.run:
-        cmd_run(argparse.Namespace(task=a.task, until=None, wait=False, gpus=None))
+    from .bridge import RemoteClient
+    result = RemoteClient().ensure().call("POST", f"/jobs/{a.task}/correct", {"message": a.message,
+        "phase": a.phase, "author": a.author, "run": a.run})
+    print(json.dumps(result, indent=2, ensure_ascii=False))
 
 
 def cmd_answer(a) -> None:
@@ -93,20 +117,20 @@ def cmd_answer(a) -> None:
 
 
 def cmd_log(a) -> None:
-    from . import review
-    print(review.history(Task.open(a.task), n=a.n))
+    from .bridge import RemoteClient
+    import httpx
+    try:
+        print(RemoteClient().call("GET", f"/jobs/{a.task}/logs").get("text", ""))
+    except (httpx.ConnectError, HarnessError):
+        from . import review
+        print(review.history(Task.open(a.task), n=a.n))
 
 
 def cmd_reset(a) -> None:
-    from . import review
-    t = Task.open(a.task)
-    with t.lock():
-        t.reload()
-        review.check_eval(t, Phase(a.phase), a.kill_eval)
-        for k in ("pending_question", "review_pending"):
-            t.state.pop(k, None)
-        t.set(phase=Phase(a.phase), status=Status.READY, reason=f"manual reset to {a.phase}")
-    _print_task(t)
+    from .bridge import RemoteClient
+    client = RemoteClient().ensure()
+    print(json.dumps(client.call("POST", f"/jobs/{a.task}/correct", {"message": f"Reset to {a.phase}",
+        "phase": a.phase, "run": True}), indent=2, ensure_ascii=False))
 
 
 def cmd_guard(a) -> int:
@@ -136,12 +160,36 @@ def cmd_guard(a) -> int:
 def cmd_report(a) -> None:
     from . import report
     t = Task.open(a.task)
-    print(report.write_report(t))
+    print(json.dumps(report.results_view(t), ensure_ascii=False, indent=2))
 
 
 def cmd_publish(a) -> None:
-    from . import report
-    print(json.dumps(report.publish(build=not a.no_build, deploy=a.deploy), indent=2, ensure_ascii=False))
+    from .bridge import RemoteClient
+    line = "/publish" + (" --build" if not a.no_build else "") + (" --deploy" if a.deploy else "")
+    print(json.dumps(RemoteClient().ensure().call("POST", "/commands", {"line": line}), indent=2, ensure_ascii=False))
+
+
+def cmd_serve(a) -> None:
+    from .service import serve
+    serve(a.host, a.port)
+
+
+def cmd_chat(a) -> None:
+    from .bridge import RemoteClient
+    client = RemoteClient(a.url).ensure()
+    sid = a.session or client.call("POST", "/sessions", {}).get("sessionId")
+    if not a.message:
+        print(sid)
+        return
+    from .store import identity
+    print(json.dumps(client.call("POST", f"/sessions/{sid}/messages", {"text": a.message,
+        "mode": "queue", "requestId": identity("cli")}), ensure_ascii=False))
+
+
+def cmd_job_control(a) -> None:
+    from .bridge import RemoteClient
+    options = {"afterJobs": a.after} if getattr(a, "after", None) is not None else {}
+    print(json.dumps(RemoteClient().ensure().call("POST", f"/jobs/{a.task}/{a.cmd}", options), ensure_ascii=False))
 
 
 def cmd_doctor(a) -> None:
@@ -155,7 +203,9 @@ def cmd_doctor(a) -> None:
         ok &= bool(good)
         print(f"{'ok ' if good else 'FAIL'} {name:<22} {detail}")
 
-    line("dsh binary", cfg.dsh_bin.exists(), str(cfg.dsh_bin))
+    host = HARNESS_DIR / "dsh-host"
+    entry = host / "launch.mjs"
+    line("pinned DSH host", (host / "node_modules/@deepseek-ai/dsh/package.json").exists(), str(entry))
     try:
         key = cfg.api_key()
         line("api key", True, f"from ${cfg['llm']['api_key_env']} or {cfg['llm'].get('api_key_file')}")
@@ -173,19 +223,16 @@ def cmd_doctor(a) -> None:
                  f"HTTP {r.status_code}, model {cfg['llm']['model']} {'listed' if cfg['llm']['model'] in ids else 'NOT listed'}")
         except Exception as e:  # noqa: BLE001 - diagnostics only
             line("endpoint /models", False, repr(e)[:200])
-    import tempfile
-    from pathlib import Path
-    from .agent import render_patch
-    with tempfile.TemporaryDirectory() as d:
-        fake = Task(Path(d) / "Doctor", {"method": "Doctor"}, {"phase": "EVIDENCE", "counters": {}})
-        (fake.dir / "dsh").mkdir(parents=True)
-        patch = render_patch(fake)
-        env = cfg.agent_env() if key else cfg.network_env()
-        env["DSH_HOME"] = str(cfg.dsh_home)
-        p = subprocess.run([str(cfg.dsh_bin), "--profile", cfg["dsh"]["profile"], "--patch",
-                            str(cfg.path("dsh", "trim_patch")), "--patch", str(patch), "--dump-config"],
-                           cwd=ROOT, env=env, capture_output=True, text=True, timeout=120)
-        line("profile composes", p.returncode == 0, (p.stderr.strip().splitlines() or [""])[-1][:200])
+    env = cfg.agent_env() if key else cfg.network_env()
+    env.update(TSAD_MODEL_PROVIDER=cfg["llm"]["provider"], TSAD_MODEL=cfg["llm"]["model"],
+               TSAD_MODEL_BASE_URL=cfg["llm"]["base_url"], TSAD_MODEL_API_KEY_ENV=cfg.dsh_key_env,
+               TSAD_MODEL_API="openai-responses" if cfg["llm"]["wire_api"] == "responses" else "openai-completions")
+    try:
+        result = subprocess.run([shutil.which("node") or "node", str(entry), "--check"],
+                                cwd=ROOT, env=env, capture_output=True, text=True, timeout=120)
+        line("profile composes", result.returncode == 0, (result.stderr.strip().splitlines() or [""])[-1][:200])
+    except (OSError, subprocess.TimeoutExpired) as error:
+        line("profile composes", False, str(error))
     raise SystemExit(0 if ok else 1)
 
 
@@ -193,13 +240,38 @@ def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(prog="harness", description="TSAD paper reproduction harness")
     sub = ap.add_subparsers(dest="cmd", required=True)
 
+    p = sub.add_parser("serve", help="persistent terminal control service")
+    p.add_argument("--host", default="127.0.0.1")
+    p.add_argument("--port", type=int)
+    p.set_defaults(fn=cmd_serve)
+
+    p = sub.add_parser("chat", help="send a normal message to a persistent Agent")
+    p.add_argument("message", nargs="?")
+    p.add_argument("--session")
+    p.add_argument("--url")
+    p.set_defaults(fn=cmd_chat)
+
+    for action in ("pause", "resume", "stop", "retry"):
+        p = sub.add_parser(action, help=f"{action} a domain job")
+        p.add_argument("task")
+        if action == "resume":
+            p.add_argument("--after", action="append", help="wait for a prerequisite job; repeat as needed")
+        p.set_defaults(fn=cmd_job_control)
+
+    p = sub.add_parser("tui", help="Agent chat, native commands and live experiments")
+    p.add_argument("--resume", metavar="SESSION_ID|latest", help="restore a session instead of creating an independent one")
+    p.add_argument("task", nargs="?", help="initially selected task")
+    p.add_argument("--gpus", help="default GPUs for runs: auto, cpu, or 0,1")
+    p.add_argument("--refresh", type=float, default=2, help="refresh interval in seconds (default: 2)")
+    p.set_defaults(fn=cmd_tui)
+
     p = sub.add_parser("search", help="search papers (arXiv + LLM web search)")
     p.add_argument("query")
     p.add_argument("--limit", type=int, default=8)
-    p.add_argument("--sources", default="arxiv,llm", help="comma list: arxiv,llm,github")
+    p.add_argument("--sources", default="arxiv,github", help="comma list: arxiv,github (legacy optional: llm)")
     p.set_defaults(fn=cmd_search)
 
-    p = sub.add_parser("new", help="create a task for one paper and fetch it")
+    p = sub.add_parser("new", help="create a task and run integration, evaluation and reporting")
     p.add_argument("name", help="EasyTSAD method / class name, e.g. AnomalyTransformer2")
     src = p.add_mutually_exclusive_group(required=True)
     src.add_argument("--arxiv")
@@ -207,15 +279,20 @@ def main(argv: list[str] | None = None) -> int:
     src.add_argument("--pdf")
     src.add_argument("--url")
     p.add_argument("--code", help="official code repository URL")
+    p.add_argument("--after", action="append", help="wait until this job finishes; repeat for multiple prerequisites")
+    p.add_argument("--evaluation-spec", help="EasyTSAD experiment TOML overriding this task's evaluation defaults")
     p.add_argument("--env", help="environment hint for the agent (e.g. torch2)")
     p.add_argument("--family", help="leaderboard family (深度学习 / 传统方法 / 预训练模型)")
     p.add_argument("--no-run", action="store_true", help="only create the task")
     p.set_defaults(fn=cmd_new)
 
-    p = sub.add_parser("run", help="advance a task until it needs a human or is done")
+    p = sub.add_parser("run", help="run integration, automatic repairs, evaluation and reporting")
     p.add_argument("task")
     p.add_argument("--until", choices=[x.value for x in Phase])
-    p.add_argument("--wait", action="store_true", help="wait for the full evaluation to finish")
+    waiting = p.add_mutually_exclusive_group()
+    waiting.add_argument("--wait", dest="wait", action="store_true", help="wait through evaluation (default)")
+    waiting.add_argument("--detach", dest="wait", action="store_false", help="return after launching evaluation")
+    p.set_defaults(wait=True)
     p.add_argument("--gpus", help="GPU ids for the evaluation, e.g. 0,1")
     p.set_defaults(fn=cmd_run)
 
@@ -254,6 +331,8 @@ def main(argv: list[str] | None = None) -> int:
     p.add_argument("task")
     p.add_argument("phase", choices=[x.value for x in Phase])
     p.add_argument("--kill-eval", action="store_true", help="stop a running evaluation first")
+    p.add_argument("--new-session", action="store_true",
+                   help="start a fresh agent session, preserving task artifacts and earlier traces")
     p.set_defaults(fn=cmd_reset)
 
     p = sub.add_parser("guard", help="check / restore / accept changes to protected files")
@@ -265,7 +344,7 @@ def main(argv: list[str] | None = None) -> int:
     p.add_argument("-m", "--message")
     p.set_defaults(fn=cmd_guard)
 
-    p = sub.add_parser("report", help="(re)write report.md for a task")
+    p = sub.add_parser("report", help="read native EasyTSAD results for a task")
     p.add_argument("task")
     p.set_defaults(fn=cmd_report)
 

@@ -1,8 +1,7 @@
-PHASE: {phase} — REPAIR ROUND {round}/{max_rounds}.
+Make `{method}` run successfully in the EasyTSAD evaluation pipeline.
+Read the reported execution errors and referenced logs, inspect the current
+files in `{method_dir}/`, and fix their cause, including environment issues or
+bugs in the reused code. Continue from the existing integration.
 
-The harness exit check for this phase failed:
-
-{errors}
-
-Fix exactly these problems (stay within the phase's scope and the system rules),
-then end your turn with a short summary.
+Finish your turn after the fix. The main process reruns full evaluation
+automatically; do not launch training or smoke runs or wait for approval.

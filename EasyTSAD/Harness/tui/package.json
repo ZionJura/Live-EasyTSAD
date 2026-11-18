@@ -1,0 +1,28 @@
+{
+  "name": "@tsad/harness-tui",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Early official DeepSeek Harness terminal presentation, connected to the TSAD service",
+  "engines": {
+    "node": ">=24.9"
+  },
+  "scripts": {
+    "postinstall": "node scripts/patch-editor.mjs",
+    "build": "node build.mjs",
+    "test": "node scripts/test.mjs",
+    "check": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@earendil-works/pi-tui": "0.80.7",
+    "diff": "9.0.0",
+    "saxes": "6.0.0",
+    "smol-toml": "1.4.2"
+  },
+  "devDependencies": {
+    "@types/node": "24.9.1",
+    "@xterm/headless": "5.5.0",
+    "esbuild": "0.25.12",
+    "typescript": "5.9.3"
+  }
+}

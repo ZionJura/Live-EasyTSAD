@@ -198,7 +198,7 @@ def config_vs_contract(task: Task, cfg: dict) -> list[str]:
 
 
 def implementation(task: Task, *, import_timeout: float = 900) -> list[str]:
-    """IMPLEMENT exit check: layout, registry, src/ isolation, config, import check, guard."""
+    """IMPLEMENT exit check: adapter, configuration, environment and importability."""
     m, d = task.method, task.method_dir
     errs: list[str] = []
     init, main, cfg_p = d / "__init__.py", d / f"{m}.py", d / "config.toml"
@@ -217,37 +217,16 @@ def implementation(task: Task, *, import_timeout: float = 900) -> list[str]:
             cfg = tomllib.loads(cfg_p.read_text())
         except tomllib.TOMLDecodeError as e:
             errs.append(f"config.toml does not parse: {e}")
-        if cfg and not isinstance(cfg.get("Model_Params", {}).get("Default"), dict):
+        if not isinstance(cfg.get("Model_Params", {}).get("Default"), dict):
             errs.append("config.toml needs a [Model_Params.Default] table")
-        if cfg:
-            errs += config_vs_contract(task, cfg)
-            ec = runner.epochs_claim(task)   # a missing key is reported by config_vs_contract
-            if ec and not runner.non_iterative(ec) and not str(ec.get("config_key") or "").strip():
-                errs.append("contract claim 'train.epochs' needs a config_key naming the [Model_Params.Default] "
-                            "epoch key (the smoke run caps epochs through it), or \"iterative\": false")
+        if cfg.get("Data_Params", {}).get("preprocess") not in ("raw", "min-max", "z-score"):
+            errs.append("config.toml needs [Data_Params].preprocess = raw|min-max|z-score")
     reg, rerr = guard.load_registry()
     if rerr:
         errs.append(rerr)
     envs = [e for e, s in reg.items() if isinstance(s, dict) and m in s.get("methods", [])]
     if rerr is None and len(envs) != 1:
         errs.append(f"{m} must be registered in exactly one env in envs/registry.toml (found {envs})")
-    allowed = {"__init__.py", f"{m}.py", "config.toml", "REPRODUCTION.md", "src", "__pycache__"}
-    extra = sorted(p.name for p in d.iterdir() if p.name not in allowed) if d.is_dir() else []
-    if extra:
-        errs.append(f"unexpected files in {d.relative_to(ROOT)}: {extra}; keep only __init__.py, {m}.py, "
-                    f"config.toml and src/ (put scratch/self-test scripts in the task dir, not the method)")
-    srcdir = d / "src"
-    if srcdir.is_dir():
-        imp = re.compile(r"^\s*(?:from|import)\s+(EasyTSAD\b|\.+)", re.M)
-        for f in sorted(srcdir.rglob("*.py")):
-            if "__pycache__" in f.parts:
-                continue
-            depth = len(f.relative_to(srcdir).parts) - 1   # packages below src/
-            for tgt in imp.findall(f.read_text(errors="replace")):
-                if tgt == "EasyTSAD" or len(tgt) - 1 > depth:
-                    errs.append(f"src/{f.relative_to(srcdir)} imports outside src/ ({tgt!r}); "
-                                f"src/ must not depend on EasyTSAD")
-                    break
     if not errs:  # the import check is slow; only run it on a structurally valid method
         ok, out = runner.import_check(m, timeout=import_timeout)
         if not ok:

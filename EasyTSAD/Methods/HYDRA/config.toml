@@ -1,0 +1,59 @@
+# HYDRA: A Multi-Level Hierarchy-Driven Approach for Robust Anomaly Detection
+# in Time Series (Huang, Liu, Boniol, Paparrizos; PACMMOD 4(3), art. 197, 2026,
+# DOI 10.1145/3802074). Official implementation: TheDatumOrg/HYDRA @ 5f76abee.
+#
+# HYDRA is TRAINING-FREE and parameter-light (paper Sec. 3/Algorithm 3, lines 838-841:
+# "(training-free, parameter-light)"). There is therefore NO optimizer, learning rate,
+# batch size, epoch count or early-stopping patience to configure; every effective
+# setting below is a runtime/inference parameter of the hierarchy.
+#
+# Values are the effective defaults actually reached from the official entry point
+# (upstream/HYDRA/main.py:58 run_HYDRA(data, 64) -> loader.HYDRA(winsize, mode='approx')
+# -> HYDRA_approx), cross-checked against the TSB-AD protocol
+# (upstream/TSB-AD/TSB_AD/HP_list.py:96).
+# See reproduction/hyperparameters.json for per-parameter evidence and discrepancies.
+
+[Data_Params]
+# Paper Sec. 5.1.3 (line 958): "we do not apply normalization to any subsequence-based
+# method for fairness". HYDRA also deliberately uses unnormalized Euclidean distance on
+# raw windows (Sec. 3, line 251: d(x,z) = ||x - z||_2) and exposes normalization only
+# through level-wise score standardization (Sec. 4.5). EasyTSAD must therefore hand
+# HYDRA raw values; the only normalization kept is the global per-channel z-score for
+# multivariate input, which the official code applies internally
+# (upstream/HYDRA/models/HYDRA_approx.py:250-252).
+preprocess = "raw"
+diff_order = 0
+
+[Model_Params.Default]
+# --- windowing (paper Sec. 3 "Windowing"/"Stride", lines 249-251; Algorithm 3 line 841) ---
+win_size = 64
+stride = 1
+
+# --- hierarchy (paper Algorithm 3 lines 841/860: "target K", "while |I_l| > K") ---
+K = 2
+include_all_windows = true
+
+# --- detector variant (paper Sec. 4.6, line 903; Sec. 5.1.4 footnote 2, line 962) ---
+# "In this paper, we primarily use HYDRA_approx ... all instances of HYDRA in our
+# experiments refer to HYDRA_approx."
+mode = "approx"
+metric = "euclidean"
+
+# --- approximate nearest-neighbour index (HNSW; paper Sec. 5.5.6, line 1344:
+# "HYDRA_approx builds indices based on HNSW with default hyperparameters") ---
+# Effective values come from the official wrapper
+# upstream/HYDRA/HYDRA_loader.py:5-9 and upstream/HYDRA/models/HYDRA_approx.py:22-24.
+ann_backend = "auto"
+hnsw_M = 16
+hnsw_ef_construction = 100
+hnsw_ef = 40
+ann_threads = 1
+
+# --- determinism (upstream/HYDRA/main.py:18-25 sets seed = 2024 for torch/np/random
+# and enables cudnn deterministic mode; random_state=42 seeds the hierarchy's RNG) ---
+random_state = 42
+seed = 2024
+
+# --- execution (single-process reference run; no training loop) ---
+debug = false
+n_jobs = 1

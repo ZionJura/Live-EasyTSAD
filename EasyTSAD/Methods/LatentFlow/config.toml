@@ -1,0 +1,62 @@
+# LatentFlow — official training defaults.
+#
+# Provenance: the paper (KDD 2026, DOI 10.1145/3770855.3818034) could not be retrieved by
+# this worker (dl.acm.org returns HTTP 403 / Cloudflare challenge; see
+# reproduction/diagnosis.json), so every value below is taken verbatim from the official
+# repository https://github.com/SunboTax/LatentFlow at commit
+# 3695f54317fcc1a3fdbfa0a7037d1cdf4369db27, rooted at
+# EasyTSAD/Methods/LatentFlow/upstream/. The matching file:line evidence for each value is
+# recorded in reproduction/hyperparameters.json.
+#
+# These are the effective defaults of the official entry point main.py (its argparse
+# defaults). script/run.sh overrides several of them per dataset; those official overrides
+# are recorded in reproduction/hyperparameters.json under "configuration_overrides" and are
+# deliberately NOT applied here (no dataset-specific tuning in this file).
+
+[Data_Params]
+# data/preprocess.py:17-20 — sklearn StandardScaler fitted on the train split only, then
+# applied to train/valid/test. Equivalent to EasyTSAD's "z-score".
+preprocess = "z-score"
+
+[Model_Params.Default]
+# --- data / window ---------------------------------------------------------------
+# main.py:28 (period) and data/preprocess.py:6-9,22 (centered rolling-median detrending
+# with window `period`); main.py:25,29; data/preprocess.py:26-32; data/dataset.py:5-19.
+period = 1440
+train_rate = 0.8
+window_size = 64
+
+# --- model structure -------------------------------------------------------------
+# main.py:30-35; models/LatentFlow.py:115-138.
+#   temporal feature extractor: Conv1d(kernel 3) with GELU-style gating + Linear -> d_model
+#   GRUCell(d_model, d_model) latent continuous dynamics
+#   SparseGraphLearner: query/key -> d_model//4, top-k (k, diagonal-masked) + softmax
+#   StructureEvolutionCell: gate-blended inertia update, prev_degree = adj.sum(-1)/N
+#   GraphAggregator: Linear + bmm(adj, h) + residual dropout + LayerNorm
+#   decoder: d_model -> d_model//2 (GELU) -> patch_size
+# seq_len = (window_size - patch_size) // patch_stride + 1
+d_model = 64
+dropout = 0.6
+patch_size = 32
+patch_stride = 2
+k = 15
+lambda_sparsity = 1e-3
+
+# --- optimization ----------------------------------------------------------------
+# main.py:20-24; exp/exp.py:121-122 (torch.optim.Adam, weight_decay=1e-4);
+# utils/tools.py:39-59 (RG_EAD_Loss = MSE recon + lambda_sparsity * mean|adj|);
+# utils/tools.py:30-31 (lradj '6' -> lr if epoch < 5 else lr * 0.1);
+# utils/earlystop.py:6 (patience on validation loss).
+epochs = 30
+patience = 5
+batch_size = 32
+lr = 1e-4
+weight_decay = 1e-4
+lradj = "6"
+optimizer = "Adam"
+
+# --- runtime ---------------------------------------------------------------------
+# main.py:17 (itr) and main.py:83-84 (one run per seed: random_seed + ii);
+# utils/seed.py:8-17 (random/numpy/torch/cuda seeds, cudnn.deterministic = True).
+random_seed = 42
+itr = 3

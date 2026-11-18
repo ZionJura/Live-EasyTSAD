@@ -1,0 +1,53 @@
+{
+  "method": "CANDI",
+  "repository_url": "https://github.com/kimanki/CANDI",
+  "supported": true,
+  "commit": "28c9679e503832f59e351208cde63657fcb51cad",
+  "branch": "main",
+  "evidence": [
+    "https://github.com/kimanki/CANDI — repository title reads '[AAAI 2026] CANDI: Curated Test-Time Adaptation for Multivariate Time-Series Anomaly Detection Under Distribution Shift', exactly matching the paper title; owner login 'kimanki' matches first author HyunGi Kim.",
+    "https://raw.githubusercontent.com/kimanki/CANDI/main/README.md — README contains the BibTeX citation '@inproceedings{kim2026candi, title={CANDI: Curated Test-Time Adaptation for Multivariate Time-Series Anomaly Detection Under Distribution Shift}, author={Kim, HyunGi and Mok, Jisoo and Lee, Hyungyu and Shin, Juhyeon and Yoon, Sungroh}, booktitle={Proceedings of the AAAI Conference on Artificial Intelligence}, volume={40}, number={17}, pages={15018--15026}, year={2026}}', confirming authorship by the paper authors.",
+    "https://raw.githubusercontent.com/kimanki/CANDI/main/README.md — README describes the paper's FPM (False Positive Mining) reference set and the plug-and-play SANA (Spatiotemporally-Aware Normality Adaptation) module, matching the paper abstract's method description.",
+    "https://arxiv.org/abs/2604.01845 — arXiv abstract page for the paper (MTSAD under distribution shift, TTA, FPM + SANA).",
+    "https://raw.githubusercontent.com/kimanki/CANDI/main/config.py — config exposes TEST.TTA.METHOD 'CANDI', TEST.TTA.CANDI.USE_FPM / USE_SANA / GATING_INIT, and SANA.TYPE 'TCN_iTrans', i.e. the paper's framework is the implemented method.",
+    "https://raw.githubusercontent.com/kimanki/CANDI/main/utils/parser.py — task description 'Test-time adaptation of unsupervised multivariate time-series anomaly detector'; valid datasets SMD (38 vars) and SWaT (51 vars) confirm multivariate TSAD.",
+    "https://raw.githubusercontent.com/kimanki/CANDI/main/scripts/SWaT/SWaT_alpha_5.0.sh — official run entrypoint 'python main.py DATA.NAME SWaT TEST.TTA.SOLVER.BASE_LR 0.03 TEST.TTA.STEPS 5 TEST.TTA.CANDI.GATING_INIT 0.5 TEST.THRESHOLD.ANOMALY_RATIO 5.0'.",
+    "https://github.com/kimanki/CANDI/commits/main.atom — repository has a single commit 28c9679e503832f59e351208cde63657fcb51cad ('Initial commit', 2026-03-22), so that commit is the selected source revision."
+  ],
+  "paper": {
+    "title": "CANDI: Curated Test-Time Adaptation for Multivariate Time-Series Anomaly Detection Under Distribution Shift",
+    "url": "https://arxiv.org/abs/2604.01845",
+    "pdf_url": "https://arxiv.org/pdf/2604.01845v1",
+    "arxiv_id": "2604.01845",
+    "authors": [
+      "HyunGi Kim",
+      "Jisoo Mok",
+      "Hyungyu Lee",
+      "Juhyeon Shin",
+      "Sungroh Yoon"
+    ],
+    "year": "2026",
+    "venue": "AAAI 2026 (Proceedings of the AAAI Conference on Artificial Intelligence, vol. 40, no. 17, pp. 15018--15026)"
+  },
+  "compatibility": {
+    "task_type": "time_series_anomaly_detection",
+    "supported": true,
+    "dataset_types": [
+      "MTS"
+    ],
+    "schemas": [
+      "naive"
+    ],
+    "reason": "CANDI is a test-time adaptation framework for unsupervised multivariate time-series anomaly detection under distribution shift; the official repository trains a reconstruction detector on normal data and evaluates anomaly detection with AUROC/AUPRC on multivariate benchmarks (SWaT, 51 variables; SMD, 38 variables). Only multivariate datasets are exercised, so dataset_types is limited to MTS; univariate (UTS) operation is not demonstrated by the released scripts.",
+    "compute_device": "cuda",
+    "compute_device_evidence": "trainer.py::prepare_inputs moves every input tensor to the current GPU via 'return inputs.cuda()' unconditionally, and utils/misc.py::set_seeds calls torch.cuda.manual_seed/torch.cuda.manual_seed_all and sets cudnn.deterministic; config.py sets NUM_GPUS=4 and VISIBLE_DEVICES=0. No CPU fallback path is present in the training/prediction entrypoint (main.py)."
+  },
+  "uncertainty": [
+    "The arXiv identifier 2604.01845 is a future-dated (2026) identifier; the paper metadata was resolved from the arXiv abstract page and cross-checked against the repository's BibTeX entry, which agree on title, author list and venue.",
+    "The repository README mentions an additional TSB-AD evaluation under the 'TSB-AD/' directory for 200 multivariate datasets; that path is an auxiliary benchmark harness and was not inspected."
+  ],
+  "notes": "Official repository verified from author/BibTeX evidence in the project README; the controller may clone https://github.com/kimanki/CANDI at commit 28c9679e503832f59e351208cde63657fcb51cad and download the paper PDF from https://arxiv.org/pdf/2604.01845v1. No training, cloning or dependency installation was performed by this worker.",
+  "at": "2026-11-17T08:10:14+00:00",
+  "upstream": "EasyTSAD/Methods/CANDI/upstream",
+  "file_count": 350
+}

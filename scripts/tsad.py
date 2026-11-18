@@ -52,7 +52,7 @@ def load_registry() -> dict:
     reg.setdefault("notes", {})
     seen: dict[str, str] = {}
     for env, spec in reg["envs"].items():
-        if not (ENVS_DIR / env / "pyproject.toml").exists():
+        if not env_project(env, spec=spec).joinpath("pyproject.toml").exists():
             die(f"env '{env}' is registered but envs/{env}/pyproject.toml is missing")
         for m in spec.get("methods", []):
             if m in seen:
@@ -62,14 +62,30 @@ def load_registry() -> dict:
     return reg
 
 
+def env_project(env: str, *, spec: dict | None = None) -> Path:
+    if spec is None:
+        with open(REGISTRY, "rb") as stream:
+            spec = tomllib.load(stream).get("envs", {}).get(env, {})
+    project = ROOT / spec["project"] if spec.get("project") else ENVS_DIR / env
+    project = project.resolve()
+    if ROOT.resolve() not in project.parents:
+        die("environment project must be inside the repository")
+    return project
+
+
+def env_venv(env: str) -> Path:
+    project = env_project(env)
+    return project / (".venv" if project.parent.parent == METHODS_DIR.resolve() else "venv")
+
+
 def env_vars(env: str) -> dict:
     e = dict(os.environ)
-    e["UV_PROJECT_ENVIRONMENT"] = str(ENVS_DIR / env / "venv")
+    e["UV_PROJECT_ENVIRONMENT"] = str(env_venv(env))
     return e
 
 
 def uv(env: str, *args: str, check: bool = True) -> int:
-    cmd = ["uv", *args, "--project", str(ENVS_DIR / env)]
+    cmd = ["uv", *args, "--project", str(env_project(env))]
     print("+ " + " ".join(cmd), file=sys.stderr)
     rc = subprocess.call(cmd, env=env_vars(env), cwd=ROOT)
     if check and rc != 0:
@@ -81,7 +97,7 @@ def uv_run(env: str, command: list[str]) -> None:
     """Run `command` inside env, with the repository root as cwd."""
     if not command:
         die("missing command after '--'")
-    cmd = ["uv", "run", "--project", str(ENVS_DIR / env), "--", *command]
+    cmd = ["uv", "run", "--project", str(env_project(env)), "--", *command]
     os.chdir(ROOT)
     os.execvpe(cmd[0], cmd, env_vars(env))
 
@@ -135,7 +151,7 @@ def cmd_which(reg, a):
 
 def cmd_list(reg, a):
     for env, spec in reg["envs"].items():
-        venv = ENVS_DIR / env / "venv"
+        venv = env_venv(env)
         state = "synced" if venv.exists() else "not synced"
         print(f"{env:<12} python {spec.get('python', '?'):<6} [{state}]  {spec.get('description', '')}")
         print("    " + ", ".join(spec.get("methods", [])))
@@ -164,7 +180,7 @@ def cmd_check(reg, a):
         )
         print(f"[{env}]")
         out = subprocess.run(
-            ["uv", "run", "--project", str(ENVS_DIR / env), "--", "python", "-c", code],
+            ["uv", "run", "--project", str(env_project(env)), "--", "python", "-c", code],
             env=env_vars(env), cwd=ROOT, capture_output=True, text=True,
         )
         sys.stdout.write(out.stdout)
@@ -206,7 +222,7 @@ def cmd_remove(reg, a):
 def cmd_exp(reg, a):
     """Run an experiment spec. The unit of work is one (method, dataset) pair, run
     in the method's env and pinned to one GPU slot; pairs are spread over all
-    slots. Results go to LiveLeaderBoard/results/runs."""
+    slots. Results go to the original EasyTSAD Results directory."""
     import datetime as dt
     import signal
     import time
@@ -259,7 +275,7 @@ def cmd_exp(reg, a):
             if gpu is not None:
                 e["CUDA_VISIBLE_DEVICES"] = gpu
             out = logs / f"{m}_{d}.out"
-            cmd = ["uv", "run", "--project", str(ENVS_DIR / env), "--", "python",
+            cmd = ["uv", "run", "--project", str(env_project(env)), "--", "python",
                    str(ROOT / "LiveLeaderBoard" / "pipeline" / "run.py"),
                    "--spec", str(spec_path), "--method", m, "--run-id", run_id,
                    "--datasets", d, *(["--force"] if a.force else [])]
@@ -383,7 +399,7 @@ def main():
     s.add_argument("env"); s.set_defaults(fn=cmd_remove)
     s = sub.add_parser("doc", help="regenerate envs/ENVIRONMENTS.md")
     s.set_defaults(fn=cmd_doc)
-    s = sub.add_parser("exp", help="run an experiment spec into LiveLeaderBoard/results")
+    s = sub.add_parser("exp", help="run an experiment spec into original EasyTSAD Results")
     s.add_argument("spec"); s.add_argument("--methods", nargs="*")
     s.add_argument("--datasets", nargs="*", help="subset of the spec's datasets")
     s.add_argument("--gpus", help="comma-separated GPU ids, one method process per slot, e.g. 0,1,2")

@@ -1,0 +1,143 @@
+# Interface mapping: official CANDI (kimanki/CANDI) -> EasyTSAD method interface
+# Commit: 28c9679e503832f59e351208cde63657fcb51cad (main)
+# Scope: interface only. No algorithm change, no thresholding/metric change, no experiment run.
+
+source:
+  repository: https://github.com/kimanki/CANDI
+  vendored_at: EasyTSAD/Methods/CANDI/upstream
+  commit: 28c9679e503832f59e351208cde63657fcb51cad
+  entrypoint: EasyTSAD/Methods/CANDI/upstream/main.py
+  call_chain:
+    - "main.main() -> parse_args() / load_config(args)  (upstream/main.py:8-26, upstream/utils/parser.py:13-68)"
+    - "set_devices(cfg.VISIBLE_DEVICES); set_seeds(cfg.SEED)  (upstream/main.py:13-23, upstream/utils/misc.py:12-27)"
+    - "model = build_model(cfg)  (upstream/main.py:26, upstream/models/build.py)"
+    - "trainer = build_trainer(cfg, model); trainer.train() if cfg.TRAIN.ENABLE  (upstream/main.py:29-32, upstream/trainer.py:292-306)"
+    - "model = trainer.load_best_model()  (upstream/main.py:34, upstream/trainer.py:275-289)"
+    - "Predictor(cfg, model, tta=cfg.TEST.TTA.ENABLE).predict()  (upstream/main.py:35-36, upstream/predictor.py:33-99)"
+  fit_inputs:
+    dataset: "upstream/datasets/build.py:12-26 TSDataset(cfg, split) builds train/val/test arrays from cfg.DATA.NAME"
+    shapes: "train/val/test are 2-D numpy arrays (T_split, N_VAR); N_VAR is forced by dataset name (SMD=38, SWaT=51) in upstream/utils/parser.py:45-54"
+    split: "upstream/datasets/build.py:49-59 _split_train_val: val = last (1 - cfg.DATA.TRAIN_RATIO) portion of train, cfg.DATA.TRAIN_RATIO=0.8 (upstream/config.py:32)"
+    preprocessing: "upstream/datasets/build.py:61-73 _normalize_data: StandardScaler (cfg.DATA.SCALE='standard', upstream/config.py:26) fit_transform on train only, transform on val and test; 'min-max'/'none' variants also supported"
+    batching: "upstream/datasets/loader.py construct_loader(cfg, split) -> torch DataLoader with per-split batch size (TRAIN/VAL/TEST.BATCH_SIZE=256, upstream/config.py:39,61,70)"
+  callables:
+    - "MLP.get_anomaly_scores(x) -> torch.Tensor (B,)  (upstream/models/mlp/modeling_mlp.py:38-53)"
+    - "TimesNet.get_anomaly_scores(x) -> torch.Tensor (B,)  (upstream/models/timesnet/modeling_timesnet.py:117-136)"
+    - "MLP.forward(X) asserts L == cfg.DATA.WIN_SIZE and C == cfg.DATA.N_VAR  (upstream/models/mlp/modeling_mlp.py:23-25)"
+    - "CANDIAdapter.adapt(x, scores) / SANA(cfg)  (upstream/tta/adapter.py, upstream/tta/candi/adapter_candi.py:107-149, 248-285)"
+  score_output:
+    shape: "(B,) one scalar per input window; Predictor concatenates batch scores and flattens to a 1-D numpy array (upstream/predictor.py:102-119)"
+    length: "number of windows = (len(test) - cfg.DATA.WIN_SIZE) // cfg.DATA.TEST_STEP + 1  (upstream/datasets/build.py:83-89)"
+    aggregation: "reconstruction MSE reduced with mean over the time and channel dims of the (B, T, C) loss: score = loss.mean(dim=tuple(range(1, loss.dim())))  (upstream/models/mlp/modeling_mlp.py:50-52, upstream/models/timesnet/modeling_timesnet.py:129-131)"
+    direction: "higher = more anomalous (reconstruction error)"
+  windowing:
+    window_size: "cfg.DATA.WIN_SIZE = 10  (upstream/config.py:27)"
+    train_step: "cfg.DATA.TRAIN_STEP = 1  (upstream/config.py:28)"
+    test_step: "cfg.DATA.TEST_STEP = 1  (upstream/config.py:29)"
+    window_construction: "upstream/datasets/build.py:91-104 __getitem__: inputs[index*step : index*step + win_size]; test windows therefore start at 0,1,2,... and the first WIN_SIZE-1 positions are not covered by any window start"
+  thresholding_in_upstream: "Thresholder uses cfg.TEST.THRESHOLD.TYPE ('ratio' -> np.percentile(val_scores, 100 - ANOMALY_RATIO), or 'best_f1')  (upstream/threshold.py:23-42, upstream/config.py:74-75); upstream also pairs each window score with an any-anomaly window label (upstream/datasets/build.py:104, upstream/predictor.py:131-138)"
+
+target:
+  method_class: "EasyTSAD/Methods/CANDI/CANDI.py :: class CANDI(BaseMethod) (registered via BaseMethodMeta, EasyTSAD/Methods/__init__.py:4-20)"
+  base_contract: "EasyTSAD/Methods/__init__.py:20-120"
+  required_hooks:
+    - "train_valid_phase(self, tsTrain)  # fit on tsTrain.train, use tsTrain.valid for model selection / early stopping"
+    - "test_phase(self, tsData)  # run the adapted detector on tsData.test and store the score array"
+    - "anomaly_score(self) -> np.ndarray  # 1-D, timepoint-level, higher = more anomalous"
+    - "get_y_hat(self) -> np.ndarray (optional; upstream has no reconstructed time series export)"
+    - "param_statistic(self, save_file)  # torchinfo summary-style string"
+  data_contract:
+    type: "EasyTSAD/DataFactory/MTSData.py MTSData (multivariate), attributes train/valid/test as (T, C) numpy arrays plus train_label/valid_label/test_label as 1-D lengths T"
+    label_source: "test_label comes from the fixed dataset; do not modify it (EasyTSAD/Evaluations/Performance.py:37-43)"
+  supported_schemas:
+    - naive: "single MTS curve; official per-dataset training protocol (checkpoint dir keyed by cfg.DATA.NAME + cfg.MODEL.NAME, upstream/utils/parser.py:60-68)"
+    - mts: "also callable because EasyTSAD/TrainingSchema/MTS.py:48-71 invokes train_valid_phase/test_phase on one MTSData curve, which is exactly the official per-dataset fit"
+  not_supported_schemas:
+    - all_in_one
+    - zero_shot
+    - zero_shot_cross_ds
+    - reason: "train_valid_phase_all_in_one is not overridden by the official code; the official main.py fits exactly one dataset per invocation (upstream/main.py:26-36, upstream/utils/parser.py:60-68)"
+  adapter_requirements:
+    - "anomaly_score() must return exactly (len(test) - WIN_SIZE) // TEST_STEP + 1 values, ordered by increasing window start index"
+    - "return the raw reconstruction score; do NOT threshold, normalize by percentile, or apply any monotone rescaling inside the method (the evaluator owns thresholding and metrics)"
+    - "keep FPM + SANA test-time adaptation inside test_phase so the exported scores match the official TTA-enabled configuration (cfg.TEST.TTA.ENABLE=True, upstream/config.py:78-79)"
+
+align:
+  input_mapping:
+    easytsad: "MTSData.test of shape (T, C) with C = number of channels of the evaluated dataset"
+    official: "numpy float32 array (T, C) in upstream/datasets/build.py:91-104; model consumes (B, WIN_SIZE, C) and asserts C == cfg.DATA.N_VAR, so cfg.DATA.N_VAR must be set to C (upstream/models/mlp/modeling_mlp.py:23-25)"
+    note: "C is data-driven; the official 38/51 values come from the SMD/SWaT names in upstream/utils/parser.py:45-54 and must not be hardcoded from those dataset names"
+  channel_handling: "all C channels are consumed jointly; the window score is the mean of the per-element squared reconstruction error over both the time and channel axes (upstream/models/mlp/modeling_mlp.py:50-52) — no per-channel score export, no channel selection"
+  window_aggregation: "one score per window, reducing T x C to a scalar; no overlapping-window averaging is performed because TEST_STEP = 1 already yields one window per start position"
+  normalization:
+    fit_scope: "train split only (StandardScaler.fit_transform on train, transform on val/test; upstream/datasets/build.py:61-73)"
+    easytsad_equivalent: "MTSData.z_score_norm fits StandardScaler per feature on self.train only (EasyTSAD/DataFactory/MTSData.py:106-119); min_max_norm is the analogous alternative (EasyTSAD/DataFactory/MTSData.py:85-104)"
+    rule: "IMPLEMENT must normalize strictly inside train_valid_phase with statistics from train, then reuse the same scaler in test_phase; never fit on test"
+  temporal_alignment:
+    score_length: "N = (T - WIN_SIZE) // TEST_STEP + 1 with WIN_SIZE = 10, TEST_STEP = 1  =>  N = T - WIN_SIZE + 1"
+    position_of_score_i: "window i covers raw positions [i, i + WIN_SIZE); EasyTSAD's Performance truncates the label array to its last N entries (self.labels = self.labels[len(self.labels) - len(self.scores):], EasyTSAD/Evaluations/Performance.py:39), so score i is compared against raw label position i + (T - N) = i + WIN_SIZE - 1, i.e. the LAST timepoint of window i"
+    omitted_positions: "the first WIN_SIZE - 1 = 9 raw positions have no score and are dropped by the evaluator's front truncation; do not pad, do not shift, do not prepend synthetic scores"
+    consistent_alternative: "if IMPLEMENT prefers explicit end-of-window assignment it must keep the same length and ordering; any other length (T or T - WIN_SIZE) would silently misalign every label"
+    score_direction: "higher = more anomalous"
+    monotonicity: "the evaluator subtracts scores.min() before computing metrics (EasyTSAD/Evaluations/Performance.py:42); returning raw nonnegative MSE is compatible"
+  thresholding:
+    owner: "EasyTSAD evaluator (EasyTSAD/Evaluations/Performance.py, TSADController.do_evals, EasyTSAD/Controller/TSADController.py:239-258)"
+    requirement: "upstream Thresholder (upstream/threshold.py:23-42) is NOT ported into anomaly_score(); its ratio/best_f1 logic stays out of the score array"
+  test_time_adaptation:
+    description: "SANA adapters are attached to the frozen detector and FPM curates samples from the streaming test batches; the adaptation updates parameters on the test stream only and never uses test labels for fitting (upstream/tta/candi/adapter_candi.py:107-149, 248-285)"
+    leakage_note: "upstream/trainer.py:309-314 prepare_inputs moves tensors to CUDA; the adapter reads self.test_labels only to log anomaly counts (upstream/tta/candi/adapter_candi.py:173-177, 205-209) — the loss is reconstruction error and is label-free"
+
+compatibility:
+  task_type: time_series_anomaly_detection
+  supported: true
+  dataset_types:
+    - MTS
+  schemas:
+    - naive
+    - mts
+  reason: >-
+    CANDI is an unsupervised multivariate time-series anomaly detection framework (FPM + SANA test-time
+    adaptation over an MLP/TimesNet reconstruction detector). The official code only builds multivariate
+    datasets: TSDataset windows are (T, C) with C = cfg.DATA.N_VAR, and model.forward asserts C equals
+    cfg.DATA.N_VAR (EasyTSAD/Methods/CANDI/upstream/models/mlp/modeling_mlp.py:23-25). Therefore MTS is
+    claimed and UTS is not: upstream/datasets/build.py:188-196 only maps the "SMD" and "SWaT" names and
+    raises ValueError for anything else, so no univariate loader is available. Training is per-dataset
+    unsupervised fit on the normal training portion (upstream/main.py:26-36), i.e. the naive schema, and
+    the same train_valid_phase/test_phase pair also satisfies EasyTSAD's mts schema. all_in_one, zero_shot
+    and zero_shot_cross_ds are not supported because train_valid_phase_all_in_one is never overridden.
+  confidence: high
+  uncertainty: >-
+    Upstream hardcodes N_VAR (38 for SMD, 51 for SWaT) in upstream/utils/parser.py:45-54; the adapter must
+    set cfg.DATA.N_VAR from the actual EasyTSAD curve width instead. EasyTSAD datasets whose channel count
+    is 1 would be rejected by the model assert, so UTS is deliberately excluded.
+  compute_device: cuda
+  compute_device_reason: >-
+    The official execution path requires CUDA: upstream/trainer.py:309-314 prepare_inputs returns
+    inputs.cuda() unconditionally, SANA is instantiated with .cuda() (upstream/tta/candi/adapter_candi.py:112-115),
+    upstream/models/build.py moves the model to .cuda() when available, and upstream/main.py:13-23 calls
+    set_devices/set_seeds which configure CUDA devices. There is no CPU fallback branch in main.py.
+
+evidence:
+  - "EasyTSAD/Methods/CANDI/upstream/main.py:8-39 — entrypoint order: config -> devices -> seeds -> model -> trainer.train() -> load_best_model() -> Predictor.predict()"
+  - "EasyTSAD/Methods/CANDI/upstream/utils/parser.py:13-68 — parse_args/load_config, dataset-name-driven N_VAR (SMD=38, SWaT=51), checkpoint and result dirs"
+  - "EasyTSAD/Methods/CANDI/upstream/config.py:26-32,39,61,70,74-79,89,105-107,122 — WIN_SIZE=10, TRAIN_STEP=TEST_STEP=1, SCALE='standard', TRAIN_RATIO=0.8, TEST.TTA.ENABLE=True, TTA.METHOD='CANDI', THRESHOLD ratio 0.5, MODEL.NAME='MLP'"
+  - "EasyTSAD/Methods/CANDI/upstream/datasets/build.py:12-26,49-59,61-73,83-104 — per-split arrays, train/val split by TRAIN_RATIO, StandardScaler fit on train only, window count and (index*step, index*step+win_size) slicing"
+  - "EasyTSAD/Methods/CANDI/upstream/datasets/build.py:188-200 — build_dataset only maps SMD and SWaT, so no univariate loader exists"
+  - "EasyTSAD/Methods/CANDI/upstream/models/mlp/modeling_mlp.py:23-25,38-53 — forward asserts L==WIN_SIZE and C==N_VAR; get_anomaly_scores reduces MSE with mean over time and channel dims"
+  - "EasyTSAD/Methods/CANDI/upstream/models/timesnet/modeling_timesnet.py:117-136 — same score reduction for the TimesNet variant"
+  - "EasyTSAD/Methods/CANDI/upstream/predictor.py:33-49,102-128,131-138 — score collection, flattening, length assertion against labels, Thresholder construction, TTA loop"
+  - "EasyTSAD/Methods/CANDI/upstream/trainer.py:275-314 — load_best_model checkpoint restore, build_trainer model dispatch, prepare_inputs unconditional cuda"
+  - "EasyTSAD/Methods/CANDI/upstream/tta/adapter.py and upstream/tta/candi/adapter_candi.py:107-149,163-285 — SANA in/out modules, FPM hard/moderate sample curation, MIN_SAMPLES-gated adaptation steps"
+  - "EasyTSAD/Methods/__init__.py:20-120 — BaseMethod hooks train_valid_phase / train_valid_phase_all_in_one / test_phase / anomaly_score / get_y_hat / param_statistic"
+  - "EasyTSAD/Evaluations/Performance.py:30-43 — 1-D np.ndarray score requirement, score length must not exceed label length, labels truncated to their last len(scores) entries, scores shifted by min()"
+  - "EasyTSAD/DataFactory/MTSData.py:38-119 — MTSData attributes, min_max_norm and z_score_norm fit per feature on train only"
+  - "EasyTSAD/Controller/TSADController.py:239-258 — evaluator loads saved scores and pairs them with the untouched test_label"
+  - "EasyTSAD/Methods/CANDI/reproduction/source.json — vendored commit 28c9679e503832f59e351208cde63657fcb51cad, paper arXiv:2604.01845"
+
+unresolved:
+  - "Upstream's internal Thresholder (ratio / best_f1) and its window-level 'any anomaly' label (upstream/datasets/build.py:104, upstream/predictor.py:131-138) are intentionally NOT ported; EasyTSAD's evaluator owns thresholding and metrics, so reported operating points will differ from the paper's ratio-based table."
+  - "FPM top-k/Q1-Q3 sample selection is driven by cfg.TEST.THRESHOLD.ANOMALY_RATIO (upstream/tta/candi/adapter_candi.py:136-149) even though the threshold itself is not exported; IMPLEMENT must keep that hyperparameter as the curation ratio, not as a decision threshold."
+  - "Official configs pin N_VAR per dataset name; the EasyTSAD adapter must derive it from the curve width, so no source line covers arbitrary C."
+  - "Upstream saves val representations and npy result dumps under cfg.RESULT_DIR (upstream/predictor.py:86-94, upstream/tta/candi/adapter_candi.py:126-129); EasyTSAD writes scores through PathManager instead, so those side effects are dropped."
+  - "Reporting-only diagnostic (clone): git clone of https://github.com/kimanki/CANDI.git failed with HTTP 407 through the proxy (EasyTSAD/Harness/tasks/CANDI/journal.jsonl); the repository is already vendored at EasyTSAD/Methods/CANDI/upstream, so the mapping above is derived from the local checkout."
+  - "Reporting-only diagnostic (environment): the environment branch's uv install failed on yacs==0.1.8 with 'Disk quota exceeded (os error 122)' while hardlinking from runtime/uv-cache (EasyTSAD/Harness/tasks/CANDI/journal.jsonl). This is an environment/provisioning concern, not an interface one; it does not change the input, score, alignment or compute_device mapping above, but a CUDA-capable torch install must exist before IMPLEMENT can run. Ownership: controller (installation)."

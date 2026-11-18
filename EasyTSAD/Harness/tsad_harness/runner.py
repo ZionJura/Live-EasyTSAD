@@ -3,7 +3,7 @@
 Nothing here evaluates anything itself: the harness only writes experiment specs
 into `<task>/runs/`, invokes `scripts/tsad exp` (synchronously for SMOKE,
 detached for EVALUATE) and reads back the run directories the pipeline writes
-to `LiveLeaderBoard/results/runs/<M>/<schema>/<dataset>/<run_id>/`.
+to method-local reproduction/runs metadata and native ROOT/Results scientific files.
 
 Failures are typed by `classify_failure` so the agent knows which files a
 repair may touch (`ALLOWED_SCOPE`).
@@ -18,12 +18,13 @@ import re
 import signal
 import subprocess
 import tomllib
+from copy import deepcopy
 from pathlib import Path
 
 import numpy as np
 import tomlkit
 
-from .config import ROOT, load
+from .config import HarnessError, ROOT, load
 from .guard import load_registry
 from .task import Task, now
 
@@ -40,10 +41,10 @@ ALLOWED_SCOPE = {
                    "registry entry); never a shared env",
     "ADAPTER_INTERFACE": "EasyTSAD/Methods/<M>/<M>.py (+ __init__.py, config.toml layout): shapes, "
                          "lifecycle, score alignment",
-    "ALGORITHM_IMPLEMENTATION": "EasyTSAD/Methods/<M>/src/, faithful to the contract; record any "
-                                "changed contract value as a deviation note",
+    "ALGORITHM_IMPLEMENTATION": "EasyTSAD/Methods/<M>/, preserving the official source and "
+                                "algorithm settings",
     "RESOURCE_EXECUTION": "runtime settings only (device, inference batch size, num_workers); "
-                          "never the algorithm; record it",
+                          "never the algorithm",
     "UNKNOWN": "diagnose first (read the log); ask the human if the cause is outside the method",
 }
 
@@ -99,11 +100,33 @@ def epochs_key(task: Task) -> str | None:
     return key if key in _method_defaults(task.method) else None
 
 
+def evaluation_identity(task: Task, plan: dict, dataset: str) -> str:
+    path = task.method_dir / "config.toml"
+    config = tomllib.loads(path.read_text()) if path.exists() else {}
+    parameters = config.get("Model_Params", {})
+    identity = {"method": task.method, "dataset": dataset,
+        "data": config.get("Data_Params", {}),
+        "parameters": {**parameters.get("Default", {}), **parameters.get(dataset, {})},
+        "evaluation": {key: value for key, value in plan.items()
+            if key not in ("name", "methods", "datasets", "gpus", "compute_device", "recover_publication",
+                           "min_gpu_memory_mib", "preferred_gpus")}}
+    return hashlib.sha256(json.dumps(identity, sort_keys=True, default=str).encode()).hexdigest()[:16]
+
+
+def evaluation_config(task: Task) -> dict:
+    """Return independent evaluation config, merging global, task spec, then state."""
+    effective = deepcopy(load()["eval"])
+    effective.update(deepcopy(getattr(task, "spec", {}).get("evaluation") or {}))
+    effective.update(deepcopy(getattr(task, "state", {}).get("evaluation") or {}))
+    return effective
+
+
 def write_spec(task: Task, kind: str, *, epochs: int | None = None,
-               hparams: dict | None = None, **fields) -> Path:
+               hparams: dict | None = None, evaluation: dict | None = None, **fields) -> Path:
     """Write `<task>/runs/<kind>.toml` for `scripts/tsad exp`.
 
-    kind "smoke" uses `[smoke]` (one dataset, a curve subset), "eval" uses `[eval]`.
+    kind "smoke" uses `[smoke]` (one dataset, a curve subset), "eval" uses
+    evaluation_config(task) with optional `evaluation` overrides.
     `epochs` is mapped through the contract's `train.epochs` config_key (skipped
     when unknown); `hparams` are extra hparam overrides; other keyword arguments
     replace top-level spec fields (e.g. `datasets=[...]`).
@@ -114,13 +137,20 @@ def write_spec(task: Task, kind: str, *, epochs: int | None = None,
         spec = {"name": spec_name(task, kind), "schema": s["schema"], "dataset_type": s["dataset_type"],
                 "datasets": [s["dataset"]], "curves": list(s["curves"])}
     elif kind == "eval":
-        s = cfg["eval"]
+        s = evaluation_config(task)
+        s.update(evaluation or {})
         spec = {"name": spec_name(task, kind), "schema": s["schema"], "dataset_type": s["dataset_type"],
                 "datasets": list(s["datasets"])}
     else:
         raise ValueError(f"unknown spec kind {kind!r}")
-    spec.update(methods=[task.method], evals=list(s["evals"]), seed=int(cfg["eval"].get("seed", 2026)))
+    spec.update(methods=[task.method], evals=list(s["evals"]),
+                seed=int((s if kind == "eval" else cfg["eval"]).get("seed", 2026)),
+                isolate_workdir=True)
     spec.update(fields)
+    if kind == "eval":
+        for key in ("src_datasets", "dst_datasets", "dataset_dir", "curves", "global_cfg", "overrides", "recover_publication"):
+            if key in s:
+                spec[key] = deepcopy(s[key])
     hp = dict(hparams or {})
     if epochs is not None and (key := epochs_key(task)):
         hp[key] = int(epochs)
@@ -138,29 +168,56 @@ def write_spec(task: Task, kind: str, *, epochs: int | None = None,
 
 # --------------------------------------------------------------- run reading
 def find_run(method: str, schema: str, dataset: str, *, run_id: str | None = None,
-             experiment: str | None = None) -> Path | None:
-    """Run dir of `run_id` (None if it wrote no manifest), else the newest finished one of `experiment`."""
-    base = RUNS / method / schema / dataset
-    if run_id:
-        return base / run_id if (base / run_id / "manifest.json").exists() else None
+             experiment: str | None = None, attempt_id: str | None = None) -> Path | None:
+    """Find method-local metadata, retaining read compatibility with historical runs."""
+    metadata = load().methods_dir / method / "reproduction" / "runs"
+    candidates = list(metadata.glob(f"{attempt_id or '*'}/{schema}/{dataset}/manifest.json"))
+    legacy = RUNS / method / schema / dataset
+    candidates += list(legacy.glob(f"{run_id or '*'}/manifest.json"))
     best, best_at = None, ""
-    for m in base.glob("*/manifest.json"):
+    for path in candidates:
         try:
-            man = json.loads(m.read_text())
-        except (OSError, json.JSONDecodeError):
+            manifest = json.loads(path.read_text())
+        except (OSError, ValueError):
             continue
-        if experiment and man.get("experiment") != experiment:
+        if run_id and manifest.get("run_id", path.parent.name) != run_id:
             continue
-        at = man.get("finished_at") or ""
+        if attempt_id and manifest.get("attempt_id", path.parents[2].name if path.is_relative_to(metadata) else None) != attempt_id:
+            continue
+        if any(manifest.get(key, value) != value for key, value in
+               (("method", method), ("schema", schema), ("dataset", dataset))):
+            continue
+        if experiment and manifest.get("experiment") != experiment:
+            continue
+        at = manifest.get("finished_at") or manifest.get("started_at") or ""
         if at >= best_at:
-            best, best_at = m.parent, at
+            best, best_at = path.parent, at
     return best
 
 
 def check_scores(run_dir: Path | None, expected: int | None = None) -> dict:
     """Load scores/*.npy: each must be a non-empty, 1-D, all-finite array."""
     problems, lengths = [], {}
-    files = sorted((run_dir / "scores").glob("*.npy")) if run_dir else []
+    score_dir = run_dir / "scores" if run_dir else None
+    selected = None
+    if run_dir and (run_dir / "manifest.json").exists():
+        manifest = json.loads((run_dir / "manifest.json").read_text())
+        if manifest.get("score_dir"):
+            score_dir = ROOT / manifest["score_dir"]
+            if isinstance(manifest.get("scored_curves"), list):
+                selected = manifest["scored_curves"]
+            elif isinstance(manifest.get("config", {}).get("curves"), list):
+                selected = manifest["config"]["curves"]
+    if score_dir and selected is not None:
+        files = []
+        for curve in sorted(set(selected)):
+            path = score_dir / (curve + ".npy")
+            if path.exists():
+                files.append(path)
+            else:
+                problems.append(f"{curve}: score file missing")
+    else:
+        files = sorted(score_dir.glob("*.npy")) if score_dir else []
     for f in files:
         try:
             a = np.load(f, allow_pickle=False)
@@ -183,6 +240,54 @@ def check_scores(run_dir: Path | None, expected: int | None = None) -> dict:
     return {"ok": not problems, "n_files": len(files), "lengths": lengths, "problems": problems}
 
 
+def read_summary(run_dir: Path | None) -> dict:
+    """Read this attempt's trusted progress; canonical averages are the fallback.
+
+    A partial attempt can point at a previous complete native pair, so its live
+    event summary takes precedence. No metric copy is written by the harness.
+    """
+    if run_dir is None:
+        return {}
+    try:
+        manifest = json.loads((run_dir / "manifest.json").read_text())
+    except (OSError, ValueError):
+        manifest = {}
+    summary = None
+    try:
+        with (run_dir / "progress.jsonl").open() as stream:
+            for line in stream:
+                try:
+                    event = json.loads(line)
+                except ValueError:
+                    continue  # an append can be observed before its final newline
+                data = event.get("data", {})
+                if event.get("type") in ("curve_evaluated", "dataset_finished") and isinstance(data.get("summary"), dict):
+                    summary = data["summary"]
+    except OSError:
+        pass
+    if summary is not None:
+        return summary
+    if manifest.get("result_format") == "easytsad-v1":
+        if not manifest.get("canonical_metrics_committed") or not manifest.get("avg_path"):
+            return {}
+        path = ROOT / manifest["avg_path"]
+        try:
+            payload = path.read_bytes()
+            expected = manifest.get("result_sha256", {})
+            checksum = expected.get(manifest["avg_path"], expected.get("avg_path"))
+            if checksum and hashlib.sha256(payload).hexdigest() != checksum:
+                return {}
+            native = json.loads(payload)
+        except (OSError, ValueError):
+            return {}
+        return {key: native[name] if isinstance(native[name], dict) else {"value": native[name]}
+                for key, name in manifest.get("metric_keys", {}).items() if name in native}
+    try:
+        return json.loads((run_dir / "metrics.json").read_text()).get("summary", {})
+    except (OSError, ValueError):
+        return {}
+
+
 def _tail(p: Path | None, n: int = 4000) -> str:
     try:
         return p.read_text(errors="replace")[-n:] if p else ""
@@ -203,8 +308,11 @@ def _killpg(proc: subprocess.Popen) -> None:
 def source_hash(method_dir: Path) -> str:
     """sha1 over the method's source inputs (*.py and config.toml, paths + contents)."""
     h = hashlib.sha1()
-    files = [f for f in method_dir.rglob("*") if f.is_file() and "__pycache__" not in f.parts
-             and (f.suffix == ".py" or f.name == "config.toml")] if method_dir.is_dir() else []
+    files = []
+    for directory, children, names in os.walk(method_dir):
+        children[:] = [name for name in children if name not in
+                       {"__pycache__", ".venv", "venv", ".git", "reproduction"}]
+        files.extend(Path(directory) / name for name in names if name.endswith(".py") or name == "config.toml")
     for f in sorted(files):
         h.update(str(f.relative_to(method_dir)).encode() + b"\0")
         try:
@@ -219,6 +327,119 @@ def _gpu(section: str) -> str | None:
     cfg = load()
     g = str(cfg[section].get("gpus", cfg["eval"].get("gpus", "")) or "").strip()
     return g or None
+
+
+def discover_resources(gpus: str | None = None, *, min_gpu_memory_mib: int | float = 0,
+                       preferred_gpus: str | None = None) -> dict:
+    """Inspect resources without torch; select idle GPUs or the scheduler's CPU slot.
+
+    None, an empty string and "auto" respect CUDA_VISIBLE_DEVICES. Explicit
+    indices/UUIDs override that mask; "cpu" and "-1" force CPU. An empty returned
+    `gpus` string means omit --gpus (scripts/tsad.py uses one None slot).
+    Busy or unmeasurable visible GPUs raise a retryable HarnessError. This is a
+    snapshot, not a reservation; callers must rediscover immediately before launch.
+    Automatic selection ranks eligible idle GPUs by preference, then free memory.
+    Preferences are indices/UUIDs and never expand visibility or explicit selections.
+    """
+    if (isinstance(min_gpu_memory_mib, bool) or not isinstance(min_gpu_memory_mib, (int, float))
+            or not 0 <= min_gpu_memory_mib < float("inf")):
+        raise HarnessError("Evaluation min_gpu_memory_mib must be a finite non-negative number")
+    if preferred_gpus is not None and not isinstance(preferred_gpus, str):
+        raise HarnessError("Evaluation preferred_gpus must be a comma-separated string of GPU indices or UUIDs")
+    preferred = [token.strip() for token in (preferred_gpus or "").split(",") if token.strip()]
+    if any(not (token.isdigit() or (token.startswith("GPU-") and len(token) > 4)) for token in preferred):
+        raise HarnessError("Evaluation preferred_gpus must contain GPU indices or UUIDs")
+    requested = (gpus or "auto").strip() or "auto"
+    automatic = requested.lower() == "auto"
+    mask = os.environ.get("CUDA_VISIBLE_DEVICES")
+    selection = mask if automatic else requested
+    resources = {"gpus": "", "cpu_count": os.cpu_count() or 1, "devices": [],
+                 "requested_gpus": requested, "cuda_visible_devices": mask,
+                 "source": "nvidia-smi", "discovered_at": now(),
+                 "min_gpu_memory_mib": min_gpu_memory_mib, "preferred_gpus": preferred_gpus}
+    if selection is not None and selection.strip().lower() in ("", "cpu", "-1"):
+        resources["reason"] = "CPU explicitly selected or CUDA devices hidden"
+        return resources
+    try:
+        result = subprocess.run(
+            ["nvidia-smi", "--query-gpu=index,uuid,memory.total,memory.used,memory.free,utilization.gpu",
+             "--format=csv,noheader,nounits"],
+            capture_output=True, text=True, timeout=10, check=True,
+        )
+    except (OSError, subprocess.SubprocessError) as error:
+        resources["reason"] = f"GPU discovery unavailable: {type(error).__name__}: {error}"
+        return resources
+
+    def number(value: str) -> float | None:
+        try:
+            parsed = float(value)
+            return parsed if 0 <= parsed < float("inf") else None
+        except ValueError:
+            return None
+
+    devices = []
+    for line in result.stdout.splitlines():
+        fields = [field.strip() for field in line.split(",")]
+        if len(fields) != 6 or not fields[0].isdigit() or not fields[1]:
+            continue
+        total, used, free, utilization = [number(value) for value in fields[2:]]
+        idle = (total is not None and total > 0 and free is not None and free > 0
+                and used is not None and used <= 256 and utilization is not None and utilization <= 5)
+        devices.append({"index": int(fields[0]), "uuid": fields[1],
+                        "total_memory_mib": total, "used_memory_mib": used,
+                        "free_memory_mib": free, "utilization_gpu_percent": utilization,
+                        "idle": idle})
+    if not devices:
+        resources["reason"] = "No GPUs reported by nvidia-smi"
+        return resources
+    if selection is not None:
+        visible = []
+        for token in selection.split(","):
+            token = token.strip()
+            matches = [device for device in devices
+                       if token == str(device["index"])
+                       or (token.startswith("GPU-") and device["uuid"].startswith(token))]
+            if len(matches) != 1 or matches[0] in visible:
+                if automatic:
+                    break
+                raise HarnessError(f"Invalid or duplicate GPU selector {token!r}; use GPU indices, UUIDs or cpu")
+            visible.append(matches[0])
+        devices = visible
+    resources["devices"] = devices
+    resources["idle_policy"] = {"max_used_memory_mib": 256, "max_utilization_gpu_percent": 5}
+    if not devices:
+        resources["reason"] = "No GPUs visible through CUDA_VISIBLE_DEVICES"
+        return resources
+    try:
+        processes = subprocess.run(
+            ["nvidia-smi", "--query-compute-apps=gpu_uuid", "--format=csv,noheader,nounits"],
+            capture_output=True, text=True, timeout=10, check=True,
+        )
+        active = {line.strip() for line in processes.stdout.splitlines() if line.strip()}
+        for device in devices:
+            device["compute_active"] = device["uuid"] in active
+            device["idle"] = device["idle"] and not device["compute_active"]
+    except (OSError, subprocess.SubprocessError) as error:
+        raise HarnessError("RESOURCE_EXECUTION (retryable): cannot verify GPU compute processes; "
+                           f"retry discover_resources or launch_eval later: {error}") from error
+    selected = [device for device in devices if device["idle"]]
+    if not selected or (not automatic and len(selected) != len(devices)):
+        raise HarnessError("RESOURCE_EXECUTION (retryable): requested/visible GPUs are busy or their "
+                           "idle state cannot be verified; retry discover_resources or launch_eval later")
+    eligible = [device for device in selected if device["free_memory_mib"] >= min_gpu_memory_mib]
+    if not eligible or (not automatic and len(eligible) != len(selected)):
+        raise HarnessError(f"RESOURCE_EXECUTION (retryable): requested/visible idle GPUs do not meet "
+                           f"min_gpu_memory_mib={min_gpu_memory_mib}; retry on a GPU with more free memory")
+    if automatic:
+        def preference(device: dict) -> tuple:
+            rank = next((index for index, token in enumerate(preferred)
+                         if token == str(device["index"])
+                         or (token.startswith("GPU-") and device["uuid"].startswith(token))), len(preferred))
+            return rank, -device["free_memory_mib"]
+
+        eligible.sort(key=preference)
+    resources["gpus"] = ",".join(str(device["index"]) for device in eligible)
+    return resources
 
 
 # --------------------------------------------------------------------- smoke
@@ -287,9 +508,7 @@ def run_smoke(task: Task, *, epochs: int | None = None) -> dict:
         {"ok": False, "n_files": 0, "lengths": {}, "problems": ["no run directory"]}
     if status == "success" and not score["ok"]:
         status, error = "failed", "score check failed: " + "; ".join(score["problems"])
-    metrics = {}
-    if run_dir and (run_dir / "metrics.json").exists():
-        metrics = json.loads((run_dir / "metrics.json").read_text()).get("summary", {})
+    metrics = read_summary(run_dir)
     fclass = None
     if status != "success":
         fclass = "RESOURCE_EXECUTION" if status == "timeout" else \
@@ -318,21 +537,53 @@ def latest_smoke(task: Task) -> dict | None:
 
 
 # ---------------------------------------------------------------------- eval
-def launch_eval(task: Task, gpus: str | None = None) -> dict:
+def evaluation_resources(evaluation: dict, gpus: str | None = None) -> dict:
+    device = evaluation.get("compute_device", "auto")
+    if device not in ("cpu", "cuda", "auto"):
+        raise HarnessError("Evaluation compute_device must be cpu, cuda or auto")
+    execution = {key: evaluation[key] for key in ("min_gpu_memory_mib", "preferred_gpus")
+                 if key in evaluation and device != "cpu"}
+    resources = discover_resources("cpu" if device == "cpu" else
+                                   gpus if gpus is not None else evaluation.get("gpus", "auto"), **execution)
+    resources["compute_device"] = device
+    if device == "cuda" and not resources["gpus"]:
+        raise HarnessError("Method requires CUDA but no CUDA device is available for evaluation")
+    if device != "cpu" and execution.get("min_gpu_memory_mib", 0) > 0 and not resources["gpus"]:
+        raise HarnessError("RESOURCE_EXECUTION (retryable): no GPU available to satisfy min_gpu_memory_mib="
+                           f"{execution['min_gpu_memory_mib']}")
+    return resources
+
+
+def launch_eval(task: Task, gpus: str | None = None, *, datasets: list[str] | None = None,
+                attempt_id: str | None = None, evaluation: dict | None = None) -> dict:
     """Start the full evaluation detached (`nohup`, new session); returns pid + log path."""
     cfg = load()
-    gpus = gpus or _gpu("eval")
-    spec = write_spec(task, "eval")
+    effective = evaluation_config(task)
+    effective.update(deepcopy(evaluation or {}))
+    if datasets is not None:
+        effective["datasets"] = list(datasets)
+    resources = evaluation_resources(effective, gpus)
+    gpus = resources["gpus"]
+    spec = write_spec(task, "eval", evaluation=effective)
     ts = dt.datetime.now(dt.timezone.utc).strftime("%Y%m%dT%H%M%SZ")
     log_path = task.dir / "runs" / f"eval-{ts}.out"
     cmd = ["nohup", str(TSAD), "exp", str(spec), "--methods", task.method, "--force",
            *(["--gpus", gpus] if gpus else [])]
+    env = cfg.network_env()
+    env["CUDA_VISIBLE_DEVICES"] = gpus
+    if attempt_id:
+        env["TSAD_ATTEMPT_ID"] = attempt_id
     with open(log_path, "w") as fh:
-        proc = subprocess.Popen(cmd, cwd=ROOT, env=cfg.network_env(), stdout=fh,
+        proc = subprocess.Popen(cmd, cwd=ROOT, env=env, stdout=fh,
                                 stderr=subprocess.STDOUT, stdin=subprocess.DEVNULL,
                                 start_new_session=True)
     info = {"pid": proc.pid, "log": str(log_path.relative_to(task.dir)), "spec": str(spec.relative_to(task.dir)),
-            "gpus": gpus, "started_at": now(), "datasets": list(cfg["eval"]["datasets"])}
+            "argv": cmd, "cwd": ".",
+            "gpus": gpus, "resources": resources, "started_at": now(),
+            "datasets": list(effective["datasets"]), "evaluation": effective, "attempt_id": attempt_id,
+            "commandVerified": True}
+    from .scheduler import process_identity
+    info["processIdentity"] = process_identity(proc.pid)
     task.set(eval=info)
     task.log("runner/eval_launch", cmd=cmd, **info)
     return info
@@ -354,7 +605,12 @@ def _alive(pid: int | None) -> bool:
 
 def eval_alive(task: Task) -> bool:
     """True while the detached evaluation process recorded in state['eval'] is running."""
-    return _alive((task.state.get("eval") or {}).get("pid"))
+    info = task.state.get("eval") or {}
+    if info.get("processIdentity"):
+        from .scheduler import process_identity
+        if process_identity(info.get("pid", 0)) != info["processIdentity"]:
+            return False
+    return _alive(info.get("pid"))
 
 
 def eval_status(task: Task) -> dict:
@@ -363,28 +619,43 @@ def eval_status(task: Task) -> dict:
     info = task.state.get("eval")
     if not info:
         return {"launched": False, "running": False, "done": False, "datasets": {}, "failed": []}
+    effective = dict(cfg["eval"])
+    effective.update(info.get("evaluation") or {})
     log_text = _tail(task.dir / info["log"], 200_000)
     m = RUN_ID_RE.search(log_text)
     run_id = m.group(1) if m else None
     running = eval_alive(task)
     datasets = {}
-    for d in info.get("datasets", cfg["eval"]["datasets"]):
-        rd = RUNS / task.method / cfg["eval"]["schema"] / d / run_id if run_id else None
+    for d in (info.get("evaluation") or {}).get("datasets", info.get("datasets", effective["datasets"])):
+        rd = find_run(task.method, effective["schema"], d, run_id=run_id,
+                      attempt_id=info.get("attempt_id")) if run_id or info.get("attempt_id") else None
         man = rd / "manifest.json" if rd else None
         if man and man.exists():
             mj = json.loads(man.read_text())
             datasets[d] = {"status": mj.get("status"), "run_dir": str(rd.relative_to(ROOT)),
-                           "error": (mj.get("error") or "")[:500]}
+                           "manifest": str(man.relative_to(ROOT)),
+                           "error": (mj.get("error") or "")[-4000:],
+                           "diagnostics": mj.get("diagnostics", {}), "metrics_summary": read_summary(rd),
+                           **{key: mj[key] for key in ("config_hash", "score_dir", "all_path", "avg_path", "runtime_path",
+                               "metric_keys", "n_curves_scored", "n_curves_evaluated", "total_curves", "partial",
+                               "canonical_metrics_committed", "execution_phase") if key in mj}}
         else:
             datasets[d] = {"status": "pending" if running else "missing"}
     failed = [d for d, v in datasets.items() if v["status"] != "success"]
     return {"launched": True, "running": running, "run_id": run_id, "pid": info.get("pid"),
             "log": info["log"], "datasets": datasets,
+            "schema": effective["schema"], "dataset_type": effective.get("dataset_type"),
             "done": not running and bool(datasets) and not failed,
             "failed": [] if running else failed, "log_tail": log_text[-1500:]}
 
 
 # ------------------------------------------------------------ classification
+def publication_failure(result: dict) -> bool:
+    error = result.get("error") or ""
+    return result.get("status") != "success" and (result.get("execution_phase") == "publication"
+        or ("export_lock" in error and "pipeline/export.py" in error))
+
+
 _RESOURCE = re.compile(
     r"CUDA out of memory|OutOfMemoryError|\bMemoryError\b|CUDA error: out of memory|"
     r"No space left on device|\bKilled\b|signal 9|TimeoutExpired|timed out|exceeded \d+ min|"
@@ -419,7 +690,7 @@ def classify_failure(text: str, method: str) -> str:
     for rx in (_MISSING_MOD, _CANNOT_IMPORT):
         for mod in rx.findall(text):
             top = mod.split(".")[0]
-            if top == "EasyTSAD" or mod.startswith(method):
+            if top == "EasyTSAD" or (method and (mod == method or mod.startswith(method + "."))):
                 return "ADAPTER_INTERFACE"   # wrong layout / relative import of the method itself
             return "ENVIRONMENT"
     if _ENV.search(text):
@@ -427,8 +698,9 @@ def classify_failure(text: str, method: str) -> str:
     frames = _FRAME.findall(text)
     mdir = f"/Methods/{method}/"
     own = [f for f in frames if mdir in f]
-    if own:  # the innermost frame of the method decides: src/ = algorithm, adapter otherwise
-        return "ALGORITHM_IMPLEMENTATION" if f"{mdir}src/" in own[-1] else "ADAPTER_INTERFACE"
+    if own:
+        relative = own[-1].split(mdir, 1)[1]
+        return "ADAPTER_INTERFACE" if relative in (f"{method}.py", "__init__.py") else "ALGORITHM_IMPLEMENTATION"
     if frames and re.search(r"/EasyTSAD/(TrainingSchema|Evaluations|DataFactory|Controller)/", frames[-1]):
         return "ADAPTER_INTERFACE"
     if _ADAPTER_MSG.search(text):
@@ -461,21 +733,20 @@ def import_check(method: str, timeout: float = 900) -> tuple[bool, str]:
 
 
 def check_method(task: Task, timeout: float = 900) -> dict:
-    """`scripts/tsad check <env>` restricted to the output lines of this method."""
+    """Import only this method inside its registered environment."""
     env = method_env(task.method)
     if env is None:
         return {"ok": False, "env": None, "lines": [],
                 "error": f"{task.method} is not registered in envs/registry.toml"}
-    rc, out = _run([str(TSAD), "check", env], timeout)
-    lines = [l.strip() for l in out.splitlines() if re.search(rf"\b{re.escape(task.method)}\b", l)]
-    ok = any(l.startswith("ok") for l in lines) and not any(l.startswith("FAIL") for l in lines)
+    ok, out = import_check(task.method, timeout)
+    lines = [f"ok     {task.method}"] if ok else [f"FAIL   {task.method}"]
     res = {"ok": ok, "env": env, "lines": lines}
     if not ok:
-        res["error"] = out[-3000:] if not lines else "\n".join(lines)
+        res["error"] = out[-3000:]
     return res
 
 
-__all__ = ["method_env", "write_spec", "run_smoke", "latest_smoke", "launch_eval", "eval_status",
-           "classify_failure", "check_scores", "check_method", "import_check", "find_run", "epochs_key", "epochs_claim", "non_iterative",
+__all__ = ["method_env", "write_spec", "discover_resources", "run_smoke", "latest_smoke", "launch_eval", "eval_status",
+           "classify_failure", "check_scores", "read_summary", "check_method", "import_check", "find_run", "epochs_key", "epochs_claim", "non_iterative",
            "source_hash", "eval_alive", "ALLOWED_SCOPE",
            "FAILURE_CLASSES"]

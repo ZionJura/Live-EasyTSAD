@@ -1,0 +1,50 @@
+{
+  "source": "EasyTSAD/Methods/CANDI/upstream",
+  "artifacts": {
+    "source": "EasyTSAD/Methods/CANDI/reproduction/source.json",
+    "hyperparameters": "EasyTSAD/Methods/CANDI/reproduction/hyperparameters.json",
+    "interface": "EasyTSAD/Methods/CANDI/reproduction/adapter.yaml",
+    "environment": "EasyTSAD/Methods/CANDI/environment/pyproject.toml",
+    "environment_evidence": "EasyTSAD/Methods/CANDI/reproduction/environment.json",
+    "diagnosis": "EasyTSAD/Methods/CANDI/reproduction/diagnosis.json"
+  },
+  "environment": "EasyTSAD/Methods/CANDI/environment",
+  "environment_name": "method_CANDI",
+  "legacy_integration": false,
+  "human_corrections": [],
+  "errors": [
+    {
+      "method": "CANDI",
+      "category": "environment",
+      "action": "repair",
+      "message": "Failing call: the post-IMPLEMENT method import smoke test in env `method_CANDI` (`python -c \"import EasyTSAD.Controller\"`, recorded at EasyTSAD/Harness/tasks/CANDI/journal.jsonl:75) exits with `FAIL   CANDI` on `EasyTSAD/Plots/plot.py:3  from matplotlib import pyplot as plt` -> `ModuleNotFoundError: No module named 'matplotlib'`. Nothing in CANDI runs; the failure is upstream of method code. Cause: the method-local venv EasyTSAD/Methods/CANDI/environment/.venv is still a truncated/partial materialization, not a missing declaration. `matplotlib>=3.7.5` IS declared in EasyTSAD/Methods/CANDI/environment/pyproject.toml:65 and is required by the EasyTSAD core chain EasyTSAD/Controller/TSADController.py:10 -> EasyTSAD/Plots/__init__.py:1 -> EasyTSAD/Plots/plot.py:3, yet site-packages contains only `matplotlib-3.11.2.dist-info/` (LICENSE, METADATA, WHEEL, RECORD) and no `matplotlib/` package directory; the same truncation remains for `yacs/`, which holds only config.py and tests.py with no `__init__.py` (that is the exact file the earlier aborted `uv sync` failed to hardlink: `Disk quota exceeded (os error 122)` at journal.jsonl:39). So the env install silently half-completed and each subsequent run inherits the broken venv. Method-local repair in EasyTSAD/Methods/CANDI/environment: delete the partial `.venv` and re-run `uv sync --project EasyTSAD/Methods/CANDI/environment` to completion with the recorded mitigations (dedicated `[tool.uv] cache-dir` on scratch storage, `link-mode = \"copy\"`, `UV_PROJECT_ENVIRONMENT` pointing at the method-local `.venv`, >= 6 GiB free or `uv cache clean`), then verify `python -c \"import matplotlib, yacs, torch, scipy, sklearn, pandas\"` and re-run the `import EasyTSAD.Controller` smoke test before the next run. No implementation files were edited and no test-set performance was used.",
+      "evidence": [
+        {
+          "file": "EasyTSAD/Harness/tasks/CANDI/journal.jsonl",
+          "line": 75,
+          "error": "Traceback (most recent call last):\n  File \"<string>\", line 1, in <module>\n  File \"/home/v-zzr25/workplace/Live-EasyTSAD/EasyTSAD/Controller/__init__.py\", line 2, in <module>\n    from .TSADController import TSADController\n  File \"/home/v-zzr25/workplace/Live-EasyTSAD/EasyTSAD/Controller/TSADController.py\", line 10, in <module>\n    from ..Plots.plot import plot_uts_score_only\n  File \"/home/v-zzr25/workplace/Live-EasyTSAD/EasyTSAD/Plots/__init__.py\", line 1, in <module>\n    from .plot import *\n  File \"/home/v-zzr25/workplace/Live-EasyTSAD/EasyTSAD/Plots/plot.py\", line 3, in <module>\n    from matplotlib import pyplot as plt\nModuleNotFoundError: No module named 'matplotlib'"
+        },
+        {
+          "file": "EasyTSAD/Harness/tasks/CANDI/journal.jsonl",
+          "line": 39,
+          "error": "error: Failed to install: yacs-0.1.8-py3-none-any.whl (yacs==0.1.8)\n  cause: failed to hardlink file from /home/v-zzr25/workplace/Live-EasyTSAD/EasyTSAD/Methods/CANDI/environment/.venv/lib/python3.11/site-packages/yacs/__init__.py to /home/v-zzr25/workplace/Live-EasyTSAD/runtime/uv-cache/archive-v0/sh-scRetmY3Bubn1/yacs/__init__.py: Disk quota exceeded (os error 122)"
+        },
+        {
+          "file": "EasyTSAD/Methods/CANDI/environment/pyproject.toml",
+          "line": 65,
+          "error": "matplotlib>=3.7.5 is declared as a project dependency of the CANDI environment, so the venv is expected to provide an importable matplotlib package; EasyTSAD/Methods/CANDI/environment/.venv/lib/python3.11/site-packages/ instead holds only matplotlib-3.11.2.dist-info/{LICENSE,METADATA,WHEEL,RECORD} with no matplotlib/ directory"
+        },
+        {
+          "file": "EasyTSAD/Methods/CANDI/environment/.venv/lib/python3.11/site-packages/yacs/config.py",
+          "line": 1,
+          "error": "Truncated-install corroboration: site-packages/yacs/ contains only config.py and tests.py and no __init__.py, matching the aborted yacs hardlink in journal.jsonl:39"
+        }
+      ],
+      "id": "diag_7e57c1d8c4e34c8b",
+      "jobId": "CANDI",
+      "attemptId": "attempt_fe015bea82b74db6",
+      "createdAt": "2026-11-18T02:33:36+00:00",
+      "updatedAt": "2026-11-18T02:33:36+00:00"
+    }
+  ]
+}

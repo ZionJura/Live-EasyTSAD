@@ -1,0 +1,12 @@
+# Full UTS benchmark for the five CPU-based methods that passed the NAB check.
+# GPU IDs are scheduler slots; these implementations perform their work on CPU.
+name = "uts_naive_classic5"
+schema = "naive"
+dataset_type = "UTS"
+datasets = ["AIOPS", "NAB", "TODS", "UCR", "WSD", "Yahoo"]
+methods = ["LOF", "OCSVM", "Diff", "SAND", "MatrixProfile"]
+evals = ["point_f1", "event_f1", "event_f1_squeeze", "auprc", "auroc"]
+seed = 2026
+require_cuda = false
+monitor_gpu = true
+isolate_workdir = true

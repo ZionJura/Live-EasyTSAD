@@ -1,5 +1,5 @@
 # Trim layer applied on top of the shipped DSH `headless` profile
-# (dsh-base + dsh-headless, runtime 0.2.1-rc.2).
+# (dsh-base + dsh-headless, published runtime 0.2.2-rc.1).
 #
 # Kept: agent loop, session + JSONL persistence, system prompt, native tool
 # executor, bash, fs read/write/edit/glob/grep, working directory, jobs,

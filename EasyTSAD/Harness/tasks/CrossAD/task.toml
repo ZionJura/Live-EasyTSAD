@@ -1,0 +1,17 @@
+method = "CrossAD"
+created_at = "2026-11-06T08:40:29+00:00"
+code_url = ""
+env_hint = ""
+family = "深度学习"
+
+[paper]
+title = "CrossAD: Time Series Anomaly Detection with Cross-scale Associations and Cross-window Modeling"
+authors = ["Beibu Li", "Qichao Shentu", "Yang Shu", "Hui Zhang", "Ming Li", "Ning Jin", "Bin Yang", "Chenjuan Guo"]
+year = 2025
+venue = "arXiv"
+arxiv_id = "2510.12489"
+url = "https://arxiv.org/abs/2510.12489"
+pdf_url = "https://arxiv.org/pdf/2510.12489v1"
+abstract = "Time series anomaly detection plays a crucial role in a wide range of real-world applications. Given that time series data can exhibit different patterns at different sampling granularities, multi-scale modeling has proven beneficial for uncovering latent anomaly patterns that may not be apparent at a single scale. However, existing methods often model multi-scale information independently or rely on simple feature fusion strategies, neglecting the dynamic changes in cross-scale associations that occur during anomalies. Moreover, most approaches perform multi-scale modeling based on fixed sliding windows, which limits their ability to capture comprehensive contextual information. In this work, we propose CrossAD, a novel framework for time series Anomaly Detection that takes Cross-scale associations and Cross-window modeling into account. We propose a cross-scale reconstruction that reconstructs fine-grained series from coarser series, explicitly capturing cross-scale associations. Furthermore, we design a query library and incorporate global multi-scale context to overcome the limitations imposed by fixed window sizes. Extensive experiments conducted on multiple real-world datasets using nine evaluation metrics validate the effectiveness of CrossAD, demonstrating state-of-the-art performance in anomaly detection."
+code_urls = []
+source = "arxiv"

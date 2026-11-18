@@ -1,0 +1,31 @@
+{
+  "fetched_at": "2026-11-12T09:52:36+00:00",
+  "paper": {
+    "title": "",
+    "authors": [],
+    "year": null,
+    "venue": "",
+    "arxiv_id": "",
+    "url": "",
+    "pdf_url": "",
+    "abstract": "",
+    "code_urls": [
+      "https://github.com/hpi-Information-Systems/autotsad"
+    ],
+    "source": "url"
+  },
+  "pdf": null,
+  "markdown": null,
+  "code": {
+    "url": "https://github.com/hpi-Information-Systems/autotsad",
+    "branch": "",
+    "dir": "/home/v-zzr25/workplace/Live-EasyTSAD/EasyTSAD/Harness/tasks/AutoTSAD/code/autotsad",
+    "commit": "3a9e65a069f0a58be1705143c9d8fc025e43a410"
+  },
+  "code_candidates": [
+    "https://github.com/hpi-Information-Systems/autotsad"
+  ],
+  "errors": [
+    "paper fetch: resolve() needs one of arxiv=, title=, url=, pdf="
+  ]
+}

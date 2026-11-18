@@ -1,0 +1,153 @@
+{
+  "method": "HYDRA",
+  "environment": "EasyTSAD/Methods/HYDRA/environment/pyproject.toml",
+  "project": {
+    "name": "tsad-env-hydra",
+    "version": "0.0.0",
+    "requires_python": "==3.11.*",
+    "venv": "EasyTSAD/Methods/HYDRA/environment/.venv",
+    "lock": "EasyTSAD/Methods/HYDRA/environment/uv.lock",
+    "installer": "controller: uv sync --project EasyTSAD/Methods/HYDRA/environment (UV_PROJECT_ENVIRONMENT=<project>/.venv)",
+    "registered_as": "method_HYDRA"
+  },
+  "python": {
+    "decision": "==3.11.*",
+    "evidence": [
+      "EasyTSAD/Methods/HYDRA/upstream/README.md — Step 2: 'conda create -n HYDRA python=3.11    # Currently we support python>=3.8, up to 3.12'.",
+      "EasyTSAD/Methods/HYDRA/upstream/TSB-AD/setup.py — python_requires='>=3.8' (the vendored benchmark package agrees with the >=3.8 .. 3.12 window).",
+      "envs/registry.toml:7-8 — repository convention: the default environment [envs.torch2] uses python = \"3.11\"."
+    ],
+    "rationale": "3.11 is the officially recommended interpreter in the upstream README and the widest-supported version inside the declared 3.8-3.12 window; it also matches the repository's default environment pin, so the method environment does not need a second managed interpreter.",
+    "compatibility_note": "No Python-version incompatibility was found: the HYDRA algorithm modules use only numpy.lib.stride_tricks.sliding_window_view (numpy>=1.20) and sklearn.neighbors, both available on 3.11."
+  },
+  "dependencies": [
+    {
+      "name": "easytsad",
+      "spec": "editable path source ../../../..",
+      "origin": "repository root pyproject.toml [project] name = EasyTSAD",
+      "evidence": "EasyTSAD/Controller/__init__.py:1-2, EasyTSAD/TrainingSchema/BaseSchema.py:7-12 — the method is driven through EasyTSAD.Controller/TSADController, DataFactory, Evaluations and Runtime, so the library must be importable inside the method environment. Declared as [tool.uv.sources] easytsad = { path = \"../../../..\", editable = true } (same pattern as envs/torch2/pyproject.toml:29, resolved relative to EasyTSAD/Methods/HYDRA/environment)."
+    },
+    {
+      "name": "numpy",
+      "spec": ">=1.24.3,<2.0",
+      "origin": "upstream/requirements.txt:5",
+      "evidence": "EasyTSAD/Methods/HYDRA/upstream/HYDRA/models/HYDRA_approx.py:1-2 imports numpy and numpy.lib.stride_tricks.sliding_window_view; upstream/requirements.txt:5 pins 'numpy>=1.24.3,<2.0'. The NumPy 1.x upper bound is kept because the official pin forbids NumPy 2 and EasyTSAD core (root pyproject.toml:18) only requires >=1.21."
+    },
+    {
+      "name": "scikit-learn",
+      "spec": ">=1.3.2",
+      "origin": "upstream/requirements.txt:12",
+      "evidence": "Required by the enabled code paths: HYDRA/models/HYDRA_exact.py:2-3 (sklearn.neighbors.NearestNeighbors, sklearn.preprocessing.StandardScaler) and HYDRA/models/HNSW_index.py:10-14,33-38 (sklearn NearestNeighbors is the ANN backend when hnswlib is absent, and a RuntimeError is raised only if both are missing). EasyTSAD core also needs it (DataFactory/TSData.py:13, Evaluations/Protocols/*.py). Pin >=1.3.2 copied from upstream/requirements.txt:12."
+    },
+    {
+      "name": "pandas",
+      "spec": ">=2.0.3",
+      "origin": "upstream/requirements.txt:7",
+      "evidence": "EasyTSAD/Methods/HYDRA/upstream/HYDRA/main.py:1 'import pandas'; also an EasyTSAD core dependency (root pyproject.toml:22, pandas>=1.3). Upstream pin >=2.0.3 is a strict superset and is satisfied on Python 3.11."
+    },
+    {
+      "name": "matplotlib",
+      "spec": ">=3.7.5",
+      "origin": "upstream/requirements.txt:6",
+      "evidence": "EasyTSAD/Plots/plot.py:2-3 and EasyTSAD/Evaluations/Protocols/*.py (e.g. PointAurocPA.py:7 'from matplotlib import pyplot as plt') are imported by the controller/plotting path; upstream/requirements.txt:6 pins >=3.7.5."
+    },
+    {
+      "name": "scipy",
+      "spec": "unpinned (resolved by the lock)",
+      "origin": "EasyTSAD/Evaluations/Protocols/VUS.py:6",
+      "evidence": "EasyTSAD/Evaluations/Protocols/VUS.py:6 'from scipy.signal import argrelextrema' — required whenever the VUS evaluation protocol is imported. It is not in the official HYDRA requirements, so it is added as an EasyTSAD runtime requirement rather than a method pin."
+    },
+    {
+      "name": "tqdm",
+      "spec": "unpinned (official line is unpinned)",
+      "origin": "upstream/requirements.txt:1",
+      "evidence": "upstream/requirements.txt:1 'tqdm'; EasyTSAD core dependency (root pyproject.toml:20, tqdm>=4.60)."
+    },
+    {
+      "name": "toml",
+      "spec": ">=0.10.2",
+      "origin": "EasyTSAD core pyproject.toml:17",
+      "evidence": "EasyTSAD/Controller/PathManager.py:1 'import toml', EasyTSAD/TrainingSchema/BaseSchema.py:2, EasyTSAD/Controller/TSADController.py:4 — imported at EasyTSAD import time, so it must be present in the method environment."
+    },
+    {
+      "name": "hnswlib",
+      "spec": ">=0.8.0 (optional extra 'ann', NOT installed by the default sync)",
+      "origin": "upstream/README.md installation notes + HYDRA/models/HNSW_index.py:4-8",
+      "evidence": "HYDRA/models/HNSW_index.py:4-8 tries 'import hnswlib' behind try/except and :33-38 resolves ann_backend='auto' to hnswlib when importable, otherwise to scikit-learn. hnswlib is absent from upstream/requirements.txt (it is only mentioned in README.md as a conda-forge fallback: 'conda install -c conda-forge hnswlib'), so the default sync installs the scikit-learn backend — the same behaviour as the documented 'pip install -r requirements.txt'. Not pinning it avoids a source build (hg+setuptools C++ compile) that would make the lock environment-dependent; `uv sync --extra ann` enables it when a toolchain is available.",
+      "compatibility_adjustment": "hybrid: optional extra instead of a hard dependency, because the official requirements.txt does not list it and the code degrades gracefully."
+    }
+  ],
+  "compatibility_adjustments": [
+    {
+      "topic": "torch is listed in the official requirements but is not needed by the HYDRA detector",
+      "source": "upstream/requirements.txt:16 'torch==2.3.0'",
+      "finding": "EasyTSAD/Methods/HYDRA/upstream/HYDRA/main.py:2-3 imports torch only to seed RNGs (torch.manual_seed / torch.cuda.manual_seed / torch.cuda.manual_seed_all) and to print torch.cuda.is_available(); the HYDRA model modules (HYDRA/HYDRA_loader.py:1-3, HYDRA/models/HYDRA_approx.py:1-3, HYDRA/models/HYDRA_exact.py:1-3, HYDRA/models/HNSW_index.py:1-14) import only numpy, scikit-learn and optionally hnswlib — no torch tensors, no .cuda() dispatch.",
+      "resolution": "torch is intentionally NOT declared. main.py is also not usable as-is: it inserts ROOT/TSB-AD on sys.path and imports TSB_AD.* (HYDRA/main.py:7-12), i.e. the vendored benchmark suite (upstream/TSB-AD), so the official entrypoint is the TSB-AD benchmark driver rather than the HYDRA integration surface. EasyTSAD drives the loader directly. Decision recorded here rather than silently dropped.",
+      "impact": "none on the enabled algorithm; compute device remains cpu (see reproduction/source.json compatibility.compute_device)."
+    },
+    {
+      "topic": "benchmark-suite dependencies are not HYDRA requirements",
+      "source": "upstream/requirements.txt:2-4,8-11,13-15",
+      "finding": "torchinfo, h5py, einops, arch, hurst, tslearn, cython, stumpy, networkx, transformers are the TSB-AD benchmark dependency set (40 detectors + suite utilities; mirrored in upstream/TSB-AD/setup.py). None of them is imported anywhere under upstream/HYDRA/models, upstream/HYDRA/HYDRA_loader.py, or the EasyTSAD integration path.",
+      "resolution": "omitted from [project].dependencies to keep the lock minimal and avoid the tslearn/cython source builds. If the controller later needs to run the official TSB-AD benchmark entrypoint (upstream/HYDRA/main.py), those packages must be added to this project — they are recorded here so that requirement is not lost.",
+      "impact": "official benchmark entrypoint (`python -m HYDRA.main`) cannot run in this environment; the HYDRA algorithm path can."
+    },
+    {
+      "topic": "NumPy 2 exclusion",
+      "source": "upstream/requirements.txt:5 'numpy>=1.24.3,<2.0'",
+      "finding": "EasyTSAD's root project only requires numpy>=1.21, so a bare install could resolve NumPy 2.x, which the official pin forbids.",
+      "resolution": "explicit 'numpy>=1.24.3,<2.0' in [project].dependencies, matching the repository convention (envs/torch2/pyproject.toml:11 'numpy<2').",
+      "impact": "none; NumPy 1.26.x satisfies both EasyTSAD and the official HYDRA pin on Python 3.11."
+    },
+    {
+      "topic": "no GPU / CUDA requirement",
+      "source": "reproduction/source.json compatibility.compute_device = cpu",
+      "finding": "Every enabled code path is CPU-only numpy/sklearn computing; the only CUDA-aware calls in the repository are the RNG seeding guards in main.py, which are no-ops without CUDA.",
+      "resolution": "no torch/CUDA index ([tool.uv.index] pytorch-cu124) is declared, unlike envs/torch2/pyproject.toml:33-36. The environment installs from PyPI only.",
+      "impact": "the environment is portable to CPU-only hosts and needs no NVIDIA driver."
+    }
+  ],
+  "incompatibilities": [
+    {
+      "id": "official-entrypoint-needs-TSB-AD",
+      "severity": "documented",
+      "detail": "upstream/HYDRA/main.py:5-12 inserts ROOT/TSB-AD into sys.path and imports TSB_AD.evaluation.metrics, TSB_AD.utils.slidingWindows, TSB_AD.model_wrapper and TSB_AD.HP_list. TSB-AD is a separate repository, vendored here at upstream/TSB-AD but not installed as a distribution.",
+      "mitigation": "EasyTSAD integrates HYDRA through HYDRA/HYDRA_loader.py::HYDRA, which has no TSB-AD dependency (HYDRA_loader.py:1-3). If TSB-AD is needed later, install upstream/TSB-AD (its setup.py declares package TSB_AD v1.5) into this environment."
+    },
+    {
+      "id": "hnswlib-not-an-installable-pin",
+      "severity": "low",
+      "detail": "hnswlib has no binary wheel for all platforms and must compile C++ (HNSW). It is also absent from upstream/requirements.txt, so the official 'pip install -r requirements.txt' path runs without it.",
+      "mitigation": "declared as the optional extra 'ann'; default sync resolves the scikit-learn ANN backend (HYDRA/models/HNSW_index.py:33-38). Scores may differ marginally between backends (approximate vs exact kNN)."
+    }
+  ],
+  "import_checks": {
+    "expected": "EasyTSAD.Controller then EasyTSAD.Methods.HYDRA.HYDRA",
+    "note": "Performed by the controller after uv sync; this worker did not run uv, pip or any import of the installed environment. No installation is claimed here.",
+    "blocking_modules": [
+      "numpy",
+      "sklearn",
+      "pandas",
+      "matplotlib",
+      "scipy",
+      "tqdm",
+      "toml"
+    ]
+  },
+  "evidence_files": [
+    "EasyTSAD/Methods/HYDRA/upstream/requirements.txt",
+    "EasyTSAD/Methods/HYDRA/upstream/README.md",
+    "EasyTSAD/Methods/HYDRA/upstream/setup.py",
+    "EasyTSAD/Methods/HYDRA/upstream/TSB-AD/setup.py",
+    "EasyTSAD/Methods/HYDRA/upstream/HYDRA/main.py",
+    "EasyTSAD/Methods/HYDRA/upstream/HYDRA/HYDRA_loader.py",
+    "EasyTSAD/Methods/HYDRA/upstream/HYDRA/models/HYDRA_approx.py",
+    "EasyTSAD/Methods/HYDRA/upstream/HYDRA/models/HYDRA_exact.py",
+    "EasyTSAD/Methods/HYDRA/upstream/HYDRA/models/HNSW_index.py",
+    "pyproject.toml",
+    "envs/registry.toml",
+    "envs/torch2/pyproject.toml"
+  ],
+  "notes": "Scope: this worker only wrote EasyTSAD/Methods/HYDRA/environment/pyproject.toml and EasyTSAD/Methods/HYDRA/reproduction/environment.json. No uv/pip command was run and no environment/shared file was modified; the controller performs the lock/sync, records environment-install.log and environment-install.json, and validates the import check.",
+  "at": "2026-11-17T08:10:57+00:00"
+}

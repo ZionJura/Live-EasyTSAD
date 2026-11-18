@@ -1,0 +1,334 @@
+method: HYDRA
+source_revision: 5f76abee37833eed0365c2da69f1afc2d22ef0ab
+paper: EasyTSAD/Methods/HYDRA/paper/paper.md
+
+source:
+  entrypoint: EasyTSAD/Methods/HYDRA/upstream/HYDRA/main.py
+  entrypoint_note: >-
+    Documented usage is `python -m HYDRA.main` on a CSV with feature columns plus a
+    trailing `Label` column (EasyTSAD/Methods/HYDRA/upstream/README.md:60-66).
+  read_input:
+    evidence: EasyTSAD/Methods/HYDRA/upstream/HYDRA/main.py:40-42
+    code: >-
+      data = df.iloc[:, 0:-1].values.astype(float);
+      label = df['Label'].astype(int).to_numpy()
+    shape: >-
+      data is [T, C] with C == 1 for the univariate TSB-AD folders and C > 1 for
+      multivariate folders. label is [T] with 0/1 values and is used only for
+      evaluation, never by the detector.
+  window_length:
+    uts: >-
+      EasyTSAD/Methods/HYDRA/upstream/HYDRA/main.py:44-45 -- data.shape[1] == 1
+      selects find_length_rank(data, rank=1), an ACF-based estimator
+      (EasyTSAD/Methods/HYDRA/upstream/TSB-AD/TSB_AD/utils/slidingWindows.py:7-52,
+      which returns 125 when no local maximum falls in [3, 300]).
+    mts: >-
+      EasyTSAD/Methods/HYDRA/upstream/HYDRA/main.py:46-47 -- multivariate input
+      uses the fixed window length 64.
+    shipped_script: >-
+      EasyTSAD/Methods/HYDRA/upstream/HYDRA/main.py:58 -- the script actually
+      executes run_HYDRA(data, 64), so 64 is the effective default for both UTS
+      and MTS runs of the official entrypoint.
+  callable:
+    name: run_HYDRA
+    evidence: EasyTSAD/Methods/HYDRA/upstream/HYDRA/main.py:52-56
+    signature: run_HYDRA(data, winsize=30)
+    body: |
+      model = loader.HYDRA(winsize, mode='approx')
+      model.compress_and_score_multi(data)
+      ens_score, _ = model.ensemble_maxpool_windows()
+      return ens_score.ravel()
+  factory:
+    evidence: EasyTSAD/Methods/HYDRA/upstream/HYDRA/HYDRA_loader.py:5-13
+    signature: >-
+      HYDRA(win_size, stride=1, K=2, include_all_windows=True, debug=False,
+      ann_backend='auto', hnsw_M=16, hnsw_ef_construction=100, hnsw_ef=40,
+      ann_threads=1, mode='approx', random_state=42)
+    mode_approx: HYDRAApprox (EasyTSAD/Methods/HYDRA/upstream/HYDRA/models/HYDRA_approx.py:20-50)
+    mode_exact: HYDRAExact (EasyTSAD/Methods/HYDRA/upstream/HYDRA/models/HYDRA_exact.py:32)
+    defaults_used: >-
+      mode='approx', stride=1, K=2, include_all_windows=True, random_state=42 --
+      the settings the official script and the TSB-AD wrapper both rely on.
+  model_steps:
+    windowing: >-
+      EasyTSAD/Methods/HYDRA/upstream/HYDRA/models/HYDRA_approx.py:59-64 --
+      sliding_window_view(x, win_size, axis=0)[::stride] flattened to
+      [T - win_size + 1, C * win_size].
+    compression: >-
+      EasyTSAD/Methods/HYDRA/upstream/HYDRA/models/HYDRA_approx.py:182-227 --
+      hierarchical compression via nearest non-self neighbour plus directed
+      merges, K representatives per level.
+    scoring: >-
+      EasyTSAD/Methods/HYDRA/upstream/HYDRA/models/HYDRA_approx.py:230-309 --
+      level 0 scores the 1-NN distance among all windows; each further level
+      scores the distance from every window to its own representatives.
+    ensemble: >-
+      EasyTSAD/Methods/HYDRA/upstream/HYDRA/models/HYDRA_approx.py:311-324 --
+      per-level z-score over windows (nanmean/nanstd, zero-variance levels
+      neutralised), max over levels, then reverse windowing back to timepoints.
+    reverse_windowing: >-
+      EasyTSAD/Methods/HYDRA/upstream/HYDRA/models/HYDRA_approx.py:145-166 --
+      np.convolve(score_win, ones(win_size), 'full') divided by the overlap
+      count, i.e. the paper's averaging rule S(t) = (1/|I(t)|) * sum_{i in I(t)}
+      s_i (EasyTSAD/Methods/HYDRA/paper/paper.md:259-261, 832-836).
+  preprocessing:
+    channel_standardization: >-
+      EasyTSAD/Methods/HYDRA/upstream/HYDRA/models/HYDRA_approx.py:247-252 -- when
+      C > 1 each channel is z-scored column-wise before windowing, using
+      z_score(x) = (x - mean) / std with std <= 1e-8 replaced by 1.0
+      (HYDRA_approx.py:6-8). This is the global per-channel z-score of
+      EasyTSAD/Methods/HYDRA/paper/paper.md:908.
+    no_window_normalization: >-
+      EasyTSAD/Methods/HYDRA/paper/paper.md:908 -- windows are deliberately not
+      normalized so that window energy is preserved.
+    post_scaling: >-
+      EasyTSAD/Methods/HYDRA/upstream/HYDRA/main.py:61 -- MinMaxScaler(0, 1) is
+      applied to the returned score for reporting only. It is monotone and must
+      not be re-implemented as part of the algorithm contract; EasyTSAD's
+      evaluator already shifts scores (EasyTSAD/Evaluations/Performance.py:41-42).
+  score_output:
+    shape: >-
+      [T] after .ravel(). reverse_windowing_min returns
+      (T - win_size + 1) + win_size - 1 == T exactly for stride 1.
+    direction: higher score means more anomalous
+    level: >-
+      Window-level scores are aggregated to timepoints inside the method. The
+      official script's threshold pred = output > mean + 3*std
+      (EasyTSAD/Methods/HYDRA/upstream/HYDRA/main.py:62) is evaluation-side only
+      and stays in the EasyTSAD evaluator.
+  device:
+    implementation: >-
+      NumPy only (EasyTSAD/Methods/HYDRA/upstream/HYDRA/models/HYDRA_approx.py:1-3
+      imports numpy plus the local ANNIndex); the detector path has no torch or
+      CUDA usage.
+    ann_backend: >-
+      EasyTSAD/Methods/HYDRA/upstream/HYDRA/models/HNSW_index.py:33-38 --
+      backend 'auto' resolves to hnswlib when importable and otherwise to
+      scikit-learn NearestNeighbors, raising otherwise. hnswlib is itself
+      CPU-only.
+    torch_import: >-
+      EasyTSAD/Methods/HYDRA/upstream/HYDRA/main.py:2 imports torch only for RNG
+      seeding in the TSB-AD harness; torch is not on HYDRA's algorithmic path
+      (EasyTSAD/Methods/HYDRA/environment/pyproject.toml:27-35).
+
+target:
+  base_class: EasyTSAD/Methods/__init__.py:20-59 (BaseMethod)
+  registration: >-
+    The class is registered through BaseMethodMeta.registry under the name
+    'HYDRA' (EasyTSAD/Methods/__init__.py:4-17) and instantiated as
+    BaseMethodMeta.registry['HYDRA'](model_params)
+    (EasyTSAD/TrainingSchema/Naive.py:47-50,
+    EasyTSAD/TrainingSchema/MTS.py:48-51).
+  required_class_name: HYDRA
+  lifecycle:
+    param_statistic: >-
+      writes a text statistic file (EasyTSAD/TrainingSchema/Naive.py:52-53,
+      EasyTSAD/Methods/__init__.py:57-58).
+    train_valid_phase: >-
+      called with tsTrain (EasyTSAD/TrainingSchema/Naive.py:57,
+      EasyTSAD/TrainingSchema/MTS.py:58).
+    test_phase: >-
+      called with tsData (EasyTSAD/TrainingSchema/Naive.py:63,
+      EasyTSAD/TrainingSchema/MTS.py:64).
+    anomaly_score: >-
+      returns a 1-D np.ndarray of timepoint scores
+      (EasyTSAD/TrainingSchema/Naive.py:67,
+      EasyTSAD/Methods/__init__.py:60-71).
+    save: >-
+      EasyTSAD/TrainingSchema/BaseSchema.py:115-128 np.save of the full score
+      array, so the array must be 1-D and no longer than the test labels
+      (EasyTSAD/Evaluations/Performance.py:34-39).
+  training_semantics: >-
+    HYDRA is training-free and completely unsupervised
+    (EasyTSAD/Methods/HYDRA/paper/paper.md:838-841, "Algorithm 3: HYDRA;
+    (training-free, parameter-light)"). The official script fits and scores the
+    same `data` and never uses the computed data_train
+    (EasyTSAD/Methods/HYDRA/upstream/HYDRA/main.py:48-58). train_valid_phase may
+    therefore be a no-op and all work may happen in test_phase on tsData.test.
+    No labels or training split may be consumed.
+  data_contract:
+    uts: >-
+      TSData.test is 1-D [T] (EasyTSAD/DataFactory/TSData.py:42-47); the method
+      promotes 1-D input to [T, 1] internally
+      (EasyTSAD/Methods/HYDRA/upstream/HYDRA/models/HYDRA_approx.py:247-249).
+    mts: >-
+      MTSData.test is [T, C] (EasyTSAD/DataFactory/MTSData.py:85-131) and is
+      passed unchanged; the method z-scores channels itself, so no additional
+      channel reduction is allowed.
+    evaluator: >-
+      The score array must be 1-D and len(score) <= len(test_label); the
+      evaluator right-aligns labels (EasyTSAD/Evaluations/Performance.py:34-39)
+      and PointRoc consumes the raw scores
+      (EasyTSAD/Evaluations/Protocols/PointRoc.py:18-38).
+
+align:
+  input_array:
+    source: data argument of run_HYDRA (EasyTSAD/Methods/HYDRA/upstream/HYDRA/main.py:52-56)
+    target: tsData.test for both the naive and mts schemas
+    transform: >-
+      identity; both are float arrays of shape [T] or [T, C]. Do not reshape
+      channels, do not select a single channel, do not transpose.
+  fit_scope:
+    channel_scaling: >-
+      Fit inside the method on the evaluated series only, as a column-wise
+      mean/std of X (EasyTSAD/Methods/HYDRA/upstream/HYDRA/models/HYDRA_approx.py:250-252).
+      Nothing is fit on tsTrain, and EasyTSAD's outer preprocessing
+      (TSData.min_max_norm / z_score_norm,
+      EasyTSAD/DataFactory/TSData.py:108-127) is a separate controller choice
+      that HYDRA must not re-apply.
+    window_length: >-
+      win_size is a hyperparameter: 64 by default for multivariate input and the
+      ACF value for univariate input
+      (EasyTSAD/Methods/HYDRA/upstream/HYDRA/main.py:44-47), with the shipped
+      script always passing 64 (main.py:58). Any EasyTSAD-supplied periodicity
+      window must come from find_length_rank, not from a new estimator.
+  window_dimension:
+    extraction: >-
+      windows[i] = X[i : i + win_size] for i = 0 .. T - win_size, i.e.
+      num_win = T - win_size + 1 consecutive windows at stride 1
+      (EasyTSAD/Methods/HYDRA/upstream/HYDRA/models/HYDRA_approx.py:59-64).
+    flattened_dim: >-
+      C * win_size per window; multivariate windows are flattened before the
+      distance is computed (HYDRA_approx.py:62-64).
+  temporal_positions:
+    window_to_point: >-
+      Window i covers points [i, i + win_size - 1]. reverse_windowing_min
+      (EasyTSAD/Methods/HYDRA/upstream/HYDRA/models/HYDRA_approx.py:145-166,
+      stride == 1 branch) computes out[t] = sum over i in I(t) of score_win[i]
+      divided by |I(t)| via np.convolve full mode, which is exactly
+      S(t) = (1/|I(t)|) * sum_{i in I(t)} s_i with
+      I(t) = {i : max(1, t - m + 1) <= i <= min(t, N)}
+      (EasyTSAD/Methods/HYDRA/paper/paper.md:259-261, 832-836; Algorithm 3 at
+      paper.md:838-860).
+    omitted_positions: >-
+      none. The output has exactly T positions and every t in [0, T-1] receives
+      a score. The first win_size - 1 positions are covered by fewer than
+      win_size windows (one window at t = 0, win_size windows from
+      t = win_size - 1 onward) and the averaging denominator |I(t)| handles
+      this, so no padding, trimming or edge replication is allowed.
+    output_length: >-
+      len(score) == T == len(tsData.test) == len(tsData.test_label).
+  channel_aggregation:
+    rule: >-
+      Per-channel z-score first, then a single window-level scalar distance over
+      all C channels (Euclidean over the flattened window,
+      EasyTSAD/Methods/HYDRA/paper/paper.md:910-932;
+      EasyTSAD/Methods/HYDRA/upstream/HYDRA/models/HYDRA_approx.py:247-252). The
+      channels are therefore fused inside the distance, not post-hoc averaged.
+    output_channels: >-
+      1 -- the method returns one score per timepoint regardless of C, which is
+      what EasyTSAD's evaluator requires
+      (EasyTSAD/Evaluations/Performance.py:34-35 enforces ndim == 1).
+  score_direction: >-
+    higher means more anomalous (1-NN distances and the max-over-levels
+    ensemble; EasyTSAD/Methods/HYDRA/paper/paper.md:821-830).
+  aggregation_chain:
+    - >-
+      per level: window score is the distance to the nearest representative,
+      with level 0 being the nearest non-self window
+      (EasyTSAD/Methods/HYDRA/upstream/HYDRA/models/HYDRA_approx.py:267-293)
+    - >-
+      per level: z-score across windows using that level's nanmean/nanstd, with
+      zero-variance levels set to 0 (HYDRA_approx.py:315-320, paper.md:775-819)
+    - >-
+      across levels: s*_i = max_L z^(L)_i (HYDRA_approx.py:322,
+      EasyTSAD/Methods/HYDRA/paper/paper.md:821-830)
+    - >-
+      across windows: average over the covering windows via reverse_windowing_min
+      (HYDRA_approx.py:323, paper.md:832-836)
+  thresholding: >-
+    Not part of the method. The pred = output > mean + 3*std and get_metrics call
+    at EasyTSAD/Methods/HYDRA/upstream/HYDRA/main.py:62 is evaluation-only and
+    must remain in the EasyTSAD evaluator, not in the adapter.
+
+compatibility:
+  task_type: time_series_anomaly_detection
+  supported: true
+  dataset_types:
+    - UTS
+    - MTS
+  schemas:
+    - naive
+    - mts
+  compute_device: cpu
+  reason: >-
+    HYDRA is a point-wise time-series anomaly detection method that emits one
+    anomaly score per timepoint. UTS is supported through the 1-D path
+    (EasyTSAD/Methods/HYDRA/upstream/HYDRA/main.py:44-45,
+    EasyTSAD/Methods/HYDRA/upstream/HYDRA/models/HYDRA_approx.py:247-249) and MTS
+    through the multivariate path with global per-channel z-scoring and a single
+    Euclidean distance over the flattened window (main.py:46-47,
+    EasyTSAD/Methods/HYDRA/paper/paper.md:905-934); neither is a degraded mode,
+    so both are claimed. The naive and mts schemas are claimed because HYDRA is
+    training-free (paper.md:838-841) and both hand the method a single curve
+    (EasyTSAD/TrainingSchema/Naive.py:57-67,
+    EasyTSAD/TrainingSchema/MTS.py:58-68). all_in_one, zero_shot and
+    zero_shot_cross_ds are NOT claimed: HYDRA performs no cross-series fitting or
+    transfer and the official entrypoint scores one series at a time
+    (main.py:52-58), so no upstream cross-dataset training path exists to map.
+    compute_device is cpu because the detector path imports only NumPy plus an
+    optional CPU ANN library
+    (EasyTSAD/Methods/HYDRA/upstream/HYDRA/models/HYDRA_approx.py:1-3,
+    EasyTSAD/Methods/HYDRA/upstream/HYDRA/models/HNSW_index.py:33-38), the
+    environment pins no CUDA requirement
+    (EasyTSAD/Methods/HYDRA/environment/pyproject.toml:43-61), and torch appears
+    only in the TSB-AD harness seeding import
+    (EasyTSAD/Methods/HYDRA/upstream/HYDRA/main.py:2), not on HYDRA's
+    algorithmic path.
+
+evidence:
+  paths:
+    - EasyTSAD/Methods/HYDRA/upstream/HYDRA/main.py:40-42
+    - EasyTSAD/Methods/HYDRA/upstream/HYDRA/main.py:44-47
+    - EasyTSAD/Methods/HYDRA/upstream/HYDRA/main.py:52-58
+    - EasyTSAD/Methods/HYDRA/upstream/HYDRA/main.py:60-62
+    - EasyTSAD/Methods/HYDRA/upstream/HYDRA/HYDRA_loader.py:5-13
+    - EasyTSAD/Methods/HYDRA/upstream/HYDRA/models/HYDRA_approx.py:1-8
+    - EasyTSAD/Methods/HYDRA/upstream/HYDRA/models/HYDRA_approx.py:59-64
+    - EasyTSAD/Methods/HYDRA/upstream/HYDRA/models/HYDRA_approx.py:145-166
+    - EasyTSAD/Methods/HYDRA/upstream/HYDRA/models/HYDRA_approx.py:230-324
+    - EasyTSAD/Methods/HYDRA/upstream/HYDRA/models/HNSW_index.py:33-38
+    - EasyTSAD/Methods/HYDRA/upstream/TSB-AD/TSB_AD/utils/slidingWindows.py:7-52
+    - EasyTSAD/Methods/HYDRA/upstream/TSB-AD/TSB_AD/model_wrapper.py:41-50
+    - EasyTSAD/Methods/HYDRA/upstream/README.md:60-80
+    - EasyTSAD/Methods/HYDRA/paper/paper.md:259-261
+    - EasyTSAD/Methods/HYDRA/paper/paper.md:766-836
+    - EasyTSAD/Methods/HYDRA/paper/paper.md:838-860
+    - EasyTSAD/Methods/HYDRA/paper/paper.md:905-934
+    - EasyTSAD/Methods/HYDRA/environment/pyproject.toml:1-61
+    - EasyTSAD/Methods/__init__.py:4-59
+    - EasyTSAD/TrainingSchema/Naive.py:47-70
+    - EasyTSAD/TrainingSchema/MTS.py:48-71
+    - EasyTSAD/TrainingSchema/BaseSchema.py:115-128
+    - EasyTSAD/Evaluations/Performance.py:34-43
+    - EasyTSAD/Evaluations/Protocols/PointRoc.py:18-38
+    - EasyTSAD/DataFactory/TSData.py:42-47
+    - EasyTSAD/DataFactory/TSData.py:108-127
+    - EasyTSAD/DataFactory/MTSData.py:85-131
+  unresolved:
+    - >-
+      ann_backend: 'auto' prefers hnswlib and falls back to scikit-learn
+      (EasyTSAD/Methods/HYDRA/upstream/HYDRA/models/HNSW_index.py:33-38). The two
+      backends return slightly different approximate neighbours, so level
+      representatives and therefore scores can differ numerically between runs of
+      the official code. The environment installs scikit-learn only
+      (EasyTSAD/Methods/HYDRA/environment/pyproject.toml:37-41, 58-61), which is
+      the reproducible configuration; IMPLEMENT should record which backend ran.
+    - >-
+      window_length_choice: The paper's headline configuration is ACF-adaptive m
+      (EasyTSAD/Methods/HYDRA/paper/paper.md:1296-1298) while the shipped script
+      hardcodes 64 (EasyTSAD/Methods/HYDRA/upstream/HYDRA/main.py:58). The
+      EasyTSAD run must state which of the two it uses; both are legitimate HYDRA
+      settings, so this is a configuration choice, not an interface change.
+    - >-
+      hyperparameters_artifact: EasyTSAD/Methods/HYDRA/reproduction/hyperparameters.json
+      was not readable from this worker (tool error), so the win_size / K / stride
+      / ANN defaults recorded above come from the source code and the paper.
+      IMPLEMENT should reconcile with the hyperparameter artifact once it is
+      available.
+    - >-
+      short_series: When T < win_size or num_win == 1 the pipeline degenerates (a
+      single window yields level-0 score 0,
+      EasyTSAD/Methods/HYDRA/upstream/HYDRA/models/HYDRA_approx.py:270-271, and
+      tree_compress stops immediately). Series shorter than win_size cannot be
+      scored, so the adapter should raise rather than pad.

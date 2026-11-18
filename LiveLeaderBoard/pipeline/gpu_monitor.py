@@ -44,6 +44,10 @@ class GPUMonitor:
                     torch.cuda.reset_peak_memory_stats(index)
                     self.devices.append({"logical_index": index, "name": props.name,
                                          "total_memory_mib": props.total_memory / 2**20})
+        except ModuleNotFoundError as error:
+            # CPU-only environments do not need PyTorch for monitoring metadata.
+            if error.name != "torch":
+                self._error(error)
         except Exception as error:
             self._error(error)
         if self.devices:

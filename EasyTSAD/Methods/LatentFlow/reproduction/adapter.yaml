@@ -1,0 +1,71 @@
+method: LatentFlow
+upstream_root: EasyTSAD/Methods/LatentFlow/upstream
+
+source:
+  entry_point: "EasyTSAD/Methods/LatentFlow/upstream/main.py:8-87 (argparse config -> per-seed loop `for ii in range(config.itr): setSeed(...); exp = Exp(config); exp.train(); exp.test()`)"
+  experiment_class: "EasyTSAD/Methods/LatentFlow/upstream/exp/exp.py:59 Exp(config)"
+  callables:
+    - "data.preprocess.getData(path='./dataset/', dataset='SWaT', period=1440, train_rate=0.8) -> dict (EasyTSAD/Methods/LatentFlow/upstream/data/preprocess.py:12-41)"
+    - "data.dataset.Dataset(data, stable, label, window_size) with __len__ = len(data) - window_size + 1 and __getitem__(i) = data[i:i+window_size, :] (EasyTSAD/Methods/LatentFlow/upstream/data/dataset.py:4-19)"
+    - "models.LatentFlow.Model(configs).forward(x, init_adj=None, inference_inertia=False, return_adj=False) -> (recon_seq, x_seq, adj_seq) (EasyTSAD/Methods/LatentFlow/upstream/models/LatentFlow.py:140-176)"
+    - "Exp._process_one_batch(batch_data, batch_stable, train, return_adj=False) (EasyTSAD/Methods/LatentFlow/upstream/exp/exp.py:127-144)"
+    - "exp.aggregate_reconstruction(recon_seq, original_len, stride=1) (EasyTSAD/Methods/LatentFlow/upstream/exp/exp.py:37-56)"
+  fit_inputs: "train_data (T_train, N) float; Dataset yields windows of shape (window_size, N); DataLoader batch -> (B, window_size, N). Training loss = RG_EAD_Loss(recon_seq, true_seq, adj_seq) = MSE(recon, truth) + lambda_sparsity * mean(|adj|) (EasyTSAD/Methods/LatentFlow/upstream/utils/tools.py:39-59), driven by Exp.train() (exp/exp.py:146-196) with EarlyStop on validation loss (utils/earlystop.py:5-36)."
+  test_inputs: "test_data (T_test, N) windows (B, window_size, N); Exp.test() (exp/exp.py:198-231) also builds an `init` score stream from init_data (the full pre-split train file) for threshold fitting."
+  preprocessing: "StandardScaler fit on init_data (= the *_train_data.npy array) and applied to init_data and test_data, fillna(0) (data/preprocess.py:17-20); getStable(data, w=period) subtracts a centered rolling median of width period and drops the first and last w//2 = 720 timesteps (data/preprocess.py:6-9, 22-24). No per-channel normalization beyond the scaler; RevIN exists in layers/RevIN.py but is not applied in Model.forward."
+  score_output: "Per window, batch_score = mean over channels N of (x[:, -1, :] - recon[:, -1, :])**2 -> shape (B, 1) (exp/exp.py:207-212, 219-224); concatenated over the loader -> (num_windows, 1), flattened with reshape(-1) by the official evaluate() (utils/vus_evaluate.py:52-55)."
+
+target:
+  method_class: "EasyTSAD/Methods/LatentFlow/LatentFlow.py -> class LatentFlow(BaseMethod) (EasyTSAD/Methods/__init__.py:20-117; registry name must equal 'LatentFlow')"
+  constructor: "__init__(self, params, cuda) -> None; read hyperparameters from `params` (EasyTSAD/Methods/Example/Example.py:21-26)."
+  required_overrides:
+    - "train_valid_phase(self, tsTrain: TSData) -> None: fit on tsTrain.train / tsTrain.valid."
+    - "test_phase(self, tsData: TSData) -> None: score tsData.test, store in a private field."
+    - "anomaly_score(self) -> np.ndarray: return one timepoint score per test timestep, shape (len(tsData.test),)."
+    - "optional: train_valid_phase_all_in_one(self, tsTrains: Dict[str, TSData]) (not needed for the naive schema); get_y_hat(self) may return the reconstruction."
+  data_container: "EasyTSAD/DataFactory/TSData.py:22-138 (UTS, 1-D `.train/.test`) and EasyTSAD/DataFactory/MTSData.py:18-140 (MTS, `.train/.test` shape (T, N) with per-feature normalization). LatentFlow requires MTSData-style (T, N)."
+  evaluator_boundary: "Thresholding (SPOT q) and metric computation stay in the existing EasyTSAD evaluator; the adapter must only emit raw timepoint scores and must not apply q, thresholds or Affiliation/VUS."
+
+align:
+  array_mapping:
+    train: "tsTrain.train (T_train, N) -> the official train_data; tsTrain.valid replaces the official valid split, or reproduce the 0.8 split from data/preprocess.py:26-32."
+    test: "tsData.test (T_test, N) -> official test_data; tsData.test_label (T_test, 1) -> official test_label."
+    init_stream: "official init_data is the full pre-split train array (data/preprocess.py:22-23). EasyTSAD exposes only train/valid/test, so IMPLEMENT may concatenate train+valid as the init stream used to fit the SPOT threshold; document whichever choice is made."
+  channel_dimension: "N = tsData.test.shape[1] -> config.enc_in (exp/exp.py:62, 94-95). Model is fully multivariate: per-channel Conv1d with in_channels=1 (models/LatentFlow.py:10-12), SparseGraphLearner over the N channel nodes with diagonal masked and top-k (models/LatentFlow.py:39-64), k = min(k, N-1) (models/LatentFlow.py:59). A single channel is degenerate (k=0 top-k); the method is MTS-only."
+  window_dimension: "window_size W = config.window_size; patch_size P and patch_stride S; number of patches = (W - P) // S + 1 (models/LatentFlow.py:124). Windows are sliding with stride 1 in Dataset (data/dataset.py:11-19). Reconstruction is re-assembled to (B, W, N) by overlap-averaging patches (exp/exp.py:37-56)."
+  normalization_scope: "StandardScaler is fit on the training array only and applied to train and test (data/preprocess.py:17-20); the median detrending `getStable` is fit on the init array only and test_stable is all zeros (data/preprocess.py:22-24) — `stable` is never used by Model.forward, so it is a no-op passthrough."
+  temporal_positions: "Dataset window i covers timesteps [i, i + W - 1] and the score uses only the last position of that window: (x[:, -1, :] - recon[:, -1, :])^2 (exp/exp.py:207-211, 219-223). Therefore score[j] corresponds to test timestep j + W - 1 for j = 0 .. T_test - W. The first W - 1 test timesteps receive no score and must be padded/reindexed by the adapter; document the fill (e.g. 0.0 or edge-repeat) so the returned array has length T_test. The official code does NOT pad: it returns T_test - W + 1 scores (exp/exp.py:229-231), which is an alignment difference to resolve in IMPLEMENT."
+  score_direction: "Higher = more anomalous. Score is a non-negative squared reconstruction error, mean-aggregated over the N channels (channel aggregation), so a single-channel spike is diluted by 1/N — preserve this mean, do not switch to max or sum."
+  output_length: "Official: (T_test - W + 1,) after reshape(-1). EasyTSAD requires (len(tsData.test),) = T_test; the adapter owns the W - 1 leading-position padding and any truncation of the init stream."
+  labels: "Labels are read per-window as label[:, -1, :] (exp/exp.py:225) and squeezed to a vector by utils/vus_evaluate.py:32-39; the adapter must not modify tsData.test_label. Note the upstream quirk that a (T, N) label array would keep only the last channel."
+
+compatibility:
+  task_type: time_series_anomaly_detection
+  supported: true
+  dataset_types: [MTS]
+  schemas: [naive, mts]
+  compute_device: auto
+  reason: "Official code is a multivariate reconstruction-based timepoint anomaly detector: it loads *_train_data.npy / *_test_data.npy / *_test_label.npy per dataset and produces one anomaly score per test timestep (data/preprocess.py:12-41; exp/exp.py:198-231). dataset_types=[MTS] because the model is built around N channel nodes with a top-k cross-channel graph and per-channel Conv1d (models/LatentFlow.py:10-12, 39-64, 118-138); all upstream scripts (script/run.sh) use multivariate benchmarks (MSL, SMD, SWAT, PSM, WADI, Kitsune, Creditcard, UNSW) and a single-channel input degenerates the top-k graph learner. schemas=[naive, mts]: upstream trains one model per dataset on a train_rate=0.8 split of the train file (data/preprocess.py:26-32), i.e. the naive in-domain schema, and the multivariate MTSData container is the compatible carrier; all_in_one / zero_shot / zero_shot_cross_ds are not implemented upstream (train_valid_phase_all_in_one is not overridden and Exp has no cross-dataset transfer path), so they are omitted rather than assumed. compute_device=auto because Exp._acquire_device() returns torch.device('cuda:{gpu_id}') when use_gpu and torch.cuda.is_available(), else torch.device('cpu') with 'device: Use CPU' (exp/exp.py:97-106), and main.py additionally falls back to CPU with a printed warning (main.py:54-59); both paths are functional so neither cpu nor cuda alone is accurate."
+
+evidence:
+  paths:
+    - "EasyTSAD/Methods/LatentFlow/upstream/main.py:8-87 — CLI entrypoint, itr=3 seeds, use_gpu/gpu_id device selection and CPU fallback."
+    - "EasyTSAD/Methods/LatentFlow/upstream/exp/exp.py:37-56 — aggregate_reconstruction overlap-averaged patch reassembly."
+    - "EasyTSAD/Methods/LatentFlow/upstream/exp/exp.py:127-144 — train vs. inference batching; inference uses inference_inertia=True."
+    - "EasyTSAD/Methods/LatentFlow/upstream/exp/exp.py:198-231 — test-phase score = mean over channels of last-position squared reconstruction error, shape (num_windows, 1)."
+    - "EasyTSAD/Methods/LatentFlow/upstream/data/preprocess.py:6-41 — StandardScaler fit on the train file, median detrending of width period, train_rate split, per-timestep labels."
+    - "EasyTSAD/Methods/LatentFlow/upstream/data/dataset.py:4-19 — sliding window of length window_size with stride 1 and __len__ = T - W + 1."
+    - "EasyTSAD/Methods/LatentFlow/upstream/models/LatentFlow.py:10-64, 118-176 — per-channel temporal encoder, GRU recurrence, top-k sparse graph learner, O-U style structure evolution, graph aggregation, patch decoder."
+    - "EasyTSAD/Methods/LatentFlow/upstream/utils/tools.py:39-59 — RG_EAD_Loss = MSE reconstruction + lambda_sparsity * L1 on adjacency."
+    - "EasyTSAD/Methods/LatentFlow/upstream/utils/vus_evaluate.py:22-76 — official SPOT-thresholded Affiliation and VUS metrics; thresholding stays outside the adapter."
+    - "EasyTSAD/Methods/LatentFlow/upstream/script/run.sh:5-19 — per-dataset hyperparameters (window_size, patch_size, patch_stride, k, q) for multivariate benchmarks."
+    - "EasyTSAD/Methods/__init__.py:20-117 — BaseMethod contract (anomaly_score, train_valid_phase, test_phase)."
+    - "EasyTSAD/DataFactory/MTSData.py:18-140 — MTSData (T, N) train/valid/test arrays and per-feature normalization."
+    - "EasyTSAD/DataFactory/TSData.py:22-138 — TSData (UTS) contract, shown for contrast: its 1-D arrays are incompatible with the N-channel graph learner."
+    - "Paper: LatentFlow: Discovering Latent Continuous Dynamics across Channels for Multivariate Time Series Anomaly Detection, KDD 2026, pp. 4498-4509, doi 10.1145/3770855.3818034 — full text was not retrievable (HTTP 403 from dl.acm.org, recorded in the task diagnostics), so all interface claims above are grounded in the official repository at commit 3695f54317fcc1a3fdbfa0a7037d1cdf4369db27 (recorded in EasyTSAD/Methods/LatentFlow/reproduction/source.json)."
+  unresolved:
+    - "Leading W - 1 test timesteps have no official score; the official evaluate() consumes a length-(T-W+1) vector. IMPLEMENT must decide the padding/fill so anomaly_score() length equals len(tsData.test)."
+    - "EasyTSAD has no `init` stream; IMPLEMENT must choose train+valid (or train only) as the SPOT threshold-fitting stream and record it."
+    - "The official evaluator applies SPOT thresholding; EasyTSAD's evaluator computes metrics itself, so the reported numbers may differ from script/run.sh. Thresholding is intentionally not ported."
+    - "config.period (median-detrend window, default 1440) and the getStable edge cropping were not re-tuned; on short EasyTSAD curves the crop may be proportionally large and should be verified by IMPLEMENT."
+    - "Paper-level hyperparameter mapping was not verifiable from the PDF (403); script/run.sh values are the only grounded source."

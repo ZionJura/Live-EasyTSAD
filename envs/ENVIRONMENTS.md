@@ -4,9 +4,10 @@
 
 | Environment | Python | Description | Methods |
 | --- | --- | --- | --- |
-| `torch2` | 3.11 | Default. PyTorch 2.6 + CUDA 12.4, lightning, transformers, sklearn. | AE, AR, AnomalyTransformer, CAD, DCdetector, Diff, Donut, EncDecAD, Example, FCVAE, FITS, LOF, LSTMADalpha, LSTMADbeta, OCSVM, OFA, SRCNN, SubLOF, SubOCSVM, TFAD, TimesNet, TranAD |
+| `torch2` | 3.11 | Default. PyTorch 2.6 + CUDA 12.4, lightning, transformers, sklearn. | AE, AR, AnomalyTransformer, CAD, CrossAD, DCdetector, DIFR, Diff, Donut, EncDecAD, Example, FCVAE, FITS, LOF, LSTMADalpha, LSTMADbeta, OCSVM, OFA, SRCNN, SubLOF, SubOCSVM, TFAD, TimesNet, TranAD |
 | `legacy` | 3.9 | Old libraries: tslearn 0.5.x (Cython build), matrixprofile, numpy<1.24. | SAND, MatrixProfile |
 | `harness` | 3.11 | Tooling env for the reproduction harness (DSH runtime, MCP tools, paper ingestion). Runs no methods. |  |
+| `autotsad` | 3.9 | AutoTSAD official deps (numpy<1.24, pandas<2, scikit-learn==1.2.0, optuna, timeeval, stumpy, pyod, pywavelets, pythresh, networkx, pynisher). | AutoTSAD |
 
 ## Method lookup
 
@@ -15,9 +16,12 @@
 | AE | `torch2` |  |
 | AnomalyTransformer | `torch2` |  |
 | AR | `torch2` |  |
+| AutoTSAD | `autotsad` |  |
 | CAD | `torch2` |  |
+| CrossAD | `torch2` |  |
 | DCdetector | `torch2` |  |
 | Diff | `torch2` |  |
+| DIFR | `torch2` |  |
 | Donut | `torch2` |  |
 | EncDecAD | `torch2` |  |
 | Example | `torch2` | Template method, not a real baseline. |

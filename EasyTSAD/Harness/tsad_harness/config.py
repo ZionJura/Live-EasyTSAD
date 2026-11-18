@@ -11,6 +11,7 @@ from pathlib import Path
 HARNESS_DIR = Path(__file__).resolve().parents[1]          # EasyTSAD/Harness
 ROOT = HARNESS_DIR.parents[1]                               # Live-EasyTSAD repo root
 CONFIG_PATH = Path(os.environ.get("TSAD_HARNESS_CONFIG", HARNESS_DIR / "config.toml"))
+LOCAL_CONFIG_PATH = HARNESS_DIR / "local_config.toml"
 PROMPTS_DIR = HARNESS_DIR / "prompts"
 
 
@@ -35,6 +36,10 @@ class Config:
 
     @property
     def dsh_home(self) -> Path:
+        override = os.environ.get("TSAD_HARNESS_RUNTIME")
+        if override:
+            runtime = Path(override).expanduser()
+            return (runtime if runtime.is_absolute() else ROOT / runtime) / "dsh"
         return self.path("paths", "dsh_home")
 
     @property
@@ -57,7 +62,10 @@ class Config:
         if not key and llm.get("api_key_file"):
             f = Path(os.path.expanduser(llm["api_key_file"]))
             if f.exists():
-                key = json.loads(f.read_text()).get(llm.get("api_key_file_field", "OPENAI_API_KEY"), "")
+                if llm.get("api_key_file_format", "json") == "text":
+                    key = f.read_text().strip()
+                else:
+                    key = json.loads(f.read_text()).get(llm.get("api_key_file_field", "OPENAI_API_KEY"), "")
         if not key:
             raise HarnessError(f"no API key: export ${llm['api_key_env']} (the harness hands it to dsh as "
                                f"${self.dsh_key_env}) or provide {llm.get('api_key_file')}")
@@ -103,4 +111,12 @@ class Config:
 @lru_cache(maxsize=1)
 def load() -> Config:
     with open(CONFIG_PATH, "rb") as f:
-        return Config(tomllib.load(f))
+        settings = tomllib.load(f)
+    if CONFIG_PATH == HARNESS_DIR / "config.toml" and LOCAL_CONFIG_PATH.is_file():
+        with LOCAL_CONFIG_PATH.open("rb") as f:
+            overrides = tomllib.load(f)
+        for name, section in overrides.items():
+            if name not in settings or not isinstance(section, dict):
+                raise HarnessError(f"Invalid site configuration section: {name!r}")
+            settings[name].update(section)
+    return Config(settings)

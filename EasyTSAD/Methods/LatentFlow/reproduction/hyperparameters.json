@@ -1,0 +1,229 @@
+{
+  "method": "LatentFlow",
+  "paper": {
+    "title": "LatentFlow: Discovering Latent Continuous Dynamics across Channels for Multivariate Time Series Anomaly Detection",
+    "venue": "KDD 2026 (ACM SIGKDD), V.2",
+    "doi": "10.1145/3770855.3818034",
+    "status": "unavailable",
+    "note": "The PDF at https://dl.acm.org/doi/pdf/10.1145/3770855.3818034 returned HTTP 403 (Cloudflare 'Just a moment...' challenge) and no arXiv preprint exists; EasyTSAD/Methods/LatentFlow/paper/meta.json has no pdf_url/pdf_path and records 'paper record has neither pdf_url nor pdf_path'. See reproduction/diagnosis.json (category 'execution', action 'report_only'). No value below is attributed to a paper section; every origin is 'source'."
+  },
+  "upstream": {
+    "repository": "https://github.com/SunboTax/LatentFlow",
+    "commit": "3695f54317fcc1a3fdbfa0a7037d1cdf4369db27",
+    "branch": "master",
+    "root": "EasyTSAD/Methods/LatentFlow/upstream"
+  },
+  "entry_point": {
+    "training": "EasyTSAD/Methods/LatentFlow/upstream/main.py",
+    "official_launcher": "EasyTSAD/Methods/LatentFlow/upstream/script/run.sh",
+    "description": "main.py parses argparse options, then loops `for ii in range(config.itr): setSeed(config.random_seed + ii); exp = Exp(config); exp.train(); exp.test()` (main.py:83-87). Exp.train/Exp.test live in upstream/exp/exp.py.",
+    "evidence": "EasyTSAD/Methods/LatentFlow/upstream/main.py:83-87"
+  },
+  "config_toml": "EasyTSAD/Methods/LatentFlow/config.toml",
+  "defaults_layer": "main.py argparse defaults (origin 'source'), mirrored 1:1 into config.toml [Model_Params.Default] / [Data_Params].",
+
+  "parameters": {
+    "preprocess": {
+      "value": "z-score",
+      "origin": "source",
+      "evidence": "EasyTSAD/Methods/LatentFlow/upstream/data/preprocess.py:17-20 (sklearn StandardScaler fit on the train split only, applied to train/valid/test). EasyTSAD equivalent name: EasyTSAD/DataFactory/LoadData.py:46-55 accepts 'z-score'.",
+      "note": "Declared in [Data_Params] because the official pipeline standardizes features before windowing; any other harness preprocessing would double-normalize."
+    },
+    "period": {
+      "value": 1440,
+      "origin": "source",
+      "evidence": "EasyTSAD/Methods/LatentFlow/upstream/main.py:28 (`--period 1440`); consumed at EasyTSAD/Methods/LatentFlow/upstream/data/preprocess.py:6-9,22 as the centered rolling-median detrending window (getStable), which trims [w//2:-w//2] samples."
+    },
+    "train_rate": {
+      "value": 0.8,
+      "origin": "source",
+      "evidence": "EasyTSAD/Methods/LatentFlow/upstream/main.py:25 (`--train_rate 0.8`); split at int(train_rate * len(init_data)) in EasyTSAD/Methods/LatentFlow/upstream/data/preprocess.py:26-32, with `test_stable = np.zeros_like(test_data)`."
+    },
+    "window_size": {
+      "value": 64,
+      "origin": "source",
+      "evidence": "EasyTSAD/Methods/LatentFlow/upstream/main.py:29 (`--window_size 64`); sliding windows in EasyTSAD/Methods/LatentFlow/upstream/data/dataset.py:5-19 with `__len__ = len(data) - window_size + 1` (stride 1, no truncation of the last partial window)."
+    },
+    "patch_size": {
+      "value": 32,
+      "origin": "source",
+      "evidence": "EasyTSAD/Methods/LatentFlow/upstream/main.py:32 (`--patch_size 32`); model.input patches at EasyTSAD/Methods/LatentFlow/upstream/models/LatentFlow.py:122,144."
+    },
+    "patch_stride": {
+      "value": 2,
+      "origin": "source",
+      "evidence": "EasyTSAD/Methods/LatentFlow/upstream/main.py:33 (`--patch_stride 2`); `self.seq_len = (self.input_len - self.patch_size) // self.stride + 1` at EasyTSAD/Methods/LatentFlow/upstream/models/LatentFlow.py:124, unfolding at :144."
+    },
+    "seq_len": {
+      "value": 17,
+      "origin": "source",
+      "evidence": "Derived, not a flag: (64 - 32) // 2 + 1 = 17 at EasyTSAD/Methods/LatentFlow/upstream/models/LatentFlow.py:124; this is the number of recurrent patch steps (models/LatentFlow.py:156)."
+    },
+    "d_model": {
+      "value": 64,
+      "origin": "source",
+      "evidence": "EasyTSAD/Methods/LatentFlow/upstream/main.py:30 (`--d_model 64`); used by TemporalFeatureExtractor/GRUCell/StructureEvolutionCell/GraphAggregator at EasyTSAD/Methods/LatentFlow/upstream/models/LatentFlow.py:127-138, with decoder width d_model // 2 = 32 (:132-137)."
+    },
+    "dropout": {
+      "value": 0.6,
+      "origin": "source",
+      "evidence": "EasyTSAD/Methods/LatentFlow/upstream/main.py:31 (`--dropout 0.6`); passed to GraphAggregator residual dropout at EasyTSAD/Methods/LatentFlow/upstream/models/LatentFlow.py:130 (applied at :111)."
+    },
+    "k": {
+      "value": 15,
+      "origin": "source",
+      "evidence": "EasyTSAD/Methods/LatentFlow/upstream/main.py:34 (`--k 15`); top-k neighbors in SparseGraphLearner with `curr_k = min(self.k, N - 1)` at EasyTSAD/Methods/LatentFlow/upstream/models/LatentFlow.py:125,59-62. k is therefore clamped for datasets with few channels."
+    },
+    "lambda_sparsity": {
+      "value": 0.001,
+      "origin": "source",
+      "evidence": "EasyTSAD/Methods/LatentFlow/upstream/main.py:35 (`--lambda_sparsity 1e-3`); loss weight in RG_EAD_Loss at EasyTSAD/Methods/LatentFlow/upstream/utils/tools.py:39-59 (= MSE reconstruction + lambda_sparsity * mean(|adj|)), instantiated at EasyTSAD/Methods/LatentFlow/upstream/exp/exp.py:125."
+    },
+    "epochs": {
+      "value": 30,
+      "origin": "source",
+      "evidence": "EasyTSAD/Methods/LatentFlow/upstream/main.py:20 (`--epochs 30`); training and validation loops at EasyTSAD/Methods/LatentFlow/upstream/exp/exp.py:146-196."
+    },
+    "patience": {
+      "value": 5,
+      "origin": "source",
+      "evidence": "EasyTSAD/Methods/LatentFlow/upstream/main.py:21 (`--patience 5`); EarlyStop(path, patience) on validation loss at EasyTSAD/Methods/LatentFlow/upstream/exp/exp.py:146-196 and EasyTSAD/Methods/LatentFlow/upstream/utils/earlystop.py:6."
+    },
+    "batch_size": {
+      "value": 32,
+      "origin": "source",
+      "evidence": "EasyTSAD/Methods/LatentFlow/upstream/main.py:22 (`--batch_size 32`); DataLoaders at EasyTSAD/Methods/LatentFlow/upstream/exp/exp.py:71-95 (train shuffle=True, valid/test shuffle=False, all drop_last=False)."
+    },
+    "optimizer": {
+      "value": "Adam",
+      "origin": "source",
+      "evidence": "EasyTSAD/Methods/LatentFlow/upstream/exp/exp.py:121-122 (`optim.Adam(self.model.parameters(), lr=config.lr, weight_decay=1e-4)`); no optimizer flag exists in main.py."
+    },
+    "lr": {
+      "value": 0.0001,
+      "origin": "source",
+      "evidence": "EasyTSAD/Methods/LatentFlow/upstream/main.py:23 (`--lr 1e-4`); passed at EasyTSAD/Methods/LatentFlow/upstream/exp/exp.py:122."
+    },
+    "weight_decay": {
+      "value": 0.0001,
+      "origin": "source",
+      "evidence": "EasyTSAD/Methods/LatentFlow/upstream/exp/exp.py:122 (hard-coded `weight_decay=1e-4`; not exposed as a flag)."
+    },
+    "lradj": {
+      "value": "6",
+      "origin": "source",
+      "evidence": "EasyTSAD/Methods/LatentFlow/upstream/main.py:24 (`--lradj '6'`); step schedule in EasyTSAD/Methods/LatentFlow/upstream/utils/tools.py:30-31 ('6' -> lr if epoch < 5 else lr * 0.1), applied per epoch after the early-stop check at EasyTSAD/Methods/LatentFlow/upstream/exp/exp.py:146-196. The official scripts instead pass 'type4'/'type3'/'type5' (same handler family)."
+    },
+    "random_seed": {
+      "value": 42,
+      "origin": "source",
+      "evidence": "EasyTSAD/Methods/LatentFlow/upstream/main.py:47 (`--random_seed 42`); setSeed at EasyTSAD/Methods/LatentFlow/upstream/utils/seed.py:8-17 (random, numpy, PYTHONHASHSEED, torch, cuda seeds; cudnn.deterministic=True, benchmark=False)."
+    },
+    "itr": {
+      "value": 3,
+      "origin": "source",
+      "evidence": "EasyTSAD/Methods/LatentFlow/upstream/main.py:17 (`--itr 3`); repeated runs use seeds random_seed + ii at EasyTSAD/Methods/LatentFlow/upstream/main.py:83-84, and reported metrics are averaged over the 3 runs."
+    },
+    "use_gpu": {
+      "value": 1,
+      "origin": "source",
+      "evidence": "EasyTSAD/Methods/LatentFlow/upstream/main.py:48-51 (`--use_gpu 1`, `--use_multi_gpu 0`, `--gpu_id 0`, `--devices '0'`); _acquire_device at EasyTSAD/Methods/LatentFlow/upstream/exp/exp.py (cuda when available, else CPU and prints 'device: Use CPU'). Not mirrored into config.toml because the harness owns device placement."
+    }
+  },
+
+  "structure": {
+    "origin": "source",
+    "evidence": "EasyTSAD/Methods/LatentFlow/upstream/models/LatentFlow.py:115-176",
+    "components": [
+      "TemporalFeatureExtractor(patch_size, d_model, kernel_size=3): Conv1d + sigmoid gating + LayerNorm, then Linear(flatten_dim -> d_model) / GELU / Dropout(0.1) (models/LatentFlow.py:7-37)",
+      "GRUCell(d_model, d_model) over patch steps as the latent continuous dynamic (models/LatentFlow.py:128,161)",
+      "SparseGraphLearner(d_model, k): query/key Linear(d_model -> d_model // 4), scaled dot product, diagonal masked to -1e9, top-k then softmax (models/LatentFlow.py:39-64)",
+      "StructureEvolutionCell: gate_net = Linear(d_model + 1 -> 32) / ReLU / Linear(32 -> 1) / Sigmoid; adj_t = alpha * adj_candidate + (1 - alpha) * prev_adj, diagonal zeroed, row-normalized (models/LatentFlow.py:66-97); inference_inertia halves alpha when force_inertia (models/LatentFlow.py:86-87)",
+      "GraphAggregator: Linear(d_model, d_model), bmm(adj, h), + dropout(x) residual, LayerNorm (models/LatentFlow.py:99-113)",
+      "Decoder: Linear(d_model -> d_model // 2) / GELU / Linear(d_model // 2 -> patch_size) (models/LatentFlow.py:132-138)"
+    ],
+    "init": "curr_adj = zeros(B, N, N) when init_adj is None; curr_h = zeros(B * N, d_model) (models/LatentFlow.py:147-152)."
+  },
+
+  "objective": {
+    "loss": "RG_EAD_Loss = MSE(recon, target) + lambda_sparsity * mean(|adj|)",
+    "evidence": "EasyTSAD/Methods/LatentFlow/upstream/utils/tools.py:39-59; instantiated at EasyTSAD/Methods/LatentFlow/upstream/exp/exp.py:125.",
+    "reported_components": "returns (total, rec_loss, sparsity_loss)"
+  },
+
+  "scoring": {
+    "direction": "higher = more anomalous (reconstruction error)",
+    "formula": "score = mean((batch_data[:, -1, :] - recon[:, -1, :]) ** 2, dim=-1, keepdim=True)",
+    "evidence": "EasyTSAD/Methods/LatentFlow/upstream/exp/exp.py:198-251 (test)."
+  },
+
+  "alignment": {
+    "patches_to_points": "Overlapping patch reconstructions are re-projected onto the original timeline by a canvas accumulator then divided by the per-position visit count with 1e-8 smoothing (aggregate_reconstruction).",
+    "evidence": "EasyTSAD/Methods/LatentFlow/upstream/exp/exp.py:37-56",
+    "window_origin": "Each sample uses the last window position as the anomaly score for that step; windows are non-overlapping in output terms, scores are flattened in time order (EasyTSAD/Methods/LatentFlow/upstream/exp/exp.py:198-251).",
+    "interface_note": "The EasyTSAD BaseMethod contract requires a per-timestamp score vector; the adapter should return the flattened score in the original time order and let the harness align the shorter prefix from the end. Shortening of the score vector is an interface concern, not a hyperparameter."
+  },
+
+  "thresholding": {
+    "official_behavior": "SPOT with a per-dataset probability q, then Affiliation precision/recall/F1 (metric_mode aff|all) or VUS_ROC/VUS_PR (metric_mode vus).",
+    "evidence": "EasyTSAD/Methods/LatentFlow/upstream/utils/vus_evaluate.py (getThreshold via SPOT -> np.mean(ret['thresholds']); evaluate(..., q, slidingWindow=5, metric_mode)); EasyTSAD/Methods/LatentFlow/upstream/utils/spot.py:95-101 (initialize default level=0.98); EasyTSAD/Methods/LatentFlow/upstream/main.py:38-44,61-65 (--q required when --metric_mode is aff or all).",
+    "not_recorded": "q / metric_mode / select_metric are evaluation-protocol choices, not training hyperparameters, so they are intentionally absent from config.toml. The harness computes point/event F1 and AUPRC itself from the score vector, so the adapter neither needs q nor should fit SPOT."
+  },
+
+  "configuration_overrides": {
+    "note": "script/run.sh is the official launcher and overrides main.py defaults per dataset. Reproduced here for provenance only; config.toml deliberately keeps the single official default set (no dataset-specific tuning).",
+    "evidence": "EasyTSAD/Methods/LatentFlow/upstream/script/run.sh",
+    "shared_across_datasets": { "epochs": 30, "patience": 5, "dropout": 0.3, "metric_mode": "all" },
+    "per_dataset": {
+      "MSL": { "batch_size": 256, "lradj": "type4", "lr": 0.001, "d_model": 128, "window_size": 256, "patch_size": 32, "patch_stride": 16, "k": 3, "q": 0.02 },
+      "SMD": { "batch_size": 256, "lradj": "type4", "lr": 0.001, "d_model": 64, "window_size": 196, "patch_size": 96, "patch_stride": 4, "k": 15, "q": 0.018 },
+      "SWAT": { "batch_size": 256, "lradj": "type4", "lr": 0.001, "d_model": 128, "window_size": 128, "patch_size": 64, "patch_stride": 8, "k": 15, "q": 0.016 },
+      "PSM": { "batch_size": 256, "lradj": "type3", "lr": 0.0001, "d_model": 128, "window_size": 256, "patch_size": 32, "patch_stride": 16, "k": 3, "q": 0.021 },
+      "WADI": { "batch_size": 64, "lradj": "type4", "lr": 0.005, "d_model": 64, "window_size": 196, "patch_size": 128, "patch_stride": 12, "k": 15, "q": 0.002 },
+      "Kitsune": { "batch_size": 64, "lradj": "type3", "lr": 0.001, "d_model": 128, "window_size": 128, "patch_size": 96, "patch_stride": 4, "k": 15, "q": 0.025 },
+      "Creditcard": { "batch_size": 64, "lradj": "type4", "lr": 0.0001, "d_model": 64, "window_size": 256, "patch_size": 128, "patch_stride": 12, "k": 15, "q": 0.016 },
+      "UNSW": { "batch_size": 64, "lradj": "type5", "lr": 0.0004, "d_model": 64, "window_size": 256, "patch_size": 32, "patch_stride": 8, "k": 15, "q": 0.023 }
+    },
+    "single_mode_scripts": "script/run_aff.sh and script/run_vus.sh reuse the same per-dataset values with --metric_mode aff --select_metric Affiliation_F1 and --metric_mode vus (no --q) respectively."
+  },
+
+  "discrepancies": [
+    {
+      "issue": "Paper vs source",
+      "detail": "The paper PDF was unobtainable (HTTP 403 Cloudflare; no arXiv record), so no paper-reported table value could be cross-checked. Every recorded value is the source default; nothing was inferred from the paper."
+    },
+    {
+      "issue": "Two parameter layers in the official repo",
+      "detail": "main.py argparse defaults (window_size 64, batch_size 32, lr 1e-4, d_model 64, dropout 0.6, patch_size 32, patch_stride 2, lradj '6', k 15) differ from every per-dataset invocation in script/run.sh (batch_size 64/256, lr 1e-4..5e-3, window_size 128/196/256, lradj type3/type4/type5, dropout 0.3, k 3/15). Selected behavior: config.toml [Model_Params.Default] holds the main.py argparse defaults, and all run.sh overrides are preserved in configuration_overrides for IMPLEMENT/controller use. No dataset-specific section is added, because the controller has not fixed the benchmark dataset and inventing one would be tuning."
+    },
+    {
+      "issue": "dropout 0.6 (default) vs 0.3 (all official scripts)",
+      "detail": "Dropout only feeds GraphAggregator's residual (models/LatentFlow.py:111,130). The CLI default 0.6 is recorded; script/run.sh's 0.3 appears in configuration_overrides.shared_across_datasets."
+    },
+    {
+      "issue": "lradj format",
+      "detail": "main.py default is the string '6'; script/run.sh passes 'type4'/'type3'/'type5'. utils/tools.py:30-31 maps '3'-'6' and the 'typeN' aliases to the same step schedules, so the two spellings are behaviorally equivalent."
+    },
+    {
+      "issue": "q / metric_mode are not training hyperparameters",
+      "detail": "main.py:64-65 aborts unless --q is given for metric_mode aff/all, because the official code thresholds scores with SPOT before computing Affiliation metrics. EasyTSAD's own evaluation thresholds externally and reports point/event F1 and AUPRC, so q, metric_mode and select_metric are recorded under 'thresholding' but excluded from config.toml. Resolved discrepancy; no silent drop."
+    },
+    {
+      "issue": "train_rate 0.8 vs EasyTSAD's train/valid split",
+      "detail": "The official pipeline detrends, standardizes on train, then splits train/valid at int(train_rate * len(init_data)) (data/preprocess.py:26-32). The harness owns the dataset split, so train_rate is documented but is not something the adapter should re-apply."
+    },
+    {
+      "issue": "Preprocessing ownership",
+      "detail": "Official code standardizes internally (StandardScaler) and detrends with a centered rolling median (period 1440). [Data_Params] preprocess = 'z-score' matches the standardization; the rolling-median detrending has no harness equivalent and must be reproduced inside the method if faithful reproduction is required."
+    }
+  ],
+
+  "uncertainty": [
+    "Paper unavailable (HTTP 403, no arXiv): no value could be confirmed against a paper table or section; all origins are 'source'.",
+    "The evaluation dataset for this task is not fixed, so the applicable script/run.sh override row (and thus batch_size, lr, lradj, d_model, window_size, patch_size, patch_stride, k) is unresolved. config.toml intentionally carries the main.py defaults.",
+    "patch_size/window_size/patch_stride combinations must keep window_size >= patch_size; the default set (64/32/2) is valid and yields seq_len = 17.",
+    "k is clamped to min(k, N - 1) at runtime (models/LatentFlow.py:59), so for low-channel datasets the effective neighbor count is smaller than 15.",
+    "Whether the harness benchmark expects the 3-run itr averaging (main.py:83-84) or a single deterministic run is unresolved; random_seed 42 and cudnn.deterministic=True are recorded so either is reproducible.",
+    "use_gpu/gpu_id/devices are omitted from config.toml because device placement belongs to the harness environment."
+  ]
+}

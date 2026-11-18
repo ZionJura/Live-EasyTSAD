@@ -17,12 +17,15 @@ from __future__ import annotations
 
 import difflib
 import http.client
+import io
 import json
 import logging
 import os
 import re
 import shutil
 import subprocess
+import tarfile
+import tempfile
 import threading
 import time
 import urllib.error
@@ -179,7 +182,11 @@ def llm_search(query: str, limit: int = 5) -> list[dict]:
     body = json.dumps({"model": llm["model"], "input": prompt, "tools": [{"type": "web_search"}]}).encode()
     raw = http(llm["base_url"].rstrip("/") + "/responses", data=body, timeout=600, retries=2,
                headers={"Authorization": f"Bearer {cfg.api_key()}", "Content-Type": "application/json"})
-    text = "\n".join(c.get("text", "") for item in json.loads(raw).get("output", [])
+    output = json.loads(raw).get("output", [])
+    if not any(item.get("type") == "web_search_call" for item in output):
+        log.warning("llm search skipped: provider did not execute web_search")
+        return []
+    text = "\n".join(c.get("text", "") for item in output
                      if item.get("type") == "message" for c in item.get("content", []) or [])
     return [record(**{**{k: v for k, v in c.items() if k in KEYS}, "source": "llm"})
             for c in _json_list(text)[:limit] if isinstance(c, dict) and c.get("title")]
@@ -269,17 +276,17 @@ def resolve(*, arxiv: str | None = None, title: str | None = None,
     arxiv = parse_arxiv_id(arxiv) if arxiv else (parse_arxiv_id(url) if url and "arxiv.org" in url else None)
     rec: dict | None = None
     if arxiv:
-        hits = _arxiv_query(id_list=arxiv, max_results=1)
-        if not hits:
-            raise HarnessError(f"arXiv id {arxiv} not found")
-        rec = hits[0]
+        try:
+            hits = _arxiv_query(id_list=arxiv, max_results=1)
+        except Exception as error:
+            log.warning("Initial arXiv lookup deferred to FETCH: %s", error)
+            hits = []
+        rec = hits[0] if hits else record(title=arxiv, arxiv_id=arxiv, source="arxiv-pending")
     elif title:
-        rec = _best_title_match(title, arxiv_search(title, 5, field="ti") or arxiv_search(title, 10))
-        if rec is None:
-            try:
-                rec = _best_title_match(title, llm_search(title, 3), cutoff=0.7)
-            except Exception as e:
-                log.warning("llm search failed: %s", e)
+        try:
+            rec = _best_title_match(title, arxiv_search(title, 5, field="ti") or arxiv_search(title, 10))
+        except Exception as error:
+            log.warning("Initial title lookup deferred to FETCH: %s", error)
         if rec is None:
             rec = record(title=title, source="manual")
     if url and not arxiv:
@@ -354,7 +361,11 @@ def _download_pdf(url: str, dest: Path) -> None:
 
 
 # ---------------------------------------------------------------------- code
-def clone(url: str, dest_root: Path) -> dict:
+class SourceFetchError(HarnessError):
+    pass
+
+
+def clone(url: str, dest_root: Path, *, revision: str | None = None) -> dict:
     """`git clone --depth 1` a GitHub link into dest_root/<repo>; reuses an existing clone."""
     m = GITHUB_RE.search(url)
     if not m:
@@ -367,9 +378,40 @@ def clone(url: str, dest_root: Path) -> dict:
             shutil.rmtree(dest)
         cmd = ["git", "clone", "--depth", "1", "--quiet", *(["--branch", branch] if branch else []),
                f"https://github.com/{owner}/{repo}.git", str(dest)]
-        p = subprocess.run(cmd, env={**env, "GIT_TERMINAL_PROMPT": "0"}, capture_output=True, text=True, timeout=900)
+        env["GIT_TERMINAL_PROMPT"] = "0"
+        try:
+            p = subprocess.run(cmd, env=env, capture_output=True, text=True, timeout=900)
+            if p.returncode and re.search(r"(?:HTTP code |response: )407\b", p.stderr):
+                if dest.exists():
+                    shutil.rmtree(dest)
+                if revision and re.fullmatch(r"[0-9a-fA-F]{40}", revision):
+                    dest_root.mkdir(parents=True, exist_ok=True)
+                    try:
+                        archive = http(f"https://codeload.github.com/{owner}/{repo}/tar.gz/{revision}", timeout=180)
+                        with tempfile.TemporaryDirectory(dir=dest_root) as staging:
+                            with tarfile.open(fileobj=io.BytesIO(archive), mode="r:gz") as bundle:
+                                bundle.extractall(staging, filter="tar")
+                            directories = list(Path(staging).iterdir())
+                            if len(directories) != 1 or not directories[0].is_dir():
+                                raise HarnessError("Unexpected GitHub source archive layout")
+                            shutil.move(str(directories[0]), str(dest))
+                    except (HarnessError, OSError, tarfile.TarError) as error:
+                        raise SourceFetchError(f"GitHub source archive download failed: {error}") from error
+                    return {"url": f"https://github.com/{owner}/{repo}", "branch": branch or "",
+                            "dir": str(dest), "commit": revision, "transport": "github-archive"}
+                direct = {key: value for key, value in env.items()
+                          if key.lower() not in ("http_proxy", "https_proxy", "all_proxy")}
+                direct.update(NO_PROXY="*", no_proxy="*")
+                p = subprocess.run(["git", "-c", "http.proxy=", *cmd[1:]], env=direct,
+                                   capture_output=True, text=True, timeout=120)
+        except (OSError, subprocess.TimeoutExpired) as error:
+            if dest.exists():
+                shutil.rmtree(dest)
+            raise SourceFetchError(f"git clone transport failed: {type(error).__name__}") from error
         if p.returncode != 0:
-            raise HarnessError(f"git clone failed: {p.stderr.strip()[-500:]}")
+            if dest.exists():
+                shutil.rmtree(dest)
+            raise SourceFetchError(f"git clone failed: {p.stderr.strip()[-500:]}")
     commit = subprocess.run(["git", "-C", str(dest), "rev-parse", "HEAD"], capture_output=True,
                             text=True, env=env).stdout.strip()
     return {"url": f"https://github.com/{owner}/{repo}", "branch": branch or "", "dir": str(dest), "commit": commit}
@@ -421,11 +463,20 @@ def fetch_to(root: Path, rec: dict, *, code_url: str = "", clone_code: bool = Tr
 def fetch(task: Task) -> dict:
     """FETCH phase for a task: resolve the paper if needed, then `fetch_to(task.dir, ...)`."""
     rec = dict(task.spec.get("paper") or {})
-    if not (rec.get("pdf_url") or rec.get("pdf_path")):
-        rec = _merge(resolve(arxiv=rec.get("arxiv_id") or None, title=rec.get("title") or None,
-                             url=rec.get("url") or None), rec)
-        task.log("fetch/resolved", paper=rec)
-    meta = fetch_to(task.dir, rec, code_url=task.spec.get("code_url", ""))
+    code_url = task.spec.get("code_url", "")
+    code = clone(code_url, task.dir / "code") if code_url else None
+    try:
+        if not (rec.get("pdf_url") or rec.get("pdf_path")):
+            rec = _merge(resolve(arxiv=rec.get("arxiv_id") or None, title=rec.get("title") or None,
+                                 url=rec.get("url") or None), rec)
+            task.log("fetch/resolved", paper=rec)
+        meta = fetch_to(task.dir, rec, code_url=code_url)
+    except Exception as error:
+        if code is None:
+            raise
+        meta = {"fetched_at": now(), "paper": rec, "pdf": None, "markdown": None,
+                "code": code, "code_candidates": [code_url], "errors": [f"paper fetch: {error}"]}
+        (task.dir / "paper" / "meta.json").write_text(json.dumps(meta, indent=2, ensure_ascii=False) + "\n")
     task.log("fetch/done", pdf=meta["pdf"], markdown=meta["markdown"], code=meta["code"],
              code_candidates=meta["code_candidates"], errors=meta["errors"])
     return meta

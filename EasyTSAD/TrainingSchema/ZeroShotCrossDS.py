@@ -47,7 +47,9 @@ class ZeroShotCrossDS(BaseSchema):
             
         ## training and validation phase
         ## self.train_valid_timer.tic()
+        self._observe("train_started", None, None)
         method.train_valid_phase_all_in_one(tsTrains=new_tstrain)
+        self._observe("train_finished", None, None)
         ## self.train_valid_timer.toc()
         
         for dataset_name, value in tsDatas.items():
@@ -57,13 +59,15 @@ class ZeroShotCrossDS(BaseSchema):
                     
                     ## test phase
                     self.test_timer.tic()
+                    self._observe("inference_started", dataset_name, curve_name)
                     method.test_phase(curve)
+                    self._observe("inference_finished", dataset_name, curve_name)
                     self.test_timer.toc()
                     
                     score = method.anomaly_score()
                     
                     ## save scores and evaluation
-                    np.save(score_path, score)
+                    self._save_score(score_path, score, dataset_name, curve_name)
                     
             # # save running time info
             # time_path = self.pm.get_rt_time_path(self.method, self.schema, dataset_name)
@@ -73,5 +77,3 @@ class ZeroShotCrossDS(BaseSchema):
             # }
             # with open(time_path, 'w') as f:
             #     json.dump(time_dict, f, indent=4)
-                
-        

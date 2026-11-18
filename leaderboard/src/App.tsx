@@ -321,7 +321,7 @@ export default function App() {
     if (filters.search) p.set("q", filters.search);
     if (filters.family !== "all") p.set("family", filters.family);
     if (filters.ascending) p.set("sort", "asc");
-    window.history.replaceState(null, "", `${window.location.pathname}?${p}`);
+    window.history.replaceState(null, "", `${window.location.pathname}?${p}${window.location.hash}`);
   }, [filters]);
   useEffect(() => {
     if (toast) {

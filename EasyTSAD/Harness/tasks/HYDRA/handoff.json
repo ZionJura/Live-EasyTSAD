@@ -1,0 +1,45 @@
+{
+  "source": "EasyTSAD/Methods/HYDRA/upstream",
+  "artifacts": {
+    "source": "EasyTSAD/Methods/HYDRA/reproduction/source.json",
+    "hyperparameters": "EasyTSAD/Methods/HYDRA/reproduction/hyperparameters.json",
+    "interface": "EasyTSAD/Methods/HYDRA/reproduction/adapter.yaml",
+    "environment": "EasyTSAD/Methods/HYDRA/environment/pyproject.toml",
+    "environment_evidence": "EasyTSAD/Methods/HYDRA/reproduction/environment.json",
+    "diagnosis": "EasyTSAD/Methods/HYDRA/reproduction/diagnosis.json"
+  },
+  "environment": "EasyTSAD/Methods/HYDRA/environment",
+  "environment_name": "method_HYDRA",
+  "legacy_integration": false,
+  "human_corrections": [
+    {
+      "id": "diag_04fa6553de4142e2",
+      "at": "2026-11-17T09:39:52+00:00",
+      "note": "Harness runtime correction: interface terminated with structured max-tokens/outputTokens=8192, not an algorithm defect. Preserve completed hyperparameters/environment and resume only the missing interface after controller update. Stop the erroneous algorithm diagnosis.",
+      "target_phase": "IMPLEMENT",
+      "author": "harness-observer"
+    },
+    {
+      "id": "diag_54bc2f5cd9d54d53",
+      "at": "2026-11-17T09:46:29+00:00",
+      "note": "Fix Harness artifact handoff: parameter provenance is already recorded per parameter; missing top-level evidence is not an algorithm failure. Accept the existing hyperparameters/config/environment. Continue missing interface only, retaining its session and structured max-tokens reason.",
+      "target_phase": "IMPLEMENT",
+      "author": "harness-observer"
+    },
+    {
+      "id": "diag_524476cf2c3f49c8",
+      "at": "2026-11-17T09:58:29+00:00",
+      "note": "Resume the original interface session to correct only YAML syntax in reproduction/adapter.yaml: evidence is a sequence but unresolved is indented as a mapping entry at line 145. The controller now returns handoff read errors to the same worker; preserve completed hyperparameters/environment and existing source. No algorithm diagnosis or implementation change is needed.",
+      "target_phase": "IMPLEMENT",
+      "author": "harness-observer"
+    },
+    {
+      "id": "diag_8b5c0d71235246b9",
+      "at": "2026-11-17T11:32:47+00:00",
+      "note": "The full NAB evaluation failed before model execution: LiveLeaderBoard/results/logs/20261117T112627Z_harness_HYDRA_eval/HYDRA_NAB.out shows EasyTSAD/Evaluations/Protocols/VUS.py imports statsmodels, absent from EasyTSAD core dependency metadata. The root pyproject.toml now declares statsmodels. Reuse valid completed research artifacts, synchronize the existing method environment through the controller, and continue full evaluation. No model or metric implementation change is required.",
+      "target_phase": "IMPLEMENT",
+      "author": "user"
+    }
+  ],
+  "errors": []
+}

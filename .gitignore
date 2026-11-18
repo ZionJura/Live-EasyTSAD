@@ -162,6 +162,7 @@ cython_debug/
 test*
 tmp/
 datasets/
+/datasets
 basedata/
 pre*
 pl_*
@@ -176,13 +177,27 @@ Model_ckpt/
 # uv environment management (see README "Environment Management")
 runtime/
 envs/*/venv/
+EasyTSAD/Harness/dsh-host/node_modules
+EasyTSAD/Methods/*/environment/.venv/
+envs/registry.lock
+EasyTSAD/Methods/AutoTSAD/data/
+EasyTSAD/Methods/*/paper/paper.pdf
+EasyTSAD/Methods/*/paper/paper.md
+EasyTSAD/Methods/*/reproduction/.??*.lock
+EasyTSAD/Methods/*/reproduction/agents/
+EasyTSAD/Methods/*/reproduction/runs/
+EasyTSAD/Methods/*/reproduction/diagnostics.jsonl
+EasyTSAD/Methods/*/reproduction/diagnosis.json
+EasyTSAD/Methods/*/reproduction/environment-install.json
 
 # LiveLeaderBoard: raw score arrays and console logs are large and rebuildable
 LiveLeaderBoard/results/runs/**/scores/
 LiveLeaderBoard/results/logs/
+LiveLeaderBoard/results/.export.lock
 
 # Reproduction harness: downloaded papers / official code clones and local DSH state
 EasyTSAD/Harness/tasks/*/paper/paper.pdf
+EasyTSAD/Harness/tasks/*/paper/paper.md
 EasyTSAD/Harness/tasks/*/code/
 
 # DeepSeek Harness reference source (read-only local copy, ~2.7 GB; not versioned here)
@@ -192,5 +207,23 @@ EasyTSAD/tsautoreproduce-harness/
 EasyTSAD/Harness/tasks/*/.lock
 EasyTSAD/Harness/tasks/*/guard/
 EasyTSAD/Harness/tasks/*/scratch/
+EasyTSAD/Harness/tasks/*/dsh/
+EasyTSAD/Harness/tasks/*/runs/
+EasyTSAD/Harness/tasks/*/state.json
+EasyTSAD/Harness/tasks/*/journal.jsonl
+EasyTSAD/Harness/tasks/*/corrections.jsonl
+EasyTSAD/Harness/tasks/*/notes.jsonl
 EasyTSAD/Harness/tasks/*/*.tmp
 __pycache__/
+
+# Keep the harness regression suite despite the legacy test* scratch-file rule.
+!EasyTSAD/Harness/tests/
+!EasyTSAD/Harness/tests/test_*.py
+!EasyTSAD/Harness/dsh-host/test/
+!EasyTSAD/Harness/dsh-host/test/*.test.mjs
+!EasyTSAD/Harness/tui/test/
+!EasyTSAD/Harness/tui/test/*.test.ts
+!EasyTSAD/Harness/tui/test/pty-smoke.py
+
+# Keep the explicit local TUI environment preparation entry point.
+!scripts/prepare-harness-tui

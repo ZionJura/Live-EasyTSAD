@@ -1,0 +1,60 @@
+{
+  "method": "LatentFlow",
+  "repository_url": "https://github.com/SunboTax/LatentFlow",
+  "supported": true,
+  "commit": "3695f54317fcc1a3fdbfa0a7037d1cdf4369db27",
+  "branch": "master",
+  "evidence": [
+    "https://github.com/SunboTax/LatentFlow — official repository; GitHub description reads 'Official PyTorch implementation of LatentFlow: Discovering Latent Continuous Dynamics across Channels for Multivariate Time-Series Anomaly Detection.' (api.github.com/repos/SunboTax/LatentFlow: default_branch=master, license=MIT, homepage=https://dl.acm.org/doi/10.1145/3770855.3818034, created 2026-05-28, single non-fork repo owned by user 'SunboTax').",
+    "https://github.com/SunboTax/LatentFlow/blob/master/README.md — README opens with 'Official PyTorch implementation of LatentFlow: Discovering Latent Continuous Dynamics across Channels for Multivariate Time-Series Anomaly Detection' and cites @inproceedings{latentflow2026, author = {Sun, Lijun and Zhang, Shuai and Xue, Xin and Li, Lanhao and Zhou, Haoyi and Li, Jianxin}, booktitle = {Proceedings of the 32nd ACM SIGKDD Conference on Knowledge Discovery and Data Mining V.2}, year = {2026}, doi = {10.1145/3770855.3818034}} — the author list matches the publisher record exactly, so the repo is authored by the paper's authors.",
+    "https://api.github.com/users/SunboTax — owner login 'SunboTax' (display name 'Sunbotax', email sunljxii@outlook.com), consistent with first author Lijun Sun (Beihang University / Zhongguancun Laboratory).",
+    "https://api.crossref.org/works/10.1145/3770855.3818034 — publisher metadata: title 'LatentFlow: Discovering Latent Continuous Dynamics across Channels for Multivariate Time Series Anomaly Detection', authors Lijun Sun (ORCID 0009-0005-5606-274X), Shuai Zhang, Xin Xue, Lanhao Li, Haoyi Zhou, Jianxin Li; published 2026-08-08; pages 4498-4509; container 'Proceedings of the 32nd ACM SIGKDD Conference on Knowledge Discovery and Data Mining V.2'; license CC-BY 4.0.",
+    "https://api.openalex.org/works/doi:10.1145/3770855.3818034 — OpenAlex W7196978874 confirms DOI, venue (KDD 2026), publication_year 2026, open_access.is_oa=true with oa_status 'hybrid' and no separate repository copy of the full text (best_oa_location.pdf_url = null), i.e. the ACM DOI page is the only publisher copy.",
+    "https://api.semanticscholar.org/graph/v1/paper/68a6b36caeef1e907133ab88358fc7d6eff1b669 — Semantic Scholar paperId 68a6b36caeef1e907133ab88358fc7d6eff1b669 / CorpusId 290858486, DBLP key conf/kdd/SunZXLZL26, abstract describes Ornstein-Uhlenbeck latent continuous dynamics across channels plus a Dependency Decoupling Strategy for multivariate time-series anomaly detection.",
+    "https://raw.githubusercontent.com/SunboTax/LatentFlow/master/models/LatentFlow.py — implements the paper's method: TemporalFeatureExtractor, GRUCell feature recurrence, SparseGraphLearner (top-k, diagonal-masked), StructureEvolutionCell (O-U style inertia blending), GraphAggregator and patch decoder with RevIN.",
+    "https://raw.githubusercontent.com/SunboTax/LatentFlow/master/exp/exp.py — Exp._acquire_device() returns torch.device('cuda:{gpu_id}') when config.use_gpu and torch.cuda.is_available(), else falls back to torch.device('cpu') with 'device: Use CPU'; both paths exist, so compute_device=auto.",
+    "https://raw.githubusercontent.com/SunboTax/LatentFlow/master/data/preprocess.py — getData(path='./dataset/', dataset, period, train_rate=0.8) loads *_train_data.npy / *_test_data.npy / *_test_label.npy, fits a StandardScaler on the training split and applies median-based detrending (getStable); per-timestep point labels on multivariate series (MTS) with a train/test split, i.e. the naive in-domain schema.",
+    "https://raw.githubusercontent.com/SunboTax/LatentFlow/master/script/run.sh — per-dataset training/eval entrypoints for MSL, SMD, SWAT, PSM, WADI, Kitsune, Creditcard, UNSW (all multivariate benchmarks); script/run_vus.sh and script/run_aff.sh select threshold-free VUS vs SPOT-thresholded Affiliation metrics."
+  ],
+  "paper": {
+    "title": "LatentFlow: Discovering Latent Continuous Dynamics across Channels for Multivariate Time Series Anomaly Detection",
+    "url": "https://doi.org/10.1145/3770855.3818034",
+    "pdf_url": "https://dl.acm.org/doi/pdf/10.1145/3770855.3818034",
+    "arxiv_id": "",
+    "authors": [
+      "Lijun Sun",
+      "Shuai Zhang",
+      "Xin Xue",
+      "Lanhao Li",
+      "Haoyi Zhou",
+      "Jianxin Li"
+    ],
+    "year": "2026",
+    "venue": "Proceedings of the 32nd ACM SIGKDD Conference on Knowledge Discovery and Data Mining V.2 (KDD 2026)"
+  },
+  "compatibility": {
+    "task_type": "time_series_anomaly_detection",
+    "supported": true,
+    "dataset_types": [
+      "MTS"
+    ],
+    "schemas": [
+      "naive"
+    ],
+    "reason": "The paper and the official repository target multivariate time-series anomaly detection: reconstruction-based training on the normal training split with per-timestep point labels on the test split (data/preprocess.py builds train/test data and *_test_label.npy with train_rate=0.8), and scoring via SPOT thresholding for Affiliation metrics or threshold-free VUS (utils/vus_evaluate.py). All eight benchmark datasets shipped by script/run.sh (MSL, SMD, SWAT, PSM, WADI, Kitsune, Creditcard, UNSW) are multivariate, so dataset_types is limited to MTS; the code has no univariate or cross-dataset zero-shot path, hence schemas is the naive in-domain split only.",
+    "compute_device": "auto",
+    "compute_device_evidence": "exp/exp.py::_acquire_device() selects torch.device('cuda:{gpu_id}') when self.config.use_gpu and torch.cuda.is_available(), and otherwise sets use_gpu=0/use_multi_gpu=0 and returns torch.device('cpu') with the log line 'device: Use CPU'; main.py additionally prints 'CUDA is not available. Falling back to CPU.' when --use_gpu 1 cannot be honoured. utils/seed.py calls torch.cuda.manual_seed/manual_seed_all unconditionally, but those are no-ops without CUDA, so no hard CUDA requirement exists and both execution paths are supported."
+  },
+  "uncertainty": [
+    "No arXiv preprint exists for this KDD 2026 paper: arXiv full-text searches for 'LatentFlow', 'Latent Continuous Dynamics' and 'Dependency Decoupling' return no matching record, so arxiv_id is empty.",
+    "The only full text is the ACM Digital Library copy (hybrid open access, CC-BY 4.0). dl.acm.org returned a CAPTCHA / HTTP 403 security check to this worker, so paper.pdf_url is recorded as the ACM PDF endpoint and the controller may need publisher access to download it.",
+    "Title casing differs between sources ('Time Series' at Crossref/OpenAlex vs 'Time-Series' in the README/BibTeX); the Crossref publisher record spelling is used.",
+    "Only one commit exists on master (3695f54317fcc1a3fdbfa0a7037d1cdf4369db27, 'init repo', authored 2026-05-28, committed 2026-07-12), so the selected revision cannot be cross-checked against later fixes.",
+    "requirements.txt pins dgl==2.3.0+cu121 and torch-geometric==2.6.1, which suggests a CUDA-oriented environment; however models/LatentFlow.py imports neither dgl nor torch_geometric (the graph learner is implemented with plain torch), and the CPU fallback in exp/exp.py is explicit, so the pin alone does not make the method cuda-only.",
+    "The repository ships no data; the eight datasets must be supplied as *_train_data.npy / *_test_data.npy / *_test_label.npy under ./dataset/<NAME>/."
+  ],
+  "notes": "Selected revision: branch master at commit 3695f54317fcc1a3fdbfa0a7037d1cdf4369db27 (tree 68d4087af05ede73fb9a2154dcf3baea380a2ab1), the only commit in the repository. Provenance chain: the repository README's BibTeX author list is identical to the Crossref/OpenAlex publisher record for DOI 10.1145/3770855.3818034, and the owner account (SunboTax / sunljxii@outlook.com) matches first author Lijun Sun, which establishes official authorship rather than a name-alike reimplementation. The code is MIT licensed. Runtime entrypoint is main.py -> exp/exp.py::Exp (train/test loop, --itr 3 seeds), with models/LatentFlow.py holding the model, data/preprocess.py + data/dataset.py the windowed I/O, and utils/{spot.py,vus_evaluate.py} the SPOT/VUS/Affiliation evaluation. Default per-dataset hyperparameters live in script/run.sh (e.g. SMD --d_model 64 --window_size 196 --patch_size 96 --patch_stride 4 --k 15 --q 0.018; PSM --lradj type3 --lr 1e-4 --k 3 --q 0.021; WADI --batch_size 64 --lr 5e-3 --window_size 196 --patch_size 128 --patch_stride 12 --k 15 --q 0.002). Essential config flags: --metric_mode {aff,vus,all}, --q (SPOT quantile, required for aff), --select_metric, --k, --patch_size, --patch_stride, --window_size, --train_rate 0.8, --lambda_sparsity 1e-3. No dependencies were installed and no training was run by this worker; only the source selection is recorded here.",
+  "at": "2026-11-17T08:22:44+00:00",
+  "upstream": "EasyTSAD/Methods/LatentFlow/upstream",
+  "file_count": 17
+}
